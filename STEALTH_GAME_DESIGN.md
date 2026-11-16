@@ -6,7 +6,7 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 ## A. Project Overview
 
-A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16), **breaking out of a facility**: a clinical test facility, our own take on that kind of place (History #77, #78). Working title: none yet; the repository is `stealth-game`.
+A **side-on stealth game** (History #1, #15, #91), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16), **breaking out of a facility**: a clinical test facility, our own take on that kind of place (History #77, #78). Working title: none yet; the repository is `stealth-game`.
 
 **Where the project stands (as of 2026-11-16T15:15:52+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
@@ -449,6 +449,7 @@ Shortlisted for visual comparison (options, not decisions):
 | 88 | 2026-11-16T14:31:28+00:00 | Combat | Kill: the guard shatters into its own shapes, which scatter and fade (2C). |
 | 89 | 2026-11-16T14:31:28+00:00 | Combat | Ceiling and wall takedowns: the pounce, with wind-up, afterimages, hit-stop, ring and a moment pinning the guard; no takedown cam (3B). |
 | 90 | 2026-11-16T15:15:52+00:00 | Workflow | Claude's plan for building the takedown picks approved, including its default that a guard can't turn round once a takedown on it is committed. |
+| 91 | 2026-11-16T17:04:21+00:00 | Concept | Stays a side-on stealth game. Pivoting to a 3/4 GTA-style sandbox was considered after the Three-Quarter Block mock-up (`prototypes/three-quarter-block/`) and turned down; the city becomes its own project later. |
 
 ---
 
