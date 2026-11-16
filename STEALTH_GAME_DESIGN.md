@@ -8,7 +8,7 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T06:31:36+00:00):**
+**Where the project stands (as of 2026-11-16T06:35:14+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -132,6 +132,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 ### The player
 - **A thief who's small and out of place.** Lyra chose both "a thief" (breaking in to take something) and "small and out of place" (sneaking past things far bigger than it; stealth as vulnerability). *(2026-11-16T05:57:44+00:00 — History #16)*
 - **Fades in shadow; the eyes stay lit.** The player's body dims when hidden while the eyes stay bright, so how visible the player is reads straight off the player. This deliberately breaks the style's rule that characters are never darkened, for the player only. Claude's recommendation, approved. *(2026-11-16T05:57:44+00:00 — History #17)*
+- **A vision pool, not a light.** A faint pool around him lets the player see the room in the dark, but it's his eyes adjusting, not a light: it doesn't stop him fading and guards can't see it. Lamps are what light him. Claude's recommendation, approved. *(2026-11-16T06:35:14+00:00 — History #41)*
 - **An expert thief.** Small but brilliant at this: confident, a bit smug, and its size is an advantage it knows how to use. *(2026-11-16T06:00:59+00:00 — History #18)*
 - **Body: No. 7, "Stacked"** from the Thief Line-up: a small circle head on a rounded trapezoid body. Lyra's pick; proportions still to be refined. *(2026-11-16T06:09:50+00:00 — History #20)*
 - **Face: mask + mouth.** A dark mask band across the eyes (white eyes with pupils inside it) and a mouth below; the line-up drew the mouth as a smirk. Lyra's pick. *(2026-11-16T06:09:50+00:00 — History #21)*
@@ -153,10 +154,13 @@ Don't rush through the questions simply to get to implementation. The design pro
   - **Lands gripping:** blink onto a wall or ceiling and he arrives already holding on, so blink and climbing work as one move set. Claude's recommendation, approved. *(2026-11-16T06:27:40+00:00 — History #35)*
   - **Look: turning to dust.** He crumbles into dust from the head down (the guide's small dust squares, in his own colours), and the dust gathers back into him at the far end. Lyra's own option, chosen from the Thief Blink Studies over pop and ring (Claude's pick), shatter and reassemble, and shadow streak. To watch in playtesting: the study takes about a second to re-form him, which may feel slow in play; and crumbling may read like a death once he can die. *(2026-11-16T06:28:40+00:00 — History #36)*
 - **On the ground:** walk, plus **sneak** (slow, near-silent), **run** (fast but noisy), **jump**, and **slide or roll** (under low gaps and closing doors). *(2026-11-16T06:19:39+00:00 — History #31)*
+- **Slide from a run.** While running, press down to drop into a low slide that carries his speed under gaps and closing doors. Claude's recommendation, approved. *(2026-11-16T06:35:14+00:00 — History #42)*
 - **Sneak is a toggle; run is held.** Press once to sneak until pressed again; hold to run. *(2026-11-16T06:31:36+00:00 — History #38)*
 
 ### Platforms and input
 - **Keyboard, gamepad and touch, all from the start.** Lyra plays on a Pixel 10 Pro Fold, so the game has to work in portrait, in landscape and on the inner folding screen, as well as on desktop. *(2026-11-16T06:31:36+00:00 — History #39)*
+- **Touch: a fixed thumbstick** in the same corner for moving and climbing. *(2026-11-16T06:35:14+00:00 — History #43)*
+- **Touch: drag from the blink button to aim.** The landing marker follows the finger; let go to blink, slide back onto the button to cancel. Claude's recommendation, approved. *(2026-11-16T06:35:14+00:00 — History #44)*
 
 ### Art and presentation
 - **Art style: Stylised Geometry**, as set out in `stylised-geometry/STYLISED_GEOMETRY.md` and its reference sheets. *(2026-11-16T05:36:10+00:00 — History #2)*
@@ -292,6 +296,10 @@ Shortlisted for visual comparison (options, not decisions):
 | 38 | 2026-11-16T06:31:36+00:00 | Player | Sneak is a toggle; run is held. |
 | 39 | 2026-11-16T06:31:36+00:00 | Platform | Keyboard, gamepad and touch from the start; must work on a Pixel 10 Pro Fold in portrait, landscape and on the inner screen, and on desktop. |
 | 40 | 2026-11-16T06:31:36+00:00 | Technical | Physics: Phaser Arcade (Claude's recommendation, approved). |
+| 41 | 2026-11-16T06:35:14+00:00 | Player | A vision pool lets the player see in the dark without lighting him; lamps are what light him (Claude's recommendation, approved). |
+| 42 | 2026-11-16T06:35:14+00:00 | Player | Slide from a run: press down while running (Claude's recommendation, approved). |
+| 43 | 2026-11-16T06:35:14+00:00 | Platform | Touch: a fixed thumbstick for moving and climbing. |
+| 44 | 2026-11-16T06:35:14+00:00 | Platform | Touch: drag from the blink button to aim; release to blink, back onto the button to cancel (Claude's recommendation, approved). |
 
 ---
 
