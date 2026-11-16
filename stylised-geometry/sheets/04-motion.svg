@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 640" width="1400" height="640" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+<defs><radialGradient id="pool" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#2e2e40"/><stop offset="0.35" stop-color="#22222f"/><stop offset="1" stop-color="#08080c"/></radialGradient><radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#ffcf7a" stop-opacity="0.45"/><stop offset="1" stop-color="#ffcf7a" stop-opacity="0"/></radialGradient><radialGradient id="hot" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#fff0d8" stop-opacity="0.7"/><stop offset="1" stop-color="#ff8a2a" stop-opacity="0"/></radialGradient></defs>
+<rect width="1400" height="640" fill="#14141c"/>
+<text x="40" y="52" fill="#e8e8f0" font-size="28" font-weight="800">4 · Motion: squash, stretch and effects</text>
+<text x="40" y="80" fill="#9a9ab0" font-size="15">Shapes stay simple; how they move does the work. Scale x × y keeps the area roughly the same, then springs back.</text>
+<rect x="40" y="110" width="205" height="280" rx="14" fill="#1d1d29"/>
+<line x1="55" y1="340" x2="230" y2="340" stroke="#3a3a4a" stroke-width="3"/>
+<polygon points="118.2,320.0 128.2,320.0 128.2,332.5 143.2,332.5 143.2,340.0 118.2,340.0" fill="#2a2a3a" stroke="#1a1a26" stroke-width="2.5" stroke-linejoin="round"/>
+<polygon points="145.8,320.0 155.8,320.0 155.8,332.5 170.8,332.5 170.8,340.0 145.8,340.0" fill="#2a2a3a" stroke="#1a1a26" stroke-width="2.5" stroke-linejoin="round"/>
+<rect x="102.0" y="250.0" width="80.0" height="80.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="5.0" stroke-linejoin="round"/>
+<ellipse cx="127.0" cy="280.0" rx="6.7" ry="10.0" fill="#1a1a26"/>
+<ellipse cx="157.0" cy="280.0" rx="6.7" ry="10.0" fill="#1a1a26"/>
+<circle cx="129.5" cy="275.0" r="2.5" fill="#fff"/>
+<circle cx="159.5" cy="275.0" r="2.5" fill="#fff"/>
+<path d="M132.0 300.0 Q 142.0 310.0 152.0 300.0" fill="none" stroke="#1a1a26" stroke-width="5.0" stroke-linecap="round"/>
+<circle cx="94.0" cy="284.7" r="10.7" fill="#f2f2f2" stroke="#1a1a26" stroke-width="3.3"/>
+<circle cx="190.0" cy="284.7" r="10.7" fill="#f2f2f2" stroke="#1a1a26" stroke-width="3.3"/>
+<text x="142" y="138" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Idle</text>
+<text x="142" y="370" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">1 × 1</text>
+<rect x="265" y="110" width="205" height="280" rx="14" fill="#1d1d29"/>
+<line x1="280" y1="340" x2="455" y2="340" stroke="#3a3a4a" stroke-width="3"/>
+<rect x="338.2" y="194.4" width="57.6" height="105.6" fill="#f2f2f2" stroke="#1a1a26" stroke-width="5.0" stroke-linejoin="round"/>
+<ellipse cx="352.0" cy="237.2" rx="6.7" ry="10.0" fill="#1a1a26"/>
+<ellipse cx="382.0" cy="237.2" rx="6.7" ry="10.0" fill="#1a1a26"/>
+<circle cx="354.5" cy="232.2" r="2.5" fill="#fff"/>
+<circle cx="384.5" cy="232.2" r="2.5" fill="#fff"/>
+<path d="M357.0 257.2 Q 367.0 267.2 377.0 257.2" fill="none" stroke="#1a1a26" stroke-width="5.0" stroke-linecap="round"/>
+<circle cx="313.7" cy="204.5" r="10.7" fill="#f2f2f2" stroke="#1a1a26" stroke-width="3.3"/>
+<circle cx="420.3" cy="201.9" r="10.7" fill="#f2f2f2" stroke="#1a1a26" stroke-width="3.3"/>
+<text x="367" y="138" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Jump</text>
+<text x="367" y="370" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">0.72 × 1.32</text>
+<rect x="490" y="110" width="205" height="280" rx="14" fill="#1d1d29"/>
+<line x1="505" y1="340" x2="680" y2="340" stroke="#3a3a4a" stroke-width="3"/>
+<rect x="558.0" y="208.0" width="68.0" height="92.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="5.0" stroke-linejoin="round"/>
+<ellipse cx="577.0" cy="244.0" rx="6.7" ry="10.0" fill="#1a1a26"/>
+<ellipse cx="607.0" cy="244.0" rx="6.7" ry="10.0" fill="#1a1a26"/>
+<circle cx="579.5" cy="239.0" r="2.5" fill="#fff"/>
+<circle cx="609.5" cy="239.0" r="2.5" fill="#fff"/>
+<path d="M582.0 264.0 Q 592.0 274.0 602.0 264.0" fill="none" stroke="#1a1a26" stroke-width="5.0" stroke-linecap="round"/>
+<circle cx="538.7" cy="211.3" r="10.7" fill="#f2f2f2" stroke="#1a1a26" stroke-width="3.3"/>
+<circle cx="645.3" cy="208.7" r="10.7" fill="#f2f2f2" stroke="#1a1a26" stroke-width="3.3"/>
+<text x="592" y="138" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Rising</text>
+<text x="592" y="370" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">0.85 × 1.15</text>
+<rect x="715" y="110" width="205" height="280" rx="14" fill="#1d1d29"/>
+<line x1="730" y1="340" x2="905" y2="340" stroke="#3a3a4a" stroke-width="3"/>
+<polygon points="793.2,320.0 803.2,320.0 803.2,332.5 818.2,332.5 818.2,340.0 793.2,340.0" fill="#2a2a3a" stroke="#1a1a26" stroke-width="2.5" stroke-linejoin="round"/>
+<polygon points="820.8,320.0 830.8,320.0 830.8,332.5 845.8,332.5 845.8,340.0 820.8,340.0" fill="#2a2a3a" stroke="#1a1a26" stroke-width="2.5" stroke-linejoin="round"/>
+<rect x="761.0" y="282.0" width="112.0" height="48.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="5.0" stroke-linejoin="round"/>
+<ellipse cx="802.0" cy="296.0" rx="6.7" ry="10.0" fill="#1a1a26"/>
+<ellipse cx="832.0" cy="296.0" rx="6.7" ry="10.0" fill="#1a1a26"/>
+<circle cx="804.5" cy="291.0" r="2.5" fill="#fff"/>
+<circle cx="834.5" cy="291.0" r="2.5" fill="#fff"/>
+<path d="M807.0 316.0 Q 817.0 326.0 827.0 316.0" fill="none" stroke="#1a1a26" stroke-width="5.0" stroke-linecap="round"/>
+<circle cx="769.0" cy="300.7" r="10.7" fill="#f2f2f2" stroke="#1a1a26" stroke-width="3.3"/>
+<circle cx="865.0" cy="300.7" r="10.7" fill="#f2f2f2" stroke="#1a1a26" stroke-width="3.3"/>
+<rect x="753" y="332" width="8" height="8" fill="#b4b4c6" opacity="0.8"/>
+<rect x="737" y="327" width="7" height="7" fill="#b4b4c6" opacity="0.6000000000000001"/>
+<rect x="721" y="322" width="6" height="6" fill="#b4b4c6" opacity="0.4"/>
+<rect x="873" y="332" width="8" height="8" fill="#b4b4c6" opacity="0.8"/>
+<rect x="889" y="327" width="7" height="7" fill="#b4b4c6" opacity="0.6000000000000001"/>
+<rect x="905" y="322" width="6" height="6" fill="#b4b4c6" opacity="0.4"/>
+<text x="817" y="138" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Land (hard)</text>
+<text x="817" y="370" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">1.4 × 0.6</text>
+<rect x="940" y="110" width="205" height="280" rx="14" fill="#1d1d29"/>
+<line x1="955" y1="340" x2="1130" y2="340" stroke="#3a3a4a" stroke-width="3"/>
+<polygon points="1018.2,320.0 1028.2,320.0 1028.2,332.5 1043.2,332.5 1043.2,340.0 1018.2,340.0" fill="#2a2a3a" stroke="#1a1a26" stroke-width="2.5" stroke-linejoin="round"/>
+<polygon points="1045.8,320.0 1055.8,320.0 1055.8,332.5 1070.8,332.5 1070.8,340.0 1045.8,340.0" fill="#2a2a3a" stroke="#1a1a26" stroke-width="2.5" stroke-linejoin="round"/>
+<rect x="988.0" y="274.0" width="108.0" height="56.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="5.0" stroke-linejoin="round"/>
+<ellipse cx="1027.0" cy="292.0" rx="6.7" ry="10.0" fill="#1a1a26"/>
+<ellipse cx="1057.0" cy="292.0" rx="6.7" ry="10.0" fill="#1a1a26"/>
+<circle cx="1029.5" cy="287.0" r="2.5" fill="#fff"/>
+<circle cx="1059.5" cy="287.0" r="2.5" fill="#fff"/>
+<path d="M1028.7 310.3 A 13.3 13.3 0 0 0 1055.3 310.3 Z" fill="#1a1a26"/>
+<circle cx="988.7" cy="259.3" r="10.7" fill="#f2f2f2" stroke="#1a1a26" stroke-width="3.3"/>
+<circle cx="1095.3" cy="256.7" r="10.7" fill="#f2f2f2" stroke="#1a1a26" stroke-width="3.3"/>
+<text x="1042" y="138" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Stomp / hurt</text>
+<text x="1042" y="370" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">1.35 × 0.7</text>
+<rect x="1165" y="110" width="205" height="280" rx="14" fill="#1d1d29"/>
+<line x1="1180" y1="340" x2="1355" y2="340" stroke="#3a3a4a" stroke-width="3"/>
+<polygon points="1243.2,320.0 1253.2,320.0 1253.2,332.5 1268.2,332.5 1268.2,340.0 1243.2,340.0" fill="#2a2a3a" stroke="#1a1a26" stroke-width="2.5" stroke-linejoin="round"/>
+<polygon points="1270.8,320.0 1280.8,320.0 1280.8,332.5 1295.8,332.5 1295.8,340.0 1270.8,340.0" fill="#2a2a3a" stroke="#1a1a26" stroke-width="2.5" stroke-linejoin="round"/>
+<rect x="1231.0" y="242.0" width="72.0" height="88.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="5.0" stroke-linejoin="round"/>
+<ellipse cx="1260.3" cy="282.7" rx="5.8" ry="5.0" fill="#1a1a26"/>
+<ellipse cx="1287.0" cy="282.7" rx="5.8" ry="5.0" fill="#1a1a26"/>
+<path d="M1250.3 266.0 L 1268.7 272.7" fill="none" stroke="#1a1a26" stroke-width="5.0" stroke-linecap="round"/>
+<path d="M1297.0 266.0 L 1278.7 272.7" fill="none" stroke="#1a1a26" stroke-width="5.0" stroke-linecap="round"/>
+<path d="M1265.3 301.0 L 1282.0 301.0" fill="none" stroke="#1a1a26" stroke-width="5.0" stroke-linecap="round"/>
+<circle cx="1307.0" cy="267.3" r="10.7" fill="#f2f2f2" stroke="#1a1a26" stroke-width="3.3"/>
+<circle cx="1307.0" cy="299.3" r="10.7" fill="#f2f2f2" stroke="#1a1a26" stroke-width="3.3"/>
+<text x="1267" y="138" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Wall slide</text>
+<text x="1267" y="370" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">0.9 × 1.1</text>
+<rect x="40" y="410" width="1320" height="200" rx="14" fill="#1d1d29"/>
+<rect x="90" y="490" width="48" height="40" fill="#8fd3ff" opacity="0.12"/>
+<rect x="116" y="490" width="48" height="40" fill="#8fd3ff" opacity="0.2"/>
+<rect x="142" y="490" width="48" height="40" fill="#8fd3ff" opacity="0.28"/>
+<rect x="168" y="490" width="48" height="40" fill="#8fd3ff" opacity="0.36"/>
+<rect x="194.0" y="492.0" width="72.0" height="36.0" fill="#8fd3ff" stroke="#1a1a26" stroke-width="3.0" stroke-linejoin="round"/>
+<ellipse cx="232.7" cy="508.3" rx="2.9" ry="2.5" fill="#1a1a26"/>
+<ellipse cx="246.0" cy="508.3" rx="2.9" ry="2.5" fill="#1a1a26"/>
+<path d="M227.7 500.0 L 236.8 503.3" fill="none" stroke="#1a1a26" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M251.0 500.0 L 241.8 503.3" fill="none" stroke="#1a1a26" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M235.2 517.5 L 243.5 517.5" fill="none" stroke="#1a1a26" stroke-width="2.5" stroke-linecap="round"/>
+<text x="200" y="590" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">Dash: a streak with fading afterimages</text>
+<rect x="430" y="520" width="10" height="10" fill="#b4b4c6" opacity="0.8" transform="rotate(20 430 520)"/>
+<rect x="410" y="506" width="8" height="8" fill="#b4b4c6" opacity="0.8" transform="rotate(20 410 506)"/>
+<rect x="392" y="496" width="6" height="6" fill="#b4b4c6" opacity="0.8" transform="rotate(20 392 496)"/>
+<rect x="510" y="520" width="10" height="10" fill="#b4b4c6" opacity="0.8" transform="rotate(20 510 520)"/>
+<rect x="530" y="506" width="8" height="8" fill="#b4b4c6" opacity="0.8" transform="rotate(20 530 506)"/>
+<rect x="548" y="496" width="6" height="6" fill="#b4b4c6" opacity="0.8" transform="rotate(20 548 496)"/>
+<rect x="470" y="490" width="7" height="7" fill="#b4b4c6" opacity="0.8" transform="rotate(20 470 490)"/>
+<text x="470" y="590" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">Dust: small pale squares, drift and fade</text>
+<ellipse cx="760" cy="510" rx="20" ry="8.0" fill="none" stroke="#8fd3ff" stroke-width="4" opacity="0.9"/>
+<ellipse cx="760" cy="510" rx="40" ry="16.0" fill="none" stroke="#8fd3ff" stroke-width="3" opacity="0.55"/>
+<ellipse cx="760" cy="510" rx="62" ry="24.8" fill="none" stroke="#8fd3ff" stroke-width="2" opacity="0.25"/>
+<text x="760" y="590" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">Ring: an outline that grows and fades</text>
+<rect x="1064" y="506" width="8" height="8" fill="#ff5a5a" transform="rotate(0 1068 510)"/>
+<rect x="1070" y="531" width="8" height="8" fill="#ff5a5a" transform="rotate(23 1074 535)"/>
+<rect x="1053" y="559" width="8" height="8" fill="#ff5a5a" transform="rotate(46 1057 563)"/>
+<rect x="1027" y="533" width="8" height="8" fill="#ff5a5a" transform="rotate(69 1031 537)"/>
+<rect x="1002" y="531" width="8" height="8" fill="#ff5a5a" transform="rotate(92 1006 535)"/>
+<rect x="980" y="506" width="8" height="8" fill="#ff5a5a" transform="rotate(115 984 510)"/>
+<rect x="1013" y="490" width="8" height="8" fill="#ff5a5a" transform="rotate(138 1017 494)"/>
+<rect x="1023" y="466" width="8" height="8" fill="#ff5a5a" transform="rotate(161 1027 470)"/>
+<rect x="1053" y="453" width="8" height="8" fill="#ff5a5a" transform="rotate(184 1057 457)"/>
+<rect x="1059" y="490" width="8" height="8" fill="#ff5a5a" transform="rotate(207 1063 494)"/>
+<text x="1040" y="590" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">Burst: shards in the event's colour</text>
+<rect x="1230" y="480" width="60" height="60" fill="#fff" stroke="#8fd3ff" stroke-width="4"/>
+<text x="1260" y="590" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">Flash: a frame of white on a hit</text>
+<text x="60" y="440" fill="#e8e8f0" font-size="16" font-weight="600" text-anchor="start">Effect vocabulary</text>
+</svg>

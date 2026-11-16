@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 760" width="1400" height="760" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+<defs><radialGradient id="pool" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#2e2e40"/><stop offset="0.35" stop-color="#22222f"/><stop offset="1" stop-color="#08080c"/></radialGradient><radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#ffcf7a" stop-opacity="0.45"/><stop offset="1" stop-color="#ffcf7a" stop-opacity="0"/></radialGradient><radialGradient id="hot" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#fff0d8" stop-opacity="0.7"/><stop offset="1" stop-color="#ff8a2a" stop-opacity="0"/></radialGradient></defs>
+<rect width="1400" height="760" fill="#14141c"/>
+<text x="40" y="52" fill="#e8e8f0" font-size="28" font-weight="800">7 · Colour</text>
+<text x="40" y="80" fill="#9a9ab0" font-size="15">Colour has jobs. Give each job one colour family and never let another thing borrow it.</text>
+<rect x="40" y="110" width="205" height="150" rx="14" fill="#1d1d29"/>
+<rect x="60" y="125" width="165" height="60" rx="8" fill="#f2f2f2" stroke="#6a6a80" stroke-width="2"/>
+<text x="142" y="212" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Hero</text>
+<text x="142" y="234" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">#f2f2f2</text>
+<text x="142" y="252" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">the player's body</text>
+<rect x="265" y="110" width="205" height="150" rx="14" fill="#1d1d29"/>
+<rect x="285" y="125" width="165" height="60" rx="8" fill="#8fd3ff" stroke="#6a6a80" stroke-width="2"/>
+<text x="367" y="212" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Power</text>
+<text x="367" y="234" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">#8fd3ff</text>
+<text x="367" y="252" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">the hero's abilities</text>
+<rect x="490" y="110" width="205" height="150" rx="14" fill="#1d1d29"/>
+<rect x="510" y="125" width="165" height="60" rx="8" fill="#ff5a5a" stroke="#6a6a80" stroke-width="2"/>
+<text x="592" y="212" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Damage</text>
+<text x="592" y="234" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">#ff5a5a</text>
+<text x="592" y="252" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">getting hurt, health loss</text>
+<rect x="715" y="110" width="205" height="150" rx="14" fill="#1d1d29"/>
+<rect x="735" y="125" width="165" height="60" rx="8" fill="#ffcf4a" stroke="#6a6a80" stroke-width="2"/>
+<text x="817" y="212" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Reward</text>
+<text x="817" y="234" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">#ffcf4a</text>
+<text x="817" y="252" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">currency, buying, pickups</text>
+<rect x="940" y="110" width="205" height="150" rx="14" fill="#1d1d29"/>
+<rect x="960" y="125" width="165" height="60" rx="8" fill="#fff0d8" stroke="#6a6a80" stroke-width="2"/>
+<text x="1042" y="212" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Hot tell</text>
+<text x="1042" y="234" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">#fff0d8</text>
+<text x="1042" y="252" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">about to attack</text>
+<rect x="1165" y="110" width="205" height="150" rx="14" fill="#1d1d29"/>
+<rect x="1185" y="125" width="165" height="60" rx="8" fill="#1a1a26" stroke="#6a6a80" stroke-width="2"/>
+<text x="1267" y="212" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Ink</text>
+<text x="1267" y="234" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">#1a1a26</text>
+<text x="1267" y="252" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">every outline</text>
+<text x="40" y="300" fill="#e8e8f0" font-size="16" font-weight="600" text-anchor="start">A world palette, built the same way every time</text>
+<text x="40" y="360" fill="#e8e8f0" font-size="14" font-weight="600" text-anchor="start">Background</text>
+<text x="40" y="376" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="start">very dark, low saturation</text>
+<text x="40" y="412" fill="#e8e8f0" font-size="14" font-weight="600" text-anchor="start">Surfaces</text>
+<text x="40" y="428" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="start">dark, a step lighter</text>
+<text x="40" y="464" fill="#e8e8f0" font-size="14" font-weight="600" text-anchor="start">Blocks / walls</text>
+<text x="40" y="480" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="start">between the two</text>
+<text x="40" y="516" fill="#e8e8f0" font-size="14" font-weight="600" text-anchor="start">Lit edge</text>
+<text x="40" y="532" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="start">a light tint, 3 px on tops</text>
+<text x="40" y="568" fill="#e8e8f0" font-size="14" font-weight="600" text-anchor="start">Accent 1</text>
+<text x="40" y="584" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="start">the world's signature colour</text>
+<text x="40" y="620" fill="#e8e8f0" font-size="14" font-weight="600" text-anchor="start">Accent 2</text>
+<text x="40" y="636" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="start">its opposite or partner</text>
+<text x="40" y="672" fill="#e8e8f0" font-size="14" font-weight="600" text-anchor="start">Danger</text>
+<text x="40" y="688" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="start">its own red or hot colour</text>
+<text x="410" y="322" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Gothic</text>
+<rect x="300" y="335" width="220" height="42" rx="6" fill="#140e24" stroke="#3a3a4a"/>
+<text x="510" y="361" fill="#ffffffaa" font-size="11" text-anchor="end">#140e24</text>
+<rect x="300" y="387" width="220" height="42" rx="6" fill="#4a3e6a" stroke="#3a3a4a"/>
+<text x="510" y="413" fill="#ffffffaa" font-size="11" text-anchor="end">#4a3e6a</text>
+<rect x="300" y="439" width="220" height="42" rx="6" fill="#332a4c" stroke="#3a3a4a"/>
+<text x="510" y="465" fill="#ffffffaa" font-size="11" text-anchor="end">#332a4c</text>
+<rect x="300" y="491" width="220" height="42" rx="6" fill="#7a6ea0" stroke="#3a3a4a"/>
+<text x="510" y="517" fill="#ffffffaa" font-size="11" text-anchor="end">#7a6ea0</text>
+<rect x="300" y="543" width="220" height="42" rx="6" fill="#c8913a" stroke="#3a3a4a"/>
+<text x="510" y="569" fill="#ffffffaa" font-size="11" text-anchor="end">#c8913a</text>
+<rect x="300" y="595" width="220" height="42" rx="6" fill="#5b3a8a" stroke="#3a3a4a"/>
+<text x="510" y="621" fill="#ffffffaa" font-size="11" text-anchor="end">#5b3a8a</text>
+<rect x="300" y="647" width="220" height="42" rx="6" fill="#b3263a" stroke="#3a3a4a"/>
+<text x="510" y="673" fill="#ffffffaa" font-size="11" text-anchor="end">#b3263a</text>
+<text x="675" y="322" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Frozen</text>
+<rect x="565" y="335" width="220" height="42" rx="6" fill="#0c1a2a" stroke="#3a3a4a"/>
+<text x="775" y="361" fill="#ffffffaa" font-size="11" text-anchor="end">#0c1a2a</text>
+<rect x="565" y="387" width="220" height="42" rx="6" fill="#2f5578" stroke="#3a3a4a"/>
+<text x="775" y="413" fill="#ffffffaa" font-size="11" text-anchor="end">#2f5578</text>
+<rect x="565" y="439" width="220" height="42" rx="6" fill="#132a44" stroke="#3a3a4a"/>
+<text x="775" y="465" fill="#ffffffaa" font-size="11" text-anchor="end">#132a44</text>
+<rect x="565" y="491" width="220" height="42" rx="6" fill="#9fd2ec" stroke="#3a3a4a"/>
+<text x="775" y="517" fill="#1a1a26" font-size="11" text-anchor="end">#9fd2ec</text>
+<rect x="565" y="543" width="220" height="42" rx="6" fill="#4fe3ff" stroke="#3a3a4a"/>
+<text x="775" y="569" fill="#1a1a26" font-size="11" text-anchor="end">#4fe3ff</text>
+<rect x="565" y="595" width="220" height="42" rx="6" fill="#8a7dff" stroke="#3a3a4a"/>
+<text x="775" y="621" fill="#1a1a26" font-size="11" text-anchor="end">#8a7dff</text>
+<rect x="565" y="647" width="220" height="42" rx="6" fill="#ff5a7a" stroke="#3a3a4a"/>
+<text x="775" y="673" fill="#ffffffaa" font-size="11" text-anchor="end">#ff5a7a</text>
+<text x="940" y="322" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Volcanic</text>
+<rect x="830" y="335" width="220" height="42" rx="6" fill="#1a1414" stroke="#3a3a4a"/>
+<text x="1040" y="361" fill="#ffffffaa" font-size="11" text-anchor="end">#1a1414</text>
+<rect x="830" y="387" width="220" height="42" rx="6" fill="#4a3a36" stroke="#3a3a4a"/>
+<text x="1040" y="413" fill="#ffffffaa" font-size="11" text-anchor="end">#4a3a36</text>
+<rect x="830" y="439" width="220" height="42" rx="6" fill="#2b1c18" stroke="#3a3a4a"/>
+<text x="1040" y="465" fill="#ffffffaa" font-size="11" text-anchor="end">#2b1c18</text>
+<rect x="830" y="491" width="220" height="42" rx="6" fill="#8a6a5a" stroke="#3a3a4a"/>
+<text x="1040" y="517" fill="#1a1a26" font-size="11" text-anchor="end">#8a6a5a</text>
+<rect x="830" y="543" width="220" height="42" rx="6" fill="#ff8a2a" stroke="#3a3a4a"/>
+<text x="1040" y="569" fill="#1a1a26" font-size="11" text-anchor="end">#ff8a2a</text>
+<rect x="830" y="595" width="220" height="42" rx="6" fill="#ffb547" stroke="#3a3a4a"/>
+<text x="1040" y="621" fill="#1a1a26" font-size="11" text-anchor="end">#ffb547</text>
+<rect x="830" y="647" width="220" height="42" rx="6" fill="#ff3a1f" stroke="#3a3a4a"/>
+<text x="1040" y="673" fill="#ffffffaa" font-size="11" text-anchor="end">#ff3a1f</text>
+<text x="1205" y="322" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Solarpunk</text>
+<rect x="1095" y="335" width="220" height="42" rx="6" fill="#1f3a2c" stroke="#3a3a4a"/>
+<text x="1305" y="361" fill="#ffffffaa" font-size="11" text-anchor="end">#1f3a2c</text>
+<rect x="1095" y="387" width="220" height="42" rx="6" fill="#3f9a55" stroke="#3a3a4a"/>
+<text x="1305" y="413" fill="#ffffffaa" font-size="11" text-anchor="end">#3f9a55</text>
+<rect x="1095" y="439" width="220" height="42" rx="6" fill="#2a6f86" stroke="#3a3a4a"/>
+<text x="1305" y="465" fill="#ffffffaa" font-size="11" text-anchor="end">#2a6f86</text>
+<rect x="1095" y="491" width="220" height="42" rx="6" fill="#fff1b8" stroke="#3a3a4a"/>
+<text x="1305" y="517" fill="#1a1a26" font-size="11" text-anchor="end">#fff1b8</text>
+<rect x="1095" y="543" width="220" height="42" rx="6" fill="#ffd166" stroke="#3a3a4a"/>
+<text x="1305" y="569" fill="#1a1a26" font-size="11" text-anchor="end">#ffd166</text>
+<rect x="1095" y="595" width="220" height="42" rx="6" fill="#ff8fb0" stroke="#3a3a4a"/>
+<text x="1305" y="621" fill="#1a1a26" font-size="11" text-anchor="end">#ff8fb0</text>
+<rect x="1095" y="647" width="220" height="42" rx="6" fill="#e0453a" stroke="#3a3a4a"/>
+<text x="1305" y="673" fill="#ffffffaa" font-size="11" text-anchor="end">#e0453a</text>
+<text x="700" y="722" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">Characters carry the saturation; rooms stay darker and duller than anything that moves.</text>
+<text x="700" y="742" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">Gothic is the finished palette from simple-shooter; the other three are illustrative, filled out from early mockups.</text>
+</svg>

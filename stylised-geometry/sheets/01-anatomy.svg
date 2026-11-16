@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 640" width="1400" height="640" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+<defs><radialGradient id="pool" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#2e2e40"/><stop offset="0.35" stop-color="#22222f"/><stop offset="1" stop-color="#08080c"/></radialGradient><radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#ffcf7a" stop-opacity="0.45"/><stop offset="1" stop-color="#ffcf7a" stop-opacity="0"/></radialGradient><radialGradient id="hot" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#fff0d8" stop-opacity="0.7"/><stop offset="1" stop-color="#ff8a2a" stop-opacity="0"/></radialGradient></defs>
+<rect width="1400" height="640" fill="#14141c"/>
+<text x="40" y="52" fill="#e8e8f0" font-size="28" font-weight="800">1 · Anatomy of a character</text>
+<text x="40" y="80" fill="#9a9ab0" font-size="15">Built in six steps from one shape. Measurements are in S, the body size (the hero here is S = 48 px in game; drawn at S = 96).</text>
+<rect x="40" y="110" width="205" height="330" rx="14" fill="#1d1d29"/>
+<rect x="94.0" y="212.0" width="96.0" height="96.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="0.0" stroke-linejoin="round"/>
+<text x="142" y="140" fill="#e8e8f0" font-size="16" font-weight="600" text-anchor="middle">1. Shape</text>
+<rect x="265" y="110" width="205" height="330" rx="14" fill="#1d1d29"/>
+<rect x="319.0" y="212.0" width="96.0" height="96.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="6.0" stroke-linejoin="round"/>
+<text x="367" y="140" fill="#e8e8f0" font-size="16" font-weight="600" text-anchor="middle">2. Outline</text>
+<rect x="490" y="110" width="205" height="330" rx="14" fill="#1d1d29"/>
+<rect x="544.0" y="212.0" width="96.0" height="96.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="6.0" stroke-linejoin="round"/>
+<ellipse cx="574.0" cy="248.0" rx="8.0" ry="12.0" fill="#1a1a26"/>
+<circle cx="577.0" cy="242.0" r="3.0" fill="#fff"/>
+<ellipse cx="610.0" cy="248.0" rx="8.0" ry="12.0" fill="#1a1a26"/>
+<circle cx="613.0" cy="242.0" r="3.0" fill="#fff"/>
+<text x="592" y="140" fill="#e8e8f0" font-size="16" font-weight="600" text-anchor="middle">3. Eyes</text>
+<rect x="715" y="110" width="205" height="330" rx="14" fill="#1d1d29"/>
+<rect x="769.0" y="212.0" width="96.0" height="96.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="6.0" stroke-linejoin="round"/>
+<ellipse cx="799.0" cy="248.0" rx="8.0" ry="12.0" fill="#1a1a26"/>
+<circle cx="802.0" cy="242.0" r="3.0" fill="#fff"/>
+<ellipse cx="835.0" cy="248.0" rx="8.0" ry="12.0" fill="#1a1a26"/>
+<circle cx="838.0" cy="242.0" r="3.0" fill="#fff"/>
+<path d="M805.0 272.0 Q 817 284.0 829.0 272.0" fill="none" stroke="#1a1a26" stroke-width="6.0" stroke-linecap="round"/>
+<text x="817" y="140" fill="#e8e8f0" font-size="16" font-weight="600" text-anchor="middle">4. Mouth</text>
+<rect x="940" y="110" width="205" height="330" rx="14" fill="#1d1d29"/>
+<rect x="994.0" y="212.0" width="96.0" height="96.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="6.0" stroke-linejoin="round"/>
+<ellipse cx="1024.0" cy="248.0" rx="8.0" ry="12.0" fill="#1a1a26"/>
+<circle cx="1027.0" cy="242.0" r="3.0" fill="#fff"/>
+<ellipse cx="1060.0" cy="248.0" rx="8.0" ry="12.0" fill="#1a1a26"/>
+<circle cx="1063.0" cy="242.0" r="3.0" fill="#fff"/>
+<path d="M1030.0 272.0 Q 1042 284.0 1054.0 272.0" fill="none" stroke="#1a1a26" stroke-width="6.0" stroke-linecap="round"/>
+<circle cx="970.0" cy="252.0" r="16.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="5.0"/>
+<circle cx="1114.0" cy="252.0" r="16.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="5.0"/>
+<text x="1042" y="140" fill="#e8e8f0" font-size="16" font-weight="600" text-anchor="middle">5. Floating hands</text>
+<rect x="1165" y="110" width="205" height="330" rx="14" fill="#1d1d29"/>
+<polygon points="1229.0,292.0 1245.0,292.0 1245.0,312.0 1269.0,312.0 1269.0,324.0 1229.0,324.0" fill="#2a2a3a" stroke="#1a1a26" stroke-width="4.0" stroke-linejoin="round"/>
+<polygon points="1273.0,292.0 1289.0,292.0 1289.0,312.0 1313.0,312.0 1313.0,324.0 1273.0,324.0" fill="#2a2a3a" stroke="#1a1a26" stroke-width="4.0" stroke-linejoin="round"/>
+<rect x="1219.0" y="212.0" width="96.0" height="96.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="6.0" stroke-linejoin="round"/>
+<ellipse cx="1249.0" cy="248.0" rx="8.0" ry="12.0" fill="#1a1a26"/>
+<circle cx="1252.0" cy="242.0" r="3.0" fill="#fff"/>
+<ellipse cx="1285.0" cy="248.0" rx="8.0" ry="12.0" fill="#1a1a26"/>
+<circle cx="1288.0" cy="242.0" r="3.0" fill="#fff"/>
+<path d="M1255.0 272.0 Q 1267 284.0 1279.0 272.0" fill="none" stroke="#1a1a26" stroke-width="6.0" stroke-linecap="round"/>
+<circle cx="1195.0" cy="252.0" r="16.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="5.0"/>
+<circle cx="1339.0" cy="252.0" r="16.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="5.0"/>
+<text x="1267" y="140" fill="#e8e8f0" font-size="16" font-weight="600" text-anchor="middle">6. Feet</text>
+<text x="142" y="400" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">A primitive</text>
+<text x="142" y="418" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">you can name</text>
+<text x="367" y="400" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">Ink #1a1a26,</text>
+<text x="367" y="418" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">≈ 0.06 S thick</text>
+<text x="592" y="400" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">Ovals ≈ 0.17 × 0.25 S,</text>
+<text x="592" y="418" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">with a highlight dot</text>
+<text x="817" y="400" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">A short arc,</text>
+<text x="817" y="418" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">≈ 0.3 S wide</text>
+<text x="1042" y="400" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">Circles ≈ 0.17 S,</text>
+<text x="1042" y="418" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">centred ≈ 0.75 S out</text>
+<text x="1267" y="400" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">Dark blocks, partly</text>
+<text x="1267" y="418" fill="#9a9ab0" font-size="12" font-weight="400" text-anchor="middle">behind the body</text>
+<rect x="40" y="460" width="1320" height="150" rx="14" fill="#1d1d29"/>
+<text x="60" y="492" fill="#e8e8f0" font-size="16" font-weight="600" text-anchor="start">Rules</text>
+<text x="60" y="522" fill="#9a9ab0" font-size="14" font-weight="400" text-anchor="start">· Hitbox = the plain shape. Face, hands, feet, squash and stretch are drawing only.</text>
+<text x="60" y="546" fill="#9a9ab0" font-size="14" font-weight="400" text-anchor="start">· Nothing is attached: hands and feet float near the body and move on their own (bob, swing, reach).</text>
+<text x="60" y="570" fill="#9a9ab0" font-size="14" font-weight="400" text-anchor="start">· Flat fills. At most a gentle top-to-bottom tint. No textures, no rendered shading.</text>
+<text x="60" y="594" fill="#9a9ab0" font-size="14" font-weight="400" text-anchor="start">· Every shape gets the same ink outline, scaled with its size: thicker on bodies, thinner on hands and details.</text>
+</svg>

@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 560" width="1400" height="560" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+<defs><radialGradient id="pool" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#2e2e40"/><stop offset="0.35" stop-color="#22222f"/><stop offset="1" stop-color="#08080c"/></radialGradient><radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#ffcf7a" stop-opacity="0.45"/><stop offset="1" stop-color="#ffcf7a" stop-opacity="0"/></radialGradient><radialGradient id="hot" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#fff0d8" stop-opacity="0.7"/><stop offset="1" stop-color="#ff8a2a" stop-opacity="0"/></radialGradient></defs>
+<rect width="1400" height="560" fill="#14141c"/>
+<text x="40" y="52" fill="#e8e8f0" font-size="28" font-weight="800">3 · Faces and eyes</text>
+<text x="40" y="80" fill="#9a9ab0" font-size="15">Eyes make a shape a character. What they look at says what it is paying attention to.</text>
+<rect x="40" y="110" width="205" height="190" rx="14" fill="#1d1d29"/>
+<rect x="94.0" y="162.0" width="96.0" height="96.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="6.0" stroke-linejoin="round"/>
+<ellipse cx="124.0" cy="198.0" rx="8.0" ry="12.0" fill="#1a1a26"/>
+<ellipse cx="160.0" cy="198.0" rx="8.0" ry="12.0" fill="#1a1a26"/>
+<circle cx="127.0" cy="192.0" r="3.0" fill="#fff"/>
+<circle cx="163.0" cy="192.0" r="3.0" fill="#fff"/>
+<path d="M130.0 222.0 Q 142.0 234.0 154.0 222.0" fill="none" stroke="#1a1a26" stroke-width="6.0" stroke-linecap="round"/>
+<text x="142" y="138" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Idle</text>
+<rect x="265" y="110" width="205" height="190" rx="14" fill="#1d1d29"/>
+<rect x="319.0" y="162.0" width="96.0" height="96.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="6.0" stroke-linejoin="round"/>
+<ellipse cx="349.0" cy="198.0" rx="8.0" ry="12.0" fill="#1a1a26"/>
+<ellipse cx="385.0" cy="198.0" rx="8.0" ry="12.0" fill="#1a1a26"/>
+<circle cx="352.0" cy="192.0" r="3.0" fill="#fff"/>
+<circle cx="388.0" cy="192.0" r="3.0" fill="#fff"/>
+<path d="M351.0 220.0 A 16.0 16.0 0 0 0 383.0 220.0 Z" fill="#1a1a26"/>
+<text x="367" y="138" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Pleased (a grin)</text>
+<rect x="490" y="110" width="205" height="190" rx="14" fill="#1d1d29"/>
+<rect x="544.0" y="162.0" width="96.0" height="96.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="6.0" stroke-linejoin="round"/>
+<path d="M564.0 194.0 L 580.0 202.0 L 564.0 210.0" fill="none" stroke="#1a1a26" stroke-width="6.0" stroke-linecap="round"/>
+<path d="M620.0 194.0 L 604.0 202.0 L 620.0 210.0" fill="none" stroke="#1a1a26" stroke-width="6.0" stroke-linecap="round"/>
+<path d="M580.0 234.0 Q 592.0 220.0 604.0 234.0" fill="none" stroke="#1a1a26" stroke-width="6.0" stroke-linecap="round"/>
+<text x="592" y="138" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Hurt</text>
+<rect x="715" y="110" width="205" height="190" rx="14" fill="#1d1d29"/>
+<rect x="769.0" y="162.0" width="96.0" height="96.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="6.0" stroke-linejoin="round"/>
+<ellipse cx="809.0" cy="206.0" rx="7.0" ry="6.0" fill="#1a1a26"/>
+<ellipse cx="841.0" cy="206.0" rx="7.0" ry="6.0" fill="#1a1a26"/>
+<path d="M797.0 186.0 L 819.0 194.0" fill="none" stroke="#1a1a26" stroke-width="6.0" stroke-linecap="round"/>
+<path d="M853.0 186.0 L 831.0 194.0" fill="none" stroke="#1a1a26" stroke-width="6.0" stroke-linecap="round"/>
+<path d="M815.0 228.0 L 835.0 228.0" fill="none" stroke="#1a1a26" stroke-width="6.0" stroke-linecap="round"/>
+<text x="817" y="138" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Determined (dash)</text>
+<rect x="940" y="110" width="205" height="190" rx="14" fill="#1d1d29"/>
+<rect x="994.0" y="162.0" width="96.0" height="96.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="6.0" stroke-linejoin="round"/>
+<ellipse cx="1024.0" cy="198.0" rx="8.0" ry="14.0" fill="#1a1a26"/>
+<ellipse cx="1060.0" cy="198.0" rx="8.0" ry="14.0" fill="#1a1a26"/>
+<circle cx="1027.0" cy="192.0" r="3.0" fill="#fff"/>
+<circle cx="1063.0" cy="192.0" r="3.0" fill="#fff"/>
+<ellipse cx="1042.0" cy="228.0" rx="7.0" ry="9.0" fill="#1a1a26"/>
+<text x="1042" y="138" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Surprised</text>
+<rect x="1165" y="110" width="205" height="190" rx="14" fill="#1d1d29"/>
+<rect x="1219.0" y="162.0" width="96.0" height="96.0" fill="#f2f2f2" stroke="#1a1a26" stroke-width="6.0" stroke-linejoin="round"/>
+<path d="M1241.0 200.0 Q 1249.0 208.0 1257.0 200.0" fill="none" stroke="#1a1a26" stroke-width="6.0" stroke-linecap="round"/>
+<path d="M1277.0 200.0 Q 1285.0 208.0 1293.0 200.0" fill="none" stroke="#1a1a26" stroke-width="6.0" stroke-linecap="round"/>
+<path d="M1255.0 222.0 Q 1267.0 234.0 1279.0 222.0" fill="none" stroke="#1a1a26" stroke-width="6.0" stroke-linecap="round"/>
+<text x="1267" y="138" fill="#e8e8f0" font-size="15" font-weight="600" text-anchor="middle">Asleep / idle long</text>
+<text x="40" y="335" fill="#e8e8f0" font-size="16" font-weight="600" text-anchor="start">One-eyed characters</text>
+<rect x="40" y="350" width="320" height="180" rx="14" fill="#1d1d29"/>
+<ellipse cx="200" cy="450" rx="50.0" ry="50.0" fill="#ff8a2a" stroke="#1a1a26" stroke-width="6.2" stroke-linejoin="round"/>
+<ellipse cx="200" cy="448" rx="22.0" ry="22.0" fill="#f6efe3" stroke="#1a1a26" stroke-width="2.6"/>
+<circle cx="207.7" cy="448.0" r="9.9" fill="#1a1a26"/>
+<text x="200" y="375" fill="#e8e8f0" font-size="14" font-weight="600" text-anchor="middle">Tracking</text>
+<rect x="375" y="350" width="320" height="180" rx="14" fill="#1d1d29"/>
+<ellipse cx="535" cy="450" rx="50.0" ry="50.0" fill="#e0453a" stroke="#1a1a26" stroke-width="6.2" stroke-linejoin="round"/>
+<ellipse cx="535" cy="448" rx="22.0" ry="22.0" fill="#f6efe3" stroke="#1a1a26" stroke-width="2.6"/>
+<circle cx="539.6" cy="450.3" r="9.9" fill="#1a1a26"/>
+<path d="M510.8 423.8 L 557.0 434.8" stroke="#1a1a26" stroke-width="6.2" stroke-linecap="round"/>
+<text x="535" y="375" fill="#e8e8f0" font-size="14" font-weight="600" text-anchor="middle">Browed (aggressive)</text>
+<rect x="710" y="350" width="320" height="180" rx="14" fill="#1d1d29"/>
+<polygon points="870.0,400.0 897.0,407.9 915.5,429.2 919.5,457.1 907.8,482.7 884.1,498.0 855.9,498.0 832.2,482.7 820.5,457.1 824.5,429.2 843.0,407.9" fill="#5b3a8a" stroke="#1a1a26" stroke-width="6.2" stroke-linejoin="round"/>
+<ellipse cx="870" cy="448" rx="22.0" ry="12.1" fill="#f6efe3" stroke="#1a1a26" stroke-width="2.6"/>
+<circle cx="870.0" cy="451.1" r="7.7" fill="#1a1a26"/>
+<path d="M848.0 448.0 A 22.0 22.0 0 0 1 892.0 448.0 L 892.0 435.9" fill="none"/>
+<text x="870" y="375" fill="#e8e8f0" font-size="14" font-weight="600" text-anchor="middle">Half-lidded (idle)</text>
+<rect x="1045" y="350" width="320" height="180" rx="14" fill="#1d1d29"/>
+<polygon points="1205.0,400.0 1232.0,407.9 1250.5,429.2 1254.5,457.1 1242.8,482.7 1219.1,498.0 1190.9,498.0 1167.2,482.7 1155.5,457.1 1159.5,429.2 1178.0,407.9" fill="#5b3a8a" stroke="#1a1a26" stroke-width="6.2" stroke-linejoin="round"/>
+<ellipse cx="1205" cy="448" rx="22.0" ry="22.0" fill="#f6efe3" stroke="#1a1a26" stroke-width="2.6"/>
+<circle cx="1205.0" cy="448.0" r="9.9" fill="#b3263a"/>
+<ellipse cx="1205.0" cy="448.0" rx="2.2" ry="7.7" fill="#1a1a26"/>
+<text x="1205" y="375" fill="#e8e8f0" font-size="14" font-weight="600" text-anchor="middle">Wide, red iris (awake, sees you)</text>
+</svg>
