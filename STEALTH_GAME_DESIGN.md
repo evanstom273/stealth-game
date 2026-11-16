@@ -8,7 +8,7 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16), **breaking out of a facility**: a clinical test facility, our own take on that kind of place (History #77, #78). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T13:37:20+00:00):**
+**Where the project stands (as of 2026-11-16T13:40:32+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -16,7 +16,7 @@ A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry**
 - Lyra is deploying the scaffold to Cloudflare Workers (History #14).
 - Designing the player: look settled (History #15–#25); climbing and ground movement settled (History #26, #28–#31); blink's rules and look settled (History #27, #32–#36).
 - Combat designed in three rounds (History #50–#61); details still open (§E).
-- Designing the guards: archetypes, senses, suspicion, searching, hiding spots, each archetype's behaviour and their size settled (History #63–#76); their look is next.
+- Designing the guards: archetypes, senses, suspicion, searching, hiding spots, each archetype's behaviour and their size settled (History #63–#80); their look is being compared in the Guard Line-up.
 - **The full player is built** (History #37, #45, #46) in a test room, playable with keyboard and mouse, gamepad and touch, and merged to `main`. Lyra's first playtest: good overall; grip raised and blink loosened as a result (History #47, #48).
 
 **Stack:** React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js and Cloudflare Workers: Lyra's normal stack (History #3).
@@ -249,6 +249,8 @@ Shortlisted for visual comparison (options, not decisions):
 **Thief Blink Studies** (Artifact, blink looks): https://claude.ai/artifact/G34hV17S54p8gSnqsmDbZU. Four looping test rooms, one per look: A, pop and ring; B, shatter and reassemble (pieces of his own shapes); C, shadow streak; D, turning to dust (Lyra's option, drawn as crumbling into the guide's dust squares from the head down and gathering back at the far end). In each he aims through a thin wall, blinks to the far floor, back, then up to the ceiling, landing gripping. Claude's choices, up for change: power blue for the aim line, landing marker and rings; a first take on the hanging pose; lit eye streaks in the shadow streak; the reading of "turning to dust"; all timings.
 
 **Thief Control Layout** (Artifact, UI mock-up, 2026-11-16T06:46:01+00:00): https://claude.ai/artifact/SZvQfYxAyDTpgY8jjx86hn. Requested by Lyra before the full player is built. An interactive mock-up of the HUD and controls on the Fold's outer screen (portrait and landscape, about 412 × 915), its inner screen (about 790 × 820) and desktop (1280 × 720): fixed thumbstick, Jump, Grab, Sneak and Blink buttons, drag-from-Blink aiming with a range ring and landing ghost, blink charges as pips, a Sneaking tag, a grip bar, an optional debug panel, and the keyboard and gamepad map. Variants to compare: buttons in an arc or a diamond; portrait controls over the game or in a band below it. Claude's choices, up for change: run on touch by pushing the stick to its edge; charges as dust squares; the icons; the Sneaking tag; the key and button bindings; S = 56 px on phones and 64 px on desktop.
+
+**Guard Line-up** (Artifact, guard visual options, 2026-11-16T13:40:32+00:00): https://claude.ai/artifact/7DDTGbZg24gdVua4B34PRS. The three archetypes (watchman, torch-bearer, blind guard), each as security staff and as a machine, at 1.25 times his size facing him in a dark facility corridor, switchable between calm, suspicious and alerted, with sight cones, the blind guard's hearing rings and the torch beam lighting him; plus a size check of all six beside him. Shortlisted to draw: faces with two eyes and a mouth varying by archetype; the blind guard blindfolded or with eyes shut; the torch in a floating hand. Claude's choices, up for change: body shapes (watchman a tall rectangle with a cap, torch-bearer broad-shouldered with a helmet, blind guard a rounded capsule; machines a panelled chassis with a screen face), colours (steel-teal, ochre, plum; gunmetal machines), faces per state, the marker's amber "?" and orange "!" badges, two-tone sight cones (dark range and light range), the hearing rings, and the torch's look.
 
 ---
 
