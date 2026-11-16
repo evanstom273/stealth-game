@@ -139,3 +139,13 @@ body {
 .tb-pips { position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%); display: flex; gap: 4px; }
 .tb-pips i { display: block; width: 7px; height: 7px; box-sizing: border-box; border: 1.5px solid var(--ui-power); }
 .tb-pips i.on { background: var(--ui-power); }
+
+/* First-person touch controls: the left half walks, the right half looks. */
+.fps-pad { position: absolute; inset: 0; pointer-events: auto; touch-action: none; }
+.fps-stick { left: 0; bottom: auto; width: 112px; height: 112px; margin: -56px 0 0 -56px; pointer-events: none; }
+.fps-stick .knob { left: 29px; top: 29px; }
+.tb.lean { top: 46%; }
+.tb.lean-l { left: calc(env(safe-area-inset-left, 0px) + 12px); }
+.tb.lean-r { right: calc(env(safe-area-inset-right, 0px) + 12px); }
+.tb.lean .tb-label { font-size: 9px; }
+.lean-arrow { font: 600 26px/1 "Outfit", ui-sans-serif, system-ui, sans-serif; color: var(--ui-fg); margin-top: -3px; }

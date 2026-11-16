@@ -16,7 +16,8 @@ export interface ThiefState {
 /** The thief's state, through the development-only debug hook. Positions are in units of S. */
 export const thief = (page: Page) => page.evaluate(() => (window as unknown as { __thief: () => ThiefState }).__thief())
 
-export async function boot(page: Page, path = '/') {
+/** Boots the side-on build (History #92 keeps it at `?view=side`). */
+export async function boot(page: Page, path = '/?view=side') {
   const errors: string[] = []
   page.on('pageerror', (e) => errors.push(e.message))
   page.on('console', (m) => {

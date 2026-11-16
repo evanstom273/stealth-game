@@ -6,7 +6,7 @@ test.use({ viewport: { width: 412, height: 915 }, hasTouch: true })
 
 test.describe('touch controls on the Fold', () => {
   test('show the stick and the diamond of buttons', async ({ page }) => {
-    const errors = await boot(page, '/?touch=1&guards=0')
+    const errors = await boot(page, '/?view=side&touch=1&guards=0')
     await expect(page.getByTestId('touch-controls')).toBeVisible()
     for (const name of ['Jump', 'Grab', 'Sneak', 'Blink']) await expect(page.getByRole('button', { name })).toBeVisible()
     // Diamond: Blink above Jump, Sneak left of Grab.
@@ -18,7 +18,7 @@ test.describe('touch controls on the Fold', () => {
   })
 
   test('the stick walks him, and its edge runs', async ({ page }) => {
-    await boot(page, '/?touch=1&guards=0')
+    await boot(page, '/?view=side&touch=1&guards=0')
     const stick = (await page.getByTestId('stick').boundingBox())!
     const cx = stick.x + stick.width / 2
     const cy = stick.y + stick.height / 2
@@ -34,7 +34,7 @@ test.describe('touch controls on the Fold', () => {
   })
 
   test('dragging from Blink aims and blinks; sliding back onto it cancels', async ({ page }) => {
-    await boot(page, '/?touch=1&guards=0')
+    await boot(page, '/?view=side&touch=1&guards=0')
     const blink = (await page.getByTestId('blink').boundingBox())!
     const bx = blink.x + blink.width / 2
     const by = blink.y + blink.height / 2

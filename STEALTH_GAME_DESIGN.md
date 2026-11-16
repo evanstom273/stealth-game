@@ -8,7 +8,8 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **first-person stealth game**, its characters standing in a 3D world as flat billboards, Daggerfall-style (History #1, #92; it began side-on, #15, #91), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16), **breaking out of a facility**: a clinical test facility, our own take on that kind of place (History #77, #78). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T17:38:38+00:00):**
+**Where the project stands (as of 2026-11-16T18:59:12+00:00):**
+- **The first-person game is built** (History #108) and merged to `main`: Three.js, the Test Wing level, all the mechanics, three test guards. Lyra is testing it. The side-on build is still playable at `?view=side`.
 - **Switched to first person** (History #92); first-person decisions made (History #93–#103), after the Billboard Corridor mock-up. Everything built so far is side-on (Phaser, 2D) and stays in the repository as reference. The §B decisions made for side-on stand as intent but are under review (§E, question 9).
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
@@ -186,6 +187,12 @@ Don't rush through the questions simply to get to implementation. The design pro
   - **Sneak becomes crouching:** lower view, slower, quieter. *(2026-11-16T17:38:38+00:00 — History #100)*
   - **The slide from a run stays.** *(2026-11-16T17:38:38+00:00 — History #100)*
   - **He crawls through gaps too low to crouch through.** *(2026-11-16T17:38:38+00:00 — History #100)*
+  - **Claude's first takes, approved** with "go, use your defaults" *(2026-11-16T18:59:12+00:00 — History #108)*:
+    - **Climbing:** any wall can be held: face it within reach and press Grab, W and S climb, A and D move along it, Grab lets go, and Space kicks off. Look up and press Grab under a ceiling in reach to hang, then move with WASD the way you're looking. Going up into a ceiling carries him onto it, and going along a ceiling into a wall carries him onto the wall. Reaching the top of a wall or ledge pulls him up, and Grab at a ledge within reach pulls him straight up onto it. Grip is 15 s and recovers on the ground. Grab forgives a quarter of a second, as in side-on.
+    - **Lean:** hold Alt and press A or D, because Q and E are Dodge and Grab. On a gamepad, LB with the stick; on touch, two lean buttons.
+    - **Blink:** the camera pulls up out of his head into the top-down view and drops back down at the landing, and he faces the way he blinked. Guards notice a blink as they did in side-on (it's loud at both ends). He lands on the highest surface there that he fits on, crouched or crawling where it's low.
+    - **The light meter:** a slim bar under the aim dot. The gloves keep a faint edge so they never fully vanish.
+    - **The camera:** a 75° field of view and a gentle head bob, which turns off when the device asks for reduced motion.
   - **He can lean round corners.** This is new for first person. *(2026-11-16T17:38:38+00:00 — History #100)*
 
 ### Combat and getting spotted
@@ -274,7 +281,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 ## C. Current Development Scope
 
-**Switched to first person** (History #92; first-person decisions #93–#103, 2026-11-16T17:32:05+00:00). Next: work out what carries over from the side-on design (§E, question 9) before building anything in the new view.
+**Switched to first person** (History #92; first-person decisions #93–#103, 2026-11-16T17:32:05+00:00). Most of what carries over from side-on was decided in two rounds of questions (§E, question 9), and the rest was built with Claude's first takes (#108). **Built and merged to `main`** (2026-11-16T18:59:12+00:00, see §F). Next: Lyra plays it.
 
 **Top-Down Blink Study** (Artifact, 2026-11-16T17:55:42+00:00): https://claude.ai/artifact/8tHWDukGJzkB7crdFqPqGt.
 - **Version 1** compared five ways of showing height in the blink view, as switches you could combine: shading, drop shadows, edges and hatching, height numbers, and lean. It also had sight cones, light and dark, lamps, and a full-detail chamber: a mezzanine with steps, crates one and two high, a platform, a loading pit, a thick wall with a doorway, and a glass office.
@@ -341,24 +348,33 @@ Shortlisted for visual comparison (options, not decisions):
 9. **What carries over from side-on** (#92). Settled by History #93–#103:
    - **Settled:** the engine (#96), the levels (#97), the billboard drawings (#98), looking up and down (#99), the ground moves (#100), takedowns (#101), the light meter (#102) and fighting (#103). How he's seen isn't a problem (#93).
    - **Still open:**
-     - How climbing works in first person (#94).
+     - How climbing works in first person (#94): first take built (#108), waiting on Lyra's playtest.
      - Blink, now settled as a top-down view with time slowed (#104, #105). Still open within it:
        - ~~how the top-down view shows height~~ (lean, #106)
-       - which way he faces on landing
-       - whether the camera pulls up and drops back down or cuts
-       - whether guards see the blink happen
-     - The touch layout for first person.
-     - The camera's feel: field of view, head bob, how leaning looks.
-     - What the light meter looks like.
-     - Whether the gloves keep a faint edge so they never fully vanish.
+       - ~~which way he faces on landing~~ (the way he blinked, #108)
+       - ~~whether the camera pulls up and drops back down or cuts~~ (pulls up and drops, #108)
+       - whether guards see the blink happen: as side-on for now (#108); there's no hearing yet
+     - The touch layout for first person: first take built (#108). The left half walks, the right half looks, and buttons sit bottom right, with lean buttons on the edges.
+     - The camera's feel: first take built (#108). 75°, a gentle head bob, lean 0.45 S with a slight roll.
+     - What the light meter looks like: first take built (#108), a slim bar under the aim dot.
+     - Whether the gloves keep a faint edge so they never fully vanish: yes, as the first take (#108).
 ---
 
 ## F. Implementation Status
 
-*Updated 2026-11-16T15:15:52+00:00.*
+*Updated 2026-11-16T18:59:12+00:00.*
 
 | Feature | Status | Notes |
 |---|---|---|
+| **First person: engine and level** | Built (#96, #97, #108) | Three.js used directly in the React shell, with its own loop (`src/fps/`). One level, the **Test Wing**, built from tiles with their own floor and ceiling heights plus freeform pieces:<ul><li>a start room with a crate and a checkpoint</li><li>a corridor with a guard at its post</li><li>a crouch duct and a crawl-only vent up to the vault (second checkpoint)</li><li>a hall with a balcony two up over a guard, a catwalk across it reached by a slanted pipe, crates, a loading pit and a glass office</li><li>a low corridor east of the hall, its ceiling in jumping reach, with a guard on patrol</li></ul>Ink lines are baked into tile textures and drawn on edges in world units, so they thin with distance. Faces get a flat tone by which way they point, lamps are warm point lights, and there's fog. *(2026-11-16T18:59:12+00:00)* |
+| **First person: moving** | Built (#100, #108) | Walk 2.6, run 4.7, crouch-sneak 1.05 and crawl 0.8 S/s. C toggles crouch, and crouching while running slides. He ducks or crawls on his own when walking into somewhere too low. Jump, held for higher, with a little forgiveness either side of leaving the ground. Lean with Alt and A or D, only as far as there's room. Free look up and down. *(2026-11-16T18:59:12+00:00)* |
+| **First person: climbing** | Built, first take (#94, #108) | Walls, ceilings, mantling, corners and grip, as listed in §B. *(2026-11-16T18:59:12+00:00)* |
+| **First person: blink** | Built (#104–#108) | Hold Blink and the camera pulls up into the top-down view: the bare two-tone room, height shown by lean, the guards, and the range ring, aim line, landing ghost and label. Time runs at a fifth. Let go and he turns to dust, arrives, and the camera drops back down. Range 6 S, through glass, stopped by thick walls, onto the highest surface there he fits on. 5 charges, refilled at the checkpoints. Aim at an unaware guard and he lands behind it and dazes it. *(2026-11-16T18:59:12+00:00)* |
+| **First person: guards** | Built (for testing) | The three test watchmen as billboards with three drawings each (#98) and every pose and face. Each is redrawn for how lit it is, with a soft shadow. They stand at a post turning every 2.4 s, or walk a patrol, and see with a 25° cone reaching 7 S in light and 1.6 S in the dark, up to 50° up or down, through nothing solid. "?" fills to "!", then they come over, finding their way round walls on their own floor, and punch. Downed guards come back after 8 s. No hearing yet. *(2026-11-16T18:59:12+00:00)* |
+| **First person: fighting** | Built (#101–#103) | The jab, cross and shove come from the gloves on screen, with the finisher and a sidestep dodge. Takedowns from behind, dropping from a ledge, wall or ceiling, and finishers. They show the outline, the badge with your Attack button and "tap · hold", and the hold ring. The view lunges and dips at the hit, or drops onto the guard. Knockouts lie with Zs; kills shatter. He's still invulnerable: a punch knocks him back with a white flash. *(2026-11-16T18:59:12+00:00)* |
+| **First person: HUD and controls** | Built | The gloves fade with his light and keep a faint edge. A light meter and grip bar sit under the aim dot. Blink charges and the Sneaking tag show, along with the pause menu (resume, restart, debug panel, full screen, key help) and the debug panel. Keyboard and mouse (click to capture the mouse; the arrow keys look too), gamepad and a first-take touch layout. Losing the mouse to Esc pauses. *(2026-11-16T18:59:12+00:00)* |
+| **Side-on build** | Kept as reference | Still playable at `?view=side`, loaded only when asked for, and its tests run against it. *(2026-11-16T18:59:12+00:00)* |
+| **Tests (first person)** | Passing in a full run | 59 unit tests, now including first-person collision, climbing, blink from above, sight, takedown positions, light through walls and guard pathing. 13 Playwright tests drive walking, running, crouching, jumping, sliding into the duct and vent, leaning, climbing onto the balcony, hanging from the ceiling, blinking (and through glass, stopped by a wall), all the takedowns, the combo into a finisher, a guard punching him, the dodge and the touch layout. All 13 passed together. The three-runs-in-a-row check wasn't finished before merging, because Lyra is testing it herself. *(2026-11-16T18:59:12+00:00)* |
 | Design doc | Done | `STEALTH_GAME_DESIGN.md` (originally `GAME_DESIGN.md`). *(2026-11-16T05:36:10+00:00; renamed 2026-11-16T05:38:21+00:00)* |
 | Art style reference | Added | `stylised-geometry/`, unpacked from `stylised-geometry.zip` as supplied; `sheets/make_sheets.py` added by Lyra. *(2026-11-16T05:36:10+00:00; script 2026-11-16T05:37:53+00:00)* |
 | Project scaffold | Done | Vite, React, TypeScript (strict), Tailwind v4, Phaser 4.2.1, and the Cloudflare Vite plugin with `wrangler`. One empty scene; the style guide's colour tokens in `src/game/style/tokens.ts`. Typecheck, lint and build pass; the Playwright smoke test passes in development and was checked to fail when the scene throws; the production build runs in the Workers runtime with one canvas and no console errors. *(2026-11-16T05:49:12+00:00)* |
@@ -379,7 +395,10 @@ Shortlisted for visual comparison (options, not decisions):
 | Deployment | In progress (Lyra) | Lyra deploying the scaffold to Cloudflare Workers. Not yet confirmed live. *(2026-11-16T05:51:48+00:00)* |
 
 ### Known issues and limitations
-- **Everything built is side-on** (#92). Nothing has moved to first person yet. The side-on build stays as reference until §E question 9 is worked through.
+- **First person hasn't been played on a real device.** The headless browser renders it on the CPU at about 6 frames a second, so real frame rate and feel are unknown. The first places to look if it's slow are the point lights, the ink lines and the guards' canvases being redrawn every frame.
+- **The gamepad is untested on hardware**, and so is the first-person touch layout on the Fold.
+- **Guards still don't hear**, so noise, landings and the blink's loudness are measured but nothing listens.
+- **The side-on tests' last run with the new test setup wasn't confirmed green.** Two side-on blink tests failed when the side-on build was briefly run on the CPU WebGL the first-person tests need. The config now runs side-on as before, but that hasn't been rerun.
 - **Not yet played on the Fold.** Everything was tested in a headless browser, which renders on the CPU at about 20 fps, so real frame rate and feel on the phone are unknown. He and the darkness are redrawn on small canvases every frame; that's the first place to look if it stutters.
 - **Gamepad support is untested** with a real pad; the headless browser has none.
 - **The gloves barely show against the dark**, as seen in the Thief Mask Fitting. Nothing has been decided about it, and it matters more now they're his weapons (#55): his punches are hard to see.
@@ -395,6 +414,21 @@ Shortlisted for visual comparison (options, not decisions):
   - **Light (#102):** "Both" is read as the gloves fading with his light, working as a meter, plus a separate gauge on screen.
   - **Billboard drawings (#98):** "three drawings" means front, side and back, with the side mirrored for the other way.
   - **Looking up and down (#99):** "free, flat billboards" means characters still turn only left and right to face you, as in the corridor mock-up.
+- **First-person details** *(2026-11-16T18:59:12+00:00, Claude's, beyond the decisions)*:
+  - **Body:** a cylinder of radius 0.3, standing 1.4 tall, crouching 0.95, crawling 0.6, and tucked to 0.9 when hanging. Eye heights are 1.22, 0.78 and 0.42. He steps up 0.36 without jumping.
+  - **Jumping:** a jump peaks at about 1.1 S, so a 3 S ceiling is in reach with a jump and Grab.
+  - **Blink landing:** he lands on the highest surface at the aim point he fits on, and the label gives its height relative to where he stands.
+  - **Drop takedowns:** they need him at least 0.6 and at most 5 S above the guard, within 2.6 S, and looking at it.
+  - **Behind takedowns:** they need him within 1.4 S, in the half of the floor the guard isn't facing, and looking at it.
+  - **Finishers:** within 2.1 S.
+  - **Guard punches:** they reach 1.4 S in front.
+  - **Guard pathing:** guards find their way across tiles of their own floor height that they fit under.
+  - **Testing switches:** `?nolock=1` never captures the mouse (the browser tests use it; the arrow keys look instead), and `?view=side` loads the side-on build. In development the page exposes `window.__fps` for the tests.
+- **Bugs found while building first person, fixed:**
+  - **A negative first frame:** the browser's first frame can carry a timestamp from before the game was made. A negative frame length fired a phantom jump and dropped him through the floor, so frame time is now never negative, and a landing forgives feet slightly under a floor.
+  - **Guards out of position:** they spawned shifted sideways from settling down through the ceiling.
+  - **Lost presses:** two quick presses in one slow frame counted as one, so presses are now counted.
+  - **Guards stopping short:** a chasing guard stopped a tile short of him.
 - **Takedown readability details beyond the picks (#86–#90):** the outline goes round the whole guard (body, head, cap, hands and feet); the shatter includes the feet, which the study left out, so nothing vanishes; pieces come to rest on the floor rather than freezing mid-air; Zs are drawn bigger and bolder than in the study, which looked thin at game size; the afterimages are stronger than the study's (0.45 opacity for the nearest, then fainter), which barely showed in the dark; on a kill, the pounce lands on the floor among the pieces, since there's no guard left to pin; when he's hanging from a ceiling right over the guard, the marker moves beside the guard so he doesn't cover it; aiming a blink at a guard shows the outline and marker but not the Attack button, since letting go of Blink is what does it; the button shown follows the last controls used, with keyboard and mouse counting as one, the mouse shown only after a click attack; and once committed, every takedown (not only the pounce) holds the guard still.
 - **Two input bugs found while testing, fixed** *({T})*: a key tapped down and up within a single frame was lost, because Phaser forgets a press when the key comes back up (presses and releases are now counted from the key and mouse events, so none go missing, however short or slow the frame); and presses made during a hit-stop were thrown away, so a fast combo could lose blows (they now carry into the first frame after it). Both made the combo test flaky in the slow headless browser, and both could eat presses on a slow phone.
 - **Testing switches added:** Sight cones (pause menu, on by default while testing), and `?guards=0` in the address for an empty room. In development the page also exposes `window.__guards()`, `window.__combat()` and `window.__test` (move him, hold a guard still) for the browser tests.
@@ -534,6 +568,7 @@ Shortlisted for visual comparison (options, not decisions):
 | 105 | 2026-11-16T17:43:37+00:00 | Player movement | The blink view is top-down. |
 | 106 | 2026-11-16T17:55:42+00:00 | Player movement | The blink view shows height by lean only (Top-Down Blink Study). |
 | 107 | 2026-11-16T17:55:42+00:00 | Player movement | The blink view is simpler: a bare two-tone silhouette of the room, the guards but no sight cones, light or lamps, and all four aiming aids (ghost, range ring, aim line, landing label). |
+| 108 | 2026-11-16T18:59:12+00:00 | Workflow | Claude's plan for building first person and its first-take defaults approved ("go, use your defaults"): the climbing scheme, Alt+A/D to lean, the touch layout, the blink camera and facing, the light meter bar, gloves keeping a faint edge, 75° field of view and head bob. |
 
 ---
 
@@ -542,7 +577,16 @@ Shortlisted for visual comparison (options, not decisions):
 - **Repository:** `evanstom273/stealth-game`. Working branch `ccr-cbb584dc-kvemny`.
 - **Art style reference:** `stylised-geometry/STYLISED_GEOMETRY.md` and `stylised-geometry/sheets/01-anatomy.svg` to `07-colour.svg`, regenerated by `stylised-geometry/sheets/make_sheets.py` (Python standard library only; takes the output folder as its one argument). The guide was developed in a side-on platformer; rules it marks **(untested)** haven't been through a real game yet.
 - **Project layout:**
-  - `src/App.tsx`: the React shell. `src/game/PhaserGame.tsx` holds the canvas; `src/game/createGame.ts` configures Phaser.
+  - `src/App.tsx`: the React shell. It loads the first-person game (`src/fps/FpsApp.tsx`), or the side-on build (`src/SideOnApp.tsx`) at `?view=side`.
+  - **First person, in `src/fps/`:**
+    - `tuning.ts`: every starting value.
+    - `level/`: the level model (tiles with heights, freeform pieces, glass) and the Test Wing.
+    - `logic/`: plain, unit-tested rules: collision and movement (`body.ts`), climbing (`climb.ts`), and blink, sight, takedowns, light and guard pathing (`rules.ts`).
+    - `art/views.ts`: the watchman's and the thief's front, side and back drawings.
+    - `render/`: the level's meshes and ink, the guards' billboards and particles, and the HUD (gloves, meters, blink view).
+    - `game/`: `Player`, `Guard`, `Combat`, `Controls` and `FpsGame`, which ties them together.
+    - `ui/FpsTouchControls.tsx`: the touch layout.
+  - **Side-on (kept as reference):** `src/game/PhaserGame.tsx` holds the canvas, and `src/game/createGame.ts` configures Phaser.
   - `src/game/tuning.ts`: every starting value (speeds, grip, blink, light) in one place, for tuning.
   - `src/game/logic/`: plain, unit-tested game logic: geometry, light, grip, noise, climbing, blink targeting.
   - `src/game/player/`: the thief: `thiefArt.ts` (drawing), `ThiefView.ts` (canvas and image), `Thief.ts` (movement, climbing, blink).
@@ -553,7 +597,7 @@ Shortlisted for visual comparison (options, not decisions):
   - `src/game/scenes/TestRoomScene.ts`: puts it all together, plus the aim line, sight cones, rings and grip bar.
   - `src/game/bridge.ts`: what the game tells the React interface, and the touch input going back.
   - `src/ui/`: the HUD, touch controls and pause menu.
-  - `tests/e2e/`: Playwright. In development the page exposes `window.__thief()` for the tests; it's left out of production builds.
+  - `tests/e2e/`: Playwright. `fps.spec.ts` drives first person (run with the browser's CPU WebGL); the other specs drive side-on at `?view=side`. In development the page exposes `window.__fps` and `window.__thief()` for the tests; they're left out of production builds.
   - Commands are in the README.
 - **Explain before adding** *(carried over from Lyra's previous design document)*: before building anything, Claude says what it's about to add and how, then waits for the go-ahead.
 - **Workflow** *(Lyra's standing order across all her projects)*: after committing to the working branch, always merge straight to `main` as well; no need to ask each time.

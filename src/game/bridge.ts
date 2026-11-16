@@ -85,6 +85,10 @@ export const touch = {
   attackHeld: false,
   attackReleased: false,
   dodgePressed: false,
+  /** First person: dragging to look, in CSS pixels since the last frame, and leaning (-1 to 1). */
+  lookDX: 0,
+  lookDY: 0,
+  lean: 0,
 }
 
 const coarse = () => typeof window !== 'undefined' && window.matchMedia('(any-pointer: coarse)').matches

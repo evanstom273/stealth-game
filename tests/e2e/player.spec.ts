@@ -3,7 +3,7 @@ import { boot, holdUntil, thief, worldToCss } from './helpers.ts'
 
 test.describe('the thief on keyboard and mouse', () => {
   test('walks, runs faster, and jumps', async ({ page }) => {
-    const errors = await boot(page, '/?guards=0')
+    const errors = await boot(page, '/?view=side&guards=0')
     const start = await thief(page)
     await holdUntil(page, 'd', (t) => t.x > start.x + 1)
     expect((await thief(page)).facing).toBe(1)
@@ -22,7 +22,7 @@ test.describe('the thief on keyboard and mouse', () => {
   })
 
   test('sneak toggles on and off with C, and shows the Sneaking tag', async ({ page }) => {
-    await boot(page, '/?guards=0')
+    await boot(page, '/?view=side&guards=0')
     await page.keyboard.press('c')
     await expect(page.getByTestId('sneaking')).toBeVisible()
     await holdUntil(page, 'd', (t) => t.state === 'sneak')
@@ -31,7 +31,7 @@ test.describe('the thief on keyboard and mouse', () => {
   })
 
   test('grabs the wall, climbs it, and lets go', async ({ page }) => {
-    await boot(page, '/?guards=0')
+    await boot(page, '/?view=side&guards=0')
     await holdUntil(page, 'a', (t) => t.x < 0.75)
     await page.keyboard.press('e')
     await expect.poll(async () => (await thief(page)).climb).toBe('wall')
@@ -44,7 +44,7 @@ test.describe('the thief on keyboard and mouse', () => {
   })
 
   test('jumps at a ledge, grabs, and climbs up onto it', async ({ page }) => {
-    await boot(page, '/?guards=0')
+    await boot(page, '/?view=side&guards=0')
     // Ledge 1 spans x 8.5 to 13.5 with its top at y 8.6. Stand just short of its left end.
     await holdUntil(page, 'd', (t) => t.x > 7.7)
     await expect.poll(async () => Math.abs((await thief(page)).x)).toBeGreaterThan(7.6)
@@ -57,7 +57,7 @@ test.describe('the thief on keyboard and mouse', () => {
   })
 
   test('blinks with the right mouse button, spending a charge, and a checkpoint refills it', async ({ page }) => {
-    await boot(page, '/?guards=0')
+    await boot(page, '/?view=side&guards=0')
     const start = await thief(page)
     const target = await worldToCss(page, start.x + 3, start.y)
     await page.mouse.move(target.x, target.y)
@@ -73,7 +73,7 @@ test.describe('the thief on keyboard and mouse', () => {
   })
 
   test('pauses with Escape and resumes from the menu', async ({ page }) => {
-    await boot(page, '/?guards=0')
+    await boot(page, '/?view=side&guards=0')
     await page.keyboard.press('Escape')
     const menu = page.getByTestId('pause-menu')
     await expect(menu).toBeVisible()

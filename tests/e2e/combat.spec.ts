@@ -117,7 +117,7 @@ test.describe('combat on touch', () => {
   test.use({ viewport: { width: 412, height: 915 }, hasTouch: true })
 
   test('Attack and Dodge sit beside the diamond without overlapping it, and Attack takes a guard down', async ({ page }) => {
-    await boot(page, '/?touch=1')
+    await boot(page, '/?view=side&touch=1')
     const names = ['Jump', 'Grab', 'Sneak', 'Blink', 'Attack', 'Dodge']
     const boxes = await Promise.all(names.map(async (n) => (await page.getByRole('button', { name: n }).boundingBox())!))
     for (let i = 0; i < boxes.length; i++) {

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { boot } from './helpers.ts'
 
-test('the game boots: one canvas filling the window, the HUD, no errors', async ({ page }) => {
+test('the side-on build still boots at ?view=side: one canvas filling the window, the HUD, no errors', async ({ page }) => {
   const errors = await boot(page)
   const canvas = page.locator('canvas')
   // Give Phaser a moment, so errors from its first frames are caught and React's
