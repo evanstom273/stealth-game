@@ -14,7 +14,7 @@ A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry**
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
 - How we work is set out below: Depth Before Breadth, Artifacts as a visual workshop, and structured rounds of design questions (History #11–#13).
 - Lyra is deploying the scaffold to Cloudflare Workers (History #14).
-- Designing the player: two rounds of questions done (History #15–#18); visual options being compared in an Artifact.
+- Designing the player: two rounds of questions done (History #15–#18); body and face picked from the Thief Line-up (History #20, #21).
 
 **Stack:** React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js and Cloudflare Workers: Lyra's normal stack (History #3).
 - **React** is the outer shell; **Phaser** (v4) runs the game inside a single React component (History #7, #9).
@@ -133,6 +133,8 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **A thief who's small and out of place.** Lyra chose both "a thief" (breaking in to take something) and "small and out of place" (sneaking past things far bigger than it; stealth as vulnerability). *(2026-11-16T05:57:44+00:00 — History #16)*
 - **Fades in shadow; the eyes stay lit.** The player's body dims when hidden while the eyes stay bright, so how visible the player is reads straight off the player. This deliberately breaks the style's rule that characters are never darkened, for the player only. Claude's recommendation, approved. *(2026-11-16T05:57:44+00:00 — History #17)*
 - **An expert thief.** Small but brilliant at this: confident, a bit smug, and its size is an advantage it knows how to use. *(2026-11-16T06:00:59+00:00 — History #18)*
+- **Body: No. 7, "Stacked"** from the Thief Line-up: a small circle head on a rounded trapezoid body. Lyra's pick; proportions still to be refined. *(2026-11-16T06:09:50+00:00 — History #20)*
+- **Face: mask + mouth.** A dark mask band across the eyes (white eyes with pupils inside it) and a mouth below; the line-up drew the mouth as a smirk. Lyra's pick. *(2026-11-16T06:09:50+00:00 — History #21)*
 
 ### Art and presentation
 - **Art style: Stylised Geometry**, as set out in `stylised-geometry/STYLISED_GEOMETRY.md` and its reference sheets. *(2026-11-16T05:36:10+00:00 — History #2)*
@@ -161,7 +163,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 ## C. Current Development Scope
 
-The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Now comparing visual options in an Artifact, then the game.
+The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); now refining them, then the game.
 
 Shortlisted for visual comparison (options, not decisions):
 - **Bodies:** square, rounded square, circle and triangle (all four picked), plus stacked and polygon builds following Lyra's note (#19).
@@ -240,6 +242,8 @@ Shortlisted for visual comparison (options, not decisions):
 | 17 | 2026-11-16T05:57:44+00:00 | Player | The player fades in shadow while the eyes stay lit, deliberately breaking the style's "characters are never darkened" rule for the player only (Claude's recommendation, approved). |
 | 18 | 2026-11-16T06:00:59+00:00 | Player | An expert thief: small but brilliant, confident, a bit smug. The player's size next to the guards is left until the guards are designed. |
 | 19 | 2026-11-16T06:00:59+00:00 | Art | Bodies aren't limited to one primitive: polygons and stacked or combined shapes are fair game (Lyra's note). |
+| 20 | 2026-11-16T06:09:50+00:00 | Player | Body: No. 7 "Stacked" from the Thief Line-up, a small circle head on a rounded trapezoid body. |
+| 21 | 2026-11-16T06:09:50+00:00 | Player | Face: mask + mouth. |
 
 ---
 
