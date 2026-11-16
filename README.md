@@ -26,4 +26,4 @@ The first time you run the browser test on a new machine, install its browser wi
 
 ## Deploying
 
-`npm run deploy` builds the game and deploys it to Cloudflare Workers with wrangler. It hasn't been deployed yet.
+`npm run deploy` builds the game and deploys it to Cloudflare Workers with wrangler.

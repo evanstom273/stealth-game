@@ -8,23 +8,117 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **stealth game** (History #1), drawn in the **Stylised Geometry** art style (History #2). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T05:49:12+00:00):**
+**Where the project stands (as of 2026-11-16T05:51:48+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
+- How we work is set out below: Depth Before Breadth, Artifacts as a visual workshop, and structured rounds of design questions (History #11–#13).
+- Lyra is deploying the scaffold to Cloudflare Workers (History #14).
 
 **Stack:** React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js and Cloudflare Workers: Lyra's normal stack (History #3).
 - **React** is the outer shell; **Phaser** (v4) runs the game inside a single React component (History #7, #9).
 - **Tailwind** styles anything React draws.
 - **Dexie** comes in when there's first something to save (History #8).
-- **Cloudflare Workers** serves the built game, with no server code yet. Whether that's where the game is deployed is still open.
+- **Cloudflare Workers** serves the built game, with no server code yet, and it's where the game is deployed (History #14).
 
 **Art style:** Stylised Geometry, kept in `stylised-geometry/`: the guide (`STYLISED_GEOMETRY.md`), seven SVG reference sheets and `make_sheets.py`, which regenerates them. In short: characters built from simple geometric shapes, with faces and floating hands, in a dark world lit around them, all drawn from shapes in code or SVG rather than sprites. The guide is the reference for how things look; this document records the game's own design.
 
 **Guiding principles** *(carried over from Lyra's previous project's design document; flag if any don't apply here)*:
-- Discuss → Decide → Document → Implement → Test → Expand.
+- ~~Discuss → Decide → Document → Implement → Test → Expand.~~ Superseded by the workflow in Depth Before Breadth, below (History #11).
 - Small, polished and functional beats large and placeholder-filled.
 - The creative director (Lyra) makes design decisions; recommendations are not decisions until approved.
+
+### Development Philosophy: Depth Before Breadth
+
+*Lyra's own words. (2026-11-16T05:51:48+00:00 — History #11)*
+
+I want us to prioritise making existing mechanics genuinely polished, satisfying and fully functional before introducing new ones.
+
+This doesn't mean limiting the game's ambition or avoiding complex systems. It means building that complexity gradually, on strong foundations.
+
+Our workflow should be:
+
+**Design → Implement → Test → Refine → Test Again → Refine Further → Move On.**
+
+- **Depth before breadth:** Make each mechanic feel excellent before expanding the game with additional mechanics, enemies, levels or systems.
+- **Iterative development:** Nothing should be considered finished simply because it works technically. It needs to feel good in actual gameplay.
+- **Playtesting drives decisions:** If something feels awkward, frustrating, too easy or too difficult, we adjust it. We should be willing to substantially change or remove mechanics.
+- **No one-shotting:** Don't attempt to build entire interconnected systems in one enormous implementation. Break development into manageable, independently testable stages.
+- **Polish before expansion:** Animations, responsiveness, feedback, AI behaviour and interactions deserve attention before we move on.
+- **Document everything:** Record decisions, refinements and reversals in `STEALTH_GAME_DESIGN.md`, including why changes were made.
+- **Creative control:** Suggest improvements and possibilities, but don't treat recommendations as approved decisions.
+
+Our previous simple-shooter project demonstrated why this works. Through repeated testing, we fundamentally improved movement, enemy behaviour, health, combat balance and weapons. Those refinements gave the game its identity.
+
+The goal isn't to make a small game. It's to build an ambitious game one exceptionally well-developed system at a time.
+
+I'd rather have one brilliant, polished stealth encounter than ten levels of shallow, unfinished mechanics.
+
+### Development Workflow: Use Claude Artifacts for Visual Design and Prototyping
+
+*Lyra's own words. (2026-11-16T05:51:48+00:00 — History #12)*
+
+I want us to make extensive use of Claude's Artifacts throughout development, particularly for smaller, self-contained design tasks.
+
+Rather than immediately implementing every idea into the game, we should use Artifacts as a visual workshop where we can experiment, review, refine and approve designs before committing them to the codebase.
+
+Examples include:
+
+- **Character designs:** Draw characters, guards, enemies and NPCs in our established Stylised Geometry art style. Show different appearances, expressions, poses and animations.
+- **Animation previews:** Demonstrate movement, idle animations, patrol behaviour, detection reactions and other visual effects.
+- **Environment concepts:** Mock up individual rooms, obstacles, hiding places, platforms and environmental features.
+- **Gameplay mechanics:** Create small interactive prototypes to demonstrate ideas before implementing them in the actual game.
+- **UI and HUD:** Design and preview menus, detection indicators, health displays, interaction prompts and other interface elements.
+- **Side-by-side comparisons:** Present multiple visual options so I can compare them, choose elements I like and request changes.
+
+The important principles:
+
+1. **Show, don't just describe.** Whenever a design decision would benefit from seeing something, offer to create an Artifact rather than relying entirely on written descriptions.
+2. **Iterate visually.** We should be able to experiment with different designs and refine them repeatedly before approval.
+3. **Keep Artifacts focused.** They're for individual designs, small prototypes and experiments, not for building the entire game separately.
+4. **Respect the art style.** Character and environment concepts should follow our Stylised Geometry reference unless we're deliberately exploring alternatives.
+5. **Don't implement prematurely.** An Artifact is an opportunity to explore an idea, not automatic permission to add it to the game.
+6. **Transfer approved designs into the game.** Once we're happy with something, use the approved design as the reference for implementation.
+7. **Document decisions.** Record approved designs and relevant decisions in `STEALTH_GAME_DESIGN.md`.
+
+This worked particularly well in our previous simple-shooter project, where visual concepts and mockups helped us develop characters, enemies, environments and bosses.
+
+The philosophy is simple: **design it, see it, refine it, approve it, then build it.**
+
+Use Artifacts proactively whenever they would make a design discussion more productive, but always leave the final creative decisions to me.
+
+### Design Workflow: Structured Questions and Collaborative Decision-Making
+
+*Lyra's own words. (2026-11-16T05:51:48+00:00 — History #13)*
+
+I want you to actively guide me through designing the game's mechanics, characters, enemies, environments and systems using structured rounds of questions, just as we've done successfully in my previous projects.
+
+How this should work:
+
+1. **Ask focused questions.** When we're designing something, break it down into its individual components rather than asking one enormous, open-ended question.
+2. **Provide multiple-choice options.** For each question, offer several distinct, well-considered possibilities, with brief explanations where useful. Always include the freedom for me to suggest something different or combine options.
+3. **Group related questions.** Ask several questions together when they concern the same aspect of a feature. For example, when designing a guard, we might first decide its appearance and movement, then its detection behaviour, then its reactions and animations.
+4. **Work through multiple rounds.** Don't try to settle every detail in one batch. Use my answers to inform the next set of questions, progressively developing the design.
+5. **Make recommendations without making decisions.** You're welcome to explain which options you think would work best and why, but the final creative decisions belong to me.
+6. **Consider the details.** Don't stop at the headline mechanic. Explore how something feels, behaves, looks, sounds, interacts with other systems and communicates information to the player.
+7. **Record approved decisions.** Update `STEALTH_GAME_DESIGN.md` with what we've agreed, including important reasoning and subsequent changes.
+8. **Implement only when the design is sufficiently settled.** Once we've agreed on the relevant details, explain the proposed implementation and wait for my approval before building.
+
+**Example:** When designing a guard, don't simply ask whether it should patrol. Explore how it patrols, what it can see, what it can hear, how it communicates suspicion, how it investigates disturbances, what happens when it detects the player, and how it eventually returns to normal behaviour.
+
+We don't necessarily need to decide all of these immediately. The point is to explore each feature properly, in manageable rounds.
+
+Combine this with our other principles:
+
+- Depth before breadth.
+- Build, test and refine repeatedly.
+- Use Claude Artifacts for visual concepts and small prototypes.
+- Document decisions and reversals.
+- Never mistake a suggestion for an approved design.
+
+I want the process to feel like a genuine collaborative game design session, with you presenting thoughtful possibilities and me directing the creative vision.
+
+Don't rush through the questions simply to get to implementation. The design process is part of what I enjoy.
 
 ---
 
@@ -38,12 +132,16 @@ A **stealth game** (History #1), drawn in the **Stylised Geometry** art style (H
 
 ### Development approach
 - **Not one-shotting the game.** It's built a piece at a time, the way Lyra built a previous project: each piece is made, tested, refined, tested and refined further before moving on to the next. *(2026-11-16T05:43:12+00:00 — History #6)*
+- **Depth before breadth.** Each mechanic is made polished, satisfying and fully functional before new ones are added. Workflow: Design → Implement → Test → Refine → Test Again → Refine Further → Move On. In full in §A. *(2026-11-16T05:51:48+00:00 — History #11)*
+- **Claude Artifacts as a visual workshop.** Characters, animations, environments, small mechanic prototypes and UI are designed, compared and refined in Artifacts, approved by Lyra, then used as the reference for implementation. In full in §A. *(2026-11-16T05:51:48+00:00 — History #12)*
+- **Structured rounds of design questions.** Claude guides design through grouped, focused multiple-choice questions over several rounds, with recommendations but no decisions; implementation only once the design is settled and the plan approved. In full in §A. *(2026-11-16T05:51:48+00:00 — History #13)*
 
 ### Technical architecture / platform
 - **Stack: React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js, Cloudflare Workers.** *(2026-11-16T05:36:10+00:00 — History #3)*
 - **React is the outer shell; Phaser runs inside one React component.** Phaser runs the game; React handles whatever sits around it later, such as menus or overlays. Claude's recommendation, approved. *(2026-11-16T05:49:12+00:00, documentation time — History #7)*
 - **Dexie is added when there's first something to save**, not as an empty database in the scaffold. Claude's recommendation, approved. *(2026-11-16T05:49:12+00:00, documentation time — History #8)*
 - **Phaser 4** (4.2.1 at scaffold time, the current stable release). *(2026-11-16T05:49:12+00:00, documentation time — History #9)*
+- **Deployed on Cloudflare Workers.** *(2026-11-16T05:51:48+00:00 — History #14)*
 
 ### Testing
 - **Vitest for logic, plus a Playwright smoke test** that boots the game in a real browser and fails if the canvas doesn't appear or anything errors. Claude's recommendation, approved. *(2026-11-16T05:49:12+00:00, documentation time — History #10)*
@@ -71,25 +169,26 @@ The scaffold is built and tested (see §F). Nothing else is in development; the 
 
 1. **Title.**
 2. **Everything about the game itself.**
-3. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8). Still open: physics, whether the game is deployed on Cloudflare Workers, and anything server-side.
+3. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). Still open: physics, and anything server-side.
 
 ---
 
 ## F. Implementation Status
 
-*Updated 2026-11-16T05:49:12+00:00.*
+*Updated 2026-11-16T05:51:48+00:00.*
 
 | Feature | Status | Notes |
 |---|---|---|
 | Design doc | Done | `STEALTH_GAME_DESIGN.md` (originally `GAME_DESIGN.md`). *(2026-11-16T05:36:10+00:00; renamed 2026-11-16T05:38:21+00:00)* |
 | Art style reference | Added | `stylised-geometry/`, unpacked from `stylised-geometry.zip` as supplied; `sheets/make_sheets.py` added by Lyra. *(2026-11-16T05:36:10+00:00; script 2026-11-16T05:37:53+00:00)* |
 | Project scaffold | Done | Vite, React, TypeScript (strict), Tailwind v4, Phaser 4.2.1, and the Cloudflare Vite plugin with `wrangler`. One empty scene; the style guide's colour tokens in `src/game/style/tokens.ts`. Typecheck, lint and build pass; the Playwright smoke test passes in development and was checked to fail when the scene throws; the production build runs in the Workers runtime with one canvas and no console errors. *(2026-11-16T05:49:12+00:00)* |
+| Deployment | In progress (Lyra) | Lyra deploying the scaffold to Cloudflare Workers. Not yet confirmed live. *(2026-11-16T05:51:48+00:00)* |
 
 ### Known issues and limitations
 - None yet.
 
 ### Implementation interpretations (technical, not design decisions — flag if wrong)
-- The guiding principles in §A and the "explain before adding" and merge-to-`main` standing orders in §H were carried over from Lyra's previous design document rather than restated for this project.
+- The first guiding principles in §A and the "explain before adding" and merge-to-`main` standing orders in §H were carried over from Lyra's previous design document rather than restated for this project. The three principle sections after them in §A are Lyra's, written for this project (#11–#13).
 - The art style zip was committed unpacked, as the `stylised-geometry/` folder, rather than as the `.zip` file itself, since the guide is written to be copied into a project as a folder.
 - **Linter: oxlint, not ESLint.** The scaffold plan said ESLint from Vite's template, but the template now ships oxlint, so that's what's used.
 - **Colour tokens** cover the whole colour-jobs table in the guide's §5.1, so they include power-light (`#cfeaff`) and hot tell (`#fff0d8`) as well as the seven in §12.4. The guide's squash, light-radius and hit-stop numbers are left out until something moves, because they were tuned for a platformer.
@@ -117,6 +216,10 @@ The scaffold is built and tested (see §F). Nothing else is in development; the 
 | 8 | 2026-11-16T05:49:12+00:00 *(documentation time)* | Technical | Dexie is added when there's first something to save, not in the scaffold (Claude's recommendation, approved). |
 | 9 | 2026-11-16T05:49:12+00:00 *(documentation time)* | Technical | Phaser 4 (4.2.1 at scaffold time). |
 | 10 | 2026-11-16T05:49:12+00:00 *(documentation time)* | Testing | Vitest for logic, plus a Playwright smoke test that boots the game in a real browser (Claude's recommendation, approved). |
+| 11 | 2026-11-16T05:51:48+00:00 | Workflow | Development Philosophy: Depth Before Breadth (in full in §A). Supersedes the carried-over "Discuss → Decide → Document → Implement → Test → Expand" loop with "Design → Implement → Test → Refine → Test Again → Refine Further → Move On". |
+| 12 | 2026-11-16T05:51:48+00:00 | Workflow | Development Workflow: Claude Artifacts for visual design and prototyping (in full in §A). |
+| 13 | 2026-11-16T05:51:48+00:00 | Workflow | Design Workflow: structured rounds of questions and collaborative decision-making (in full in §A). |
+| 14 | 2026-11-16T05:51:48+00:00 | Deployment | Deployed on Cloudflare Workers (Lyra deploying the scaffold). |
 
 ---
 
