@@ -8,13 +8,13 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T06:27:40+00:00):**
+**Where the project stands (as of 2026-11-16T06:28:40+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
 - How we work is set out below: Depth Before Breadth, Artifacts as a visual workshop, and structured rounds of design questions (History #11–#13).
 - Lyra is deploying the scaffold to Cloudflare Workers (History #14).
-- Designing the player: look settled (History #15–#25); climbing and ground movement settled (History #26, #28–#31); blink's rules settled, look being compared (History #27, #32–#35).
+- Designing the player: look settled (History #15–#25); climbing and ground movement settled (History #26, #28–#31); blink's rules and look settled (History #27, #32–#36).
 
 **Stack:** React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js and Cloudflare Workers: Lyra's normal stack (History #3).
 - **React** is the outer shell; **Phaser** (v4) runs the game inside a single React component (History #7, #9).
@@ -151,7 +151,7 @@ Don't rush through the questions simply to get to implementation. The design pro
   - **Charges that work like spells in Dark Souls:** a set number of blinks that only reset at checkpoints, not over time. *(2026-11-16T06:27:40+00:00 — History #33)*
   - **Guards can notice it:** a blink makes a flash or sound, so blinking near guards is a risk. *(2026-11-16T06:27:40+00:00 — History #34)*
   - **Lands gripping:** blink onto a wall or ceiling and he arrives already holding on, so blink and climbing work as one move set. Claude's recommendation, approved. *(2026-11-16T06:27:40+00:00 — History #35)*
-  - **Look:** being compared in the Thief Blink Studies: pop and ring, shatter and reassemble, shadow streak, and turning to dust (Lyra's own option).
+  - **Look: turning to dust.** He crumbles into dust from the head down (the guide's small dust squares, in his own colours), and the dust gathers back into him at the far end. Lyra's own option, chosen from the Thief Blink Studies over pop and ring (Claude's pick), shatter and reassemble, and shadow streak. To watch in playtesting: the study takes about a second to re-form him, which may feel slow in play; and crumbling may read like a death once he can die. *(2026-11-16T06:28:40+00:00 — History #36)*
 - **On the ground:** walk, plus **sneak** (slow, near-silent), **run** (fast but noisy), **jump**, and **slide or roll** (under low gaps and closing doors). *(2026-11-16T06:19:39+00:00 — History #31)*
 
 ### Art and presentation
@@ -181,7 +181,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 ## C. Current Development Scope
 
-The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink's rules settled (#27, #32–#35) and its look being compared; then the game.
+The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink's rules and look settled (#27, #32–#36); next, the first playable piece of the game.
 
 Shortlisted for visual comparison (options, not decisions):
 - **Bodies:** square, rounded square, circle and triangle (all four picked), plus stacked and polygon builds following Lyra's note (#19).
@@ -207,7 +207,7 @@ Shortlisted for visual comparison (options, not decisions):
 
 1. **Title.**
 2. **Everything about the game itself.**
-3. **Blink details** (#27, #32–#35): how it looks; how many charges; its range; what counts as a thin wall; exactly what guards notice and from how far.
+3. **Blink details** (#27, #32–#36): how many charges; its range; what counts as a thin wall; exactly what guards notice and from how far.
 4. **The player's size, in the game and next to the guards.** Decided when the guards are designed. Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
 5. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). Still open: physics, and anything server-side.
 
@@ -281,6 +281,7 @@ Shortlisted for visual comparison (options, not decisions):
 | 33 | 2026-11-16T06:27:40+00:00 | Player | Blink charges work like Dark Souls spells: a set number, reset only at checkpoints. |
 | 34 | 2026-11-16T06:27:40+00:00 | Player | Guards can notice a blink. |
 | 35 | 2026-11-16T06:27:40+00:00 | Player | Blink can land on walls and ceilings, arriving gripping (Claude's recommendation, approved). |
+| 36 | 2026-11-16T06:28:40+00:00 | Player | Blink look: turning to dust (Lyra's option). Watch in playtesting: re-form time, and whether it reads like a death. |
 
 ---
 
