@@ -1,1 +1,136 @@
 @import "tailwindcss";
+
+/* Interface tokens from the Stylised Geometry guide: dark translucent panels, power blue for abilities (§5.1, §10). */
+:root {
+  --ui-ink: #1a1a26;
+  --ui-fg: #e8e8f0;
+  --ui-power: #8fd3ff;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+  overscroll-behavior: none;
+  background: #000;
+}
+
+.game-shell {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  font-family: "Outfit", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.ui-panel {
+  background: rgb(0 0 0 / 0.5);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 12px;
+}
+.ui-label {
+  font: 500 9px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(232 232 240 / 0.7);
+}
+
+.hud-tl { position: absolute; left: calc(var(--safe-l) + 16px); top: calc(var(--safe-t) + 16px); }
+.hud-tl-2 { position: absolute; left: calc(var(--safe-l) + 16px); top: calc(var(--safe-t) + 74px); }
+.hud-tr { position: absolute; right: calc(var(--safe-r) + 16px); top: calc(var(--safe-t) + 16px); }
+.hud-tr-2 { position: absolute; right: calc(var(--safe-r) + 16px); top: calc(var(--safe-t) + 68px); }
+
+.pip { display: block; width: 11px; height: 11px; box-sizing: border-box; border: 2px solid var(--ui-power); }
+.pip.on { background: var(--ui-power); }
+
+.menu-btn {
+  width: 100%;
+  text-align: left;
+  font: 600 15px/1 "Outfit", ui-sans-serif, system-ui, sans-serif;
+  color: var(--ui-fg);
+  background: rgb(255 255 255 / 0.04);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+}
+.menu-btn.primary { background: #f2f2f2; color: #14141c; border-color: #f2f2f2; }
+.menu-btn:focus-visible, .tb:focus-visible { outline: 2px solid #f2f2f2; outline-offset: 3px; }
+
+/* Touch controls */
+.touch-layer { position: absolute; inset: 0; pointer-events: none; }
+.stick {
+  position: absolute;
+  left: calc(var(--safe-l) + 30px);
+  bottom: calc(var(--safe-b) + 40px);
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.42);
+  border: 1px solid rgb(255 255 255 / 0.16);
+  pointer-events: auto;
+  touch-action: none;
+}
+.stick-run { position: absolute; inset: 9px; border-radius: 50%; border: 2px dashed rgb(143 211 255 / 0.32); }
+.stick.running .stick-run { border-style: solid; border-color: var(--ui-power); }
+.knob {
+  position: absolute;
+  width: 54px;
+  height: 54px;
+  left: 36px;
+  top: 36px;
+  border-radius: 50%;
+  background: rgb(242 242 242 / 0.9);
+  border: 2px solid var(--ui-ink);
+  box-sizing: border-box;
+}
+.run-tag {
+  position: absolute;
+  left: 50%;
+  top: -20px;
+  transform: translateX(-50%);
+  font: 600 10px/1 "Outfit", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgb(143 211 255 / 0.45);
+}
+.stick.running .run-tag { color: var(--ui-power); }
+
+.tb {
+  position: absolute;
+  border-radius: 50%;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  color: var(--ui-fg);
+  background: rgb(0 0 0 / 0.45);
+  border: 1px solid rgb(255 255 255 / 0.18);
+  pointer-events: auto;
+  touch-action: none;
+  transition: transform 0.08s ease, background 0.12s ease;
+}
+.tb svg { width: 46%; height: 46%; }
+.tb[aria-pressed="true"] { background: #f2f2f2; color: #14141c; }
+.tb.down { transform: scale(0.92); }
+.tb.blink { border-color: rgb(143 211 255 / 0.65); }
+.tb.blink.aiming { background: rgb(143 211 255 / 0.25); }
+.tb.blink.empty { opacity: 0.4; }
+.tb-label {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  font: 600 10px/1 "Outfit", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgb(232 232 240 / 0.75);
+  white-space: nowrap;
+}
+.tb-pips { position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%); display: flex; gap: 4px; }
+.tb-pips i { display: block; width: 7px; height: 7px; box-sizing: border-box; border: 1.5px solid var(--ui-power); }
+.tb-pips i.on { background: var(--ui-power); }
