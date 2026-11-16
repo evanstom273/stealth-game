@@ -8,8 +8,8 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **first-person stealth game**, its characters standing in a 3D world as flat billboards, Daggerfall-style (History #1, #92; it began side-on, #15, #91), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16), **breaking out of a facility**: a clinical test facility, our own take on that kind of place (History #77, #78). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T17:32:05+00:00):**
-- **Switched to first person** (History #92), after the Billboard Corridor mock-up. Everything built so far is side-on (Phaser, 2D) and stays in the repository as reference. The §B decisions made for side-on stand as intent but are under review (§E, question 9).
+**Where the project stands (as of 2026-11-16T17:38:38+00:00):**
+- **Switched to first person** (History #92); first-person decisions made (History #93–#103), after the Billboard Corridor mock-up. Everything built so far is side-on (Phaser, 2D) and stays in the repository as reference. The §B decisions made for side-on stand as intent but are under review (§E, question 9).
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -22,7 +22,7 @@ A **first-person stealth game**, its characters standing in a 3D world as flat b
 - **The full player is built** (History #37, #45, #46) in a test room, playable with keyboard and mouse, gamepad and touch, and merged to `main`. Lyra's first playtest: good overall; grip raised and blink loosened as a result (History #47, #48).
 
 **Stack:** React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js and Cloudflare Workers: Lyra's normal stack (History #3).
-- **React** is the outer shell; **Phaser** (v4) runs the game inside a single React component (History #7, #9).
+- **React** is the outer shell; **Three.js** runs the game inside it (History #96). Phaser (v4) ran the side-on build (History #7, #9).
 - **Tailwind** styles anything React draws.
 - **Dexie** comes in when there's first something to save (History #8).
 - **Cloudflare Workers** serves the built game, with no server code yet, and it's where the game is deployed (History #14).
@@ -140,6 +140,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **First person, with the characters as billboards** in a 3D world, as in the Billboard Corridor mock-up. Lyra preferred it to side-on by a long way. *(2026-11-16T17:32:05+00:00 — History #92)*
 - **He's breaking out of a facility, not into somewhere.** A clinical test facility: chambers, testing, being watched, in the spirit of the game Portal's setting but our own take, not its look. Lyra is still working out the story. *(2026-11-16T13:37:20+00:00 — History #77)*
 - **He's still a thief**, just breaking out rather than in. *(2026-11-16T13:37:20+00:00 — History #78)*
+- **It doesn't matter that you hardly see him in first person.** Lyra: "You never see Garrett and he's memorable." *(2026-11-16T17:38:38+00:00 — History #93)*
 
 ### The player
 - **A thief who's small and out of place.** Lyra chose both "a thief" (~~breaking in to take something~~ breaking out of a facility, #77, #78) and "small and out of place" (sneaking past things far bigger than it; stealth as vulnerability). *(2026-11-16T05:57:44+00:00 — History #16)*
@@ -171,6 +172,13 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **On the ground:** walk, plus **sneak** (slow, near-silent), **run** (fast but noisy), **jump**, and **slide or roll** (under low gaps and closing doors). *(2026-11-16T06:19:39+00:00 — History #31)*
 - **Slide from a run.** While running, press down to drop into a low slide that carries his speed under gaps and closing doors. Claude's recommendation, approved. *(2026-11-16T06:35:14+00:00 — History #42)*
 - **Sneak is a toggle; run is held.** Press once to sneak until pressed again; hold to run. *(2026-11-16T06:31:36+00:00 — History #38)*
+- **In first person** (History #92), the moves are:
+  - **Climbing stays, redone for first person.** The details are still to be designed. *(2026-11-16T17:38:38+00:00 — History #94)*
+  - **Blink stays. Lyra has an idea for how it works in first person**, still to come. *(2026-11-16T17:38:38+00:00 — History #95)*
+  - **Sneak becomes crouching:** lower view, slower, quieter. *(2026-11-16T17:38:38+00:00 — History #100)*
+  - **The slide from a run stays.** *(2026-11-16T17:38:38+00:00 — History #100)*
+  - **He crawls through gaps too low to crouch through.** *(2026-11-16T17:38:38+00:00 — History #100)*
+  - **He can lean round corners.** This is new for first person. *(2026-11-16T17:38:38+00:00 — History #100)*
 
 ### Combat and getting spotted
 - **Being spotted isn't a fail state.** No restarting the level on detection. He gets out of it by **hiding again** (breaking line of sight, getting into the dark; guards search, then give up), **getting out of reach** (climbing or blinking where guards can't follow), **fighting his way out**, or **distracting them** (which needs tools or gadgets, still to be designed). *(2026-11-16T13:24:13+00:00 — History #50)*
@@ -191,7 +199,10 @@ Don't rush through the questions simply to get to implementation. The design pro
   - **Knockout: option B.** The guard lies on its back with its eyes shut and little Zs drift up while it's out. *(2026-11-16T14:31:28+00:00 — History #87)*
   - **Kill: option C.** The guard shatters into the shapes it's made of (chunks of body, arcs of head, cap, hands), which scatter and fade, leaving nothing lying there. *(2026-11-16T14:31:28+00:00 — History #88)*
   - **Ceiling and wall takedowns: option B, the pounce.** A quarter-second wind-up on the surface, a leap with afterimages, a hit-stop and ring on impact, and a moment pinning the guard before he steps off. No takedown cam. *(2026-11-16T14:31:28+00:00 — History #89)*
-
+- **In first person** (History #92):
+  - **Takedowns:** his gloves do it on screen, and the view moves with it: a lunge, and a dip at impact with the hit-stop. The ceiling and wall pounce becomes a drop onto the guard from above, with the view falling with him. There's no third-person shot. *(2026-11-16T17:38:38+00:00 — History #101)*
+  - **How hidden he is shows two ways:** his gloves fade with his light, working as the meter, and there's also a light meter on screen. *(2026-11-16T17:38:38+00:00 — History #102)*
+  - **The jab, cross and shove combo, the finisher and the dodge all carry over.** Blows are thrown by the gloves on screen. *(2026-11-16T17:38:38+00:00 — History #103)*
 
 ### Guards
 - **Three archetypes: a watchman, a ~~lantern-bearer~~ torch-bearer (#80), and a blind guard.** The watchman is the everyday guard (patrols, average sight and hearing) and the baseline. The ~~lantern-bearer~~ torch-bearer carries a light, so the darkness that hides him moves with them. The blind guard can't see at all: only silence works on them. Lyra chose a blind archetype and three in all; the watchman (Claude's recommendation) and lantern-bearer were picked from options. *(2026-11-16T13:31:53+00:00 — History #63)*
@@ -224,6 +235,8 @@ Don't rush through the questions simply to get to implementation. The design pro
 ### Art and presentation
 - **Art style: Stylised Geometry**, as set out in `stylised-geometry/STYLISED_GEOMETRY.md` and its reference sheets. *(2026-11-16T05:36:10+00:00 — History #2)*
 - **Bodies aren't limited to one primitive.** A character can be a polygon, or several shapes stacked or combined, for more varied body types than a single square or circle. Lyra's note; the guide agrees (§3.1 step 1, §4.2). *(2026-11-16T06:00:59+00:00 — History #19)*
+- **Billboard characters have three drawings: front, side and back**, with the side mirrored, giving four directions. *(2026-11-16T17:38:38+00:00 — History #98)*
+- **Looking up and down is free, and the billboards stay flat.** Looking down at someone close shows they're a flat card, and that's accepted. *(2026-11-16T17:38:38+00:00 — History #99)*
 
 ### Development approach
 - **First playable piece: the full player.** Lyra wants to test all of the player's mechanics together (look, light, ground movement, climbing, blink) rather than one at a time. Claude builds it in stages internally, testing each before the next, so it's still not one-shotted. *(2026-11-16T06:31:36+00:00 — History #37)*
@@ -240,6 +253,8 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **Phaser 4** (4.2.1 at scaffold time, the current stable release). *(2026-11-16T05:49:12+00:00, documentation time — History #9)*
 - **Deployed on Cloudflare Workers.** *(2026-11-16T05:51:48+00:00 — History #14)*
 - **Physics: Phaser Arcade.** Phaser's built-in box physics; the player's hitbox stays the plain shape, as the style guide asks, and climbing and blink are written on top. Claude's recommendation, approved. *(2026-11-16T06:31:36+00:00 — History #40)*
+- **First person runs on Three.js, used directly**, inside the existing React shell with our own game loop, as in the Billboard Corridor. It replaces Phaser for the game (#9, #40); the rest of the stack stays. *(2026-11-16T17:38:38+00:00 — History #96)*
+- **Levels are built from tiles with heights, plus freeform pieces.** Each grid square has its own floor and ceiling height, ledges and steps, and freeform pieces are dropped in for set pieces like a catwalk or a slanted pipe. *(2026-11-16T17:38:38+00:00 — History #97)*
 
 ### Testing
 - **Vitest for logic, plus a Playwright smoke test** that boots the game in a real browser and fails if the canvas doesn't appear or anything errors. Claude's recommendation, approved. *(2026-11-16T05:49:12+00:00, documentation time — History #10)*
@@ -251,7 +266,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 ## C. Current Development Scope
 
-**Switched to first person** (History #92, 2026-11-16T17:32:05+00:00). Next: work out what carries over from the side-on design (§E, question 9) before building anything in the new view.
+**Switched to first person** (History #92; first-person decisions #93–#103, 2026-11-16T17:32:05+00:00). Next: work out what carries over from the side-on design (§E, question 9) before building anything in the new view.
 
 **Billboard Corridor** (Artifact, 2026-11-16T17:32:05+00:00): https://claude.ai/artifact/AHAgyvbD5BFNBXTpyyiF9H. Saved as `prototypes/billboard-corridor/index.html`. A first-person test-wing corridor in Three.js:
 - **What's in it:** you play the thief, seen as his floating gloves (click or F to punch). A staff watchman at an alcove post turns every 2.4 s, another patrols the corridor, and a second thief walks round a pillar in a side room.
@@ -305,11 +320,15 @@ Shortlisted for visual comparison (options, not decisions):
 6. **Guard details still open** (#63–#84): ~~the blind guard's face~~ (#82); ~~stairs for the wheel~~ (can't, #83), though ladders and drops aren't decided; ~~their look~~ (#84). Still to come: patrol routes and posts in real levels, and the numbers (how far they see and hear, how fast suspicion builds, how long they search), which are tuning.
 7. **The player's size on screen.** ~~Next to the guards~~ (about 1.25×, #76). Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
 8. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). ~~physics~~ (Phaser Arcade, #40). Still open: anything server-side.
-9. **What carries over from side-on** (#92).
-   - **Likely to carry:** his and the guards' look; light deciding how far guards see him; noise; the guard archetypes, senses, suspicion and searching; knockout or kill with the outlined prompt; blink, though aiming and thin walls need first-person rules.
-   - **Needs rethinking:** climbing walls and especially ceilings; sliding and crawling; the camera and the touch layout; the takedown animations, including the pounce; the engine. Phaser is 2D, and the mock-up uses Three.js.
-   - **New:** how he's seen when he's mostly two gloves; a light meter, since he can't see himself; the gloves vanishing in the dark, which first person makes much more obvious.
-
+9. **What carries over from side-on** (#92). Settled by History #93–#103:
+   - **Settled:** the engine (#96), the levels (#97), the billboard drawings (#98), looking up and down (#99), the ground moves (#100), takedowns (#101), the light meter (#102) and fighting (#103). How he's seen isn't a problem (#93).
+   - **Still open:**
+     - How climbing works in first person (#94).
+     - Blink in first person: Lyra's idea, to come (#95).
+     - The touch layout for first person.
+     - The camera's feel: field of view, head bob, how leaning looks.
+     - What the light meter looks like.
+     - Whether the gloves keep a faint edge so they never fully vanish.
 ---
 
 ## F. Implementation Status
@@ -350,6 +369,10 @@ Shortlisted for visual comparison (options, not decisions):
 
 ### Implementation interpretations (technical, not design decisions — flag if wrong)
 - **Combat details beyond the approved first takes (#85):** presses during a blow queue (so mashing never loses blows); a blow connects on the first frame past its contact point (so a slow frame can't skip it); finisher reach is a generous 2.1 S because the shove knocks guards back; wall leaps reach 4 S; takedowns from behind or blinks end with him behind the guard, finishers on his own side of it; sneak takedowns make only a soft noise, open blows a loud one; after a guard's punch he can't attack for a quarter of a second; a guard that's punched while unaware becomes alerted.
+- **First-person picks, read as follows** *(2026-11-16T17:38:38+00:00)*:
+  - **Light (#102):** "Both" is read as the gloves fading with his light, working as a meter, plus a separate gauge on screen.
+  - **Billboard drawings (#98):** "three drawings" means front, side and back, with the side mirrored for the other way.
+  - **Looking up and down (#99):** "free, flat billboards" means characters still turn only left and right to face you, as in the corridor mock-up.
 - **Takedown readability details beyond the picks (#86–#90):** the outline goes round the whole guard (body, head, cap, hands and feet); the shatter includes the feet, which the study left out, so nothing vanishes; pieces come to rest on the floor rather than freezing mid-air; Zs are drawn bigger and bolder than in the study, which looked thin at game size; the afterimages are stronger than the study's (0.45 opacity for the nearest, then fainter), which barely showed in the dark; on a kill, the pounce lands on the floor among the pieces, since there's no guard left to pin; when he's hanging from a ceiling right over the guard, the marker moves beside the guard so he doesn't cover it; aiming a blink at a guard shows the outline and marker but not the Attack button, since letting go of Blink is what does it; the button shown follows the last controls used, with keyboard and mouse counting as one, the mouse shown only after a click attack; and once committed, every takedown (not only the pounce) holds the guard still.
 - **Two input bugs found while testing, fixed** *({T})*: a key tapped down and up within a single frame was lost, because Phaser forgets a press when the key comes back up (presses and releases are now counted from the key and mouse events, so none go missing, however short or slow the frame); and presses made during a hit-stop were thrown away, so a fast combo could lose blows (they now carry into the first frame after it). Both made the combo test flaky in the slow headless browser, and both could eat presses on a slow phone.
 - **Testing switches added:** Sight cones (pause menu, on by default while testing), and `?guards=0` in the address for an empty room. In development the page also exposes `window.__guards()`, `window.__combat()` and `window.__test` (move him, hold a guard still) for the browser tests.
@@ -474,6 +497,17 @@ Shortlisted for visual comparison (options, not decisions):
 | 90 | 2026-11-16T15:15:52+00:00 | Workflow | Claude's plan for building the takedown picks approved, including its default that a guard can't turn round once a takedown on it is committed. |
 | 91 | 2026-11-16T17:04:21+00:00 | Concept | Stays a side-on stealth game. Pivoting to a 3/4 GTA-style sandbox was considered after the Three-Quarter Block mock-up (`prototypes/three-quarter-block/`) and turned down; the city becomes its own project later. |
 | 92 | 2026-11-16T17:32:05+00:00 | Concept | The game becomes first person, with the characters as billboards in a 3D world (the Billboard Corridor mock-up, `prototypes/billboard-corridor/`). Supersedes side-on (#15, #91). Side-on decisions stand as intent but are under review. |
+| 93 | 2026-11-16T17:38:38+00:00 | Concept | In first person you hardly see him, and that's fine: "You never see Garrett and he's memorable." |
+| 94 | 2026-11-16T17:38:38+00:00 | Player movement | Climbing stays in first person, redone; details to design. |
+| 95 | 2026-11-16T17:38:38+00:00 | Player movement | Blink stays; Lyra has an idea for how it works in first person, to come. |
+| 96 | 2026-11-16T17:38:38+00:00 | Technical | First person runs on Three.js, used directly inside the React shell with our own game loop; it replaces Phaser for the game. |
+| 97 | 2026-11-16T17:38:38+00:00 | Technical | Levels: tiles with heights, plus freeform pieces for set pieces. |
+| 98 | 2026-11-16T17:38:38+00:00 | Art | Billboard characters have three drawings: front, side and back, with the side mirrored. |
+| 99 | 2026-11-16T17:38:38+00:00 | Art | Free looking up and down, with flat billboards. |
+| 100 | 2026-11-16T17:38:38+00:00 | Player movement | Sneak becomes crouching; the slide from a run stays; crawling through low gaps; leaning round corners (new). |
+| 101 | 2026-11-16T17:38:38+00:00 | Combat | First-person takedowns: the gloves do it on screen, the view lunges and dips, and the pounce becomes a drop from above. No third-person shot. |
+| 102 | 2026-11-16T17:38:38+00:00 | Combat | How hidden he is: both his gloves fading as the meter and a meter on screen. |
+| 103 | 2026-11-16T17:38:38+00:00 | Combat | The combo, finisher and dodge carry over into first person. |
 
 ---
 
