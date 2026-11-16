@@ -64,12 +64,12 @@ test.describe('the thief on keyboard and mouse', () => {
     await page.mouse.down({ button: 'right' })
     await page.waitForTimeout(150)
     await page.mouse.up({ button: 'right' })
-    await expect.poll(async () => (await thief(page)).charges).toBe(2)
+    await expect.poll(async () => (await thief(page)).charges).toBe(start.charges - 1)
     await expect.poll(async () => (await thief(page)).mode, { timeout: 15_000 }).toBe('ground')
     const landed = await thief(page)
     expect(landed.x).toBeGreaterThan(start.x + 2)
     // The stand-in checkpoint is at x = 1.6.
-    await holdUntil(page, 'a', (t) => t.charges === 3)
+    await holdUntil(page, 'a', (t) => t.charges === start.charges)
   })
 
   test('pauses with Escape and resumes from the menu', async ({ page }) => {

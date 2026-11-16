@@ -41,6 +41,7 @@ test.describe('touch controls on the Fold', () => {
 
     // Cancel: out and back onto the button.
     let start = await thief(page)
+    const full = start.charges
     let target = await worldToCss(page, start.x + 2.5, start.y)
     await page.mouse.move(bx, by)
     await page.mouse.down()
@@ -48,7 +49,7 @@ test.describe('touch controls on the Fold', () => {
     await page.mouse.move(bx, by, { steps: 5 })
     await page.mouse.up()
     await page.waitForTimeout(300)
-    expect((await thief(page)).charges).toBe(3)
+    expect((await thief(page)).charges).toBe(full)
 
     // Blink.
     start = await thief(page)
@@ -57,7 +58,7 @@ test.describe('touch controls on the Fold', () => {
     await page.mouse.down()
     await page.mouse.move(target.x, target.y, { steps: 5 })
     await page.mouse.up()
-    await expect.poll(async () => (await thief(page)).charges).toBe(2)
+    await expect.poll(async () => (await thief(page)).charges).toBe(full - 1)
     await expect.poll(async () => (await thief(page)).mode, { timeout: 15_000 }).toBe('ground')
     expect((await thief(page)).x).toBeGreaterThan(start.x + 1.5)
   })

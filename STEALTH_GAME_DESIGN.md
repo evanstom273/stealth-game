@@ -8,14 +8,14 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T07:24:16+00:00):**
+**Where the project stands (as of 2026-11-16T13:14:39+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
 - How we work is set out below: Depth Before Breadth, Artifacts as a visual workshop, and structured rounds of design questions (History #11–#13).
 - Lyra is deploying the scaffold to Cloudflare Workers (History #14).
 - Designing the player: look settled (History #15–#25); climbing and ground movement settled (History #26, #28–#31); blink's rules and look settled (History #27, #32–#36).
-- **The full player is built** (History #37, #45, #46) in a test room, playable with keyboard and mouse, gamepad and touch, and merged to `main`. Waiting on Lyra's first playtest on the Fold.
+- **The full player is built** (History #37, #45, #46) in a test room, playable with keyboard and mouse, gamepad and touch, and merged to `main`. Lyra's first playtest: good overall; grip raised and blink loosened as a result (History #47, #48).
 
 **Stack:** React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js and Cloudflare Workers: Lyra's normal stack (History #3).
 - **React** is the outer shell; **Phaser** (v4) runs the game inside a single React component (History #7, #9).
@@ -148,12 +148,14 @@ Don't rush through the questions simply to get to implementation. The design pro
   - **Limits** (so it can't get him past everything): **grip** (he can only hold on so long, especially upside down on ceilings, and recovers on floors and ledges); **slow and noisy** (climbing is slower than running, and some surfaces make noise guards can hear); **guards look up** (suspicious guards check ceilings and high walls, so up isn't automatically safe). Unclimbable surfaces, Claude's recommendation, were not chosen. *(2026-11-16T06:19:39+00:00 — History #28)*
   - **Hangs by his hands.** Upright on walls with the gloves gripping; hangs from ceilings by his hands with his body dangling. The gloves are his climbing tool. Claude's recommendation, approved. *(2026-11-16T06:19:39+00:00 — History #29)*
   - **Controls: press to grab, press to let go.** A toggle rather than holding a button. *(2026-11-16T06:19:39+00:00 — History #30)*
+  - **Much more grip.** After Lyra's first playtest the meter was far too small: she could barely climb one test wall, which would make climbing in real levels hard. Raised from 6 s on walls and 3 s on ceilings to 15 s and 7.5 s (Claude's pick of how much, keeping ceilings at half the wall time). A full-height test wall now uses about half the meter. *(2026-11-16T13:14:39+00:00 — History #47)*
 - **Blink.** He has a blink ability. *(2026-11-16T06:16:30+00:00 — History #27)*
   - **Aimed, and it can go through thin walls**, doors and floors. Chosen over line-of-sight only (Claude's recommendation) and a fixed short hop. *(2026-11-16T06:27:40+00:00 — History #32)*
   - **Charges that work like spells in Dark Souls:** a set number of blinks that only reset at checkpoints, not over time. *(2026-11-16T06:27:40+00:00 — History #33)*
   - **Guards can notice it:** a blink makes a flash or sound, so blinking near guards is a risk. *(2026-11-16T06:27:40+00:00 — History #34)*
   - **Lands gripping:** blink onto a wall or ceiling and he arrives already holding on, so blink and climbing work as one move set. Claude's recommendation, approved. *(2026-11-16T06:27:40+00:00 — History #35)*
   - **Look: turning to dust.** He crumbles into dust from the head down (the guide's small dust squares, in his own colours), and the dust gathers back into him at the far end. Lyra's own option, chosen from the Thief Blink Studies over pop and ring (Claude's pick), shatter and reassemble, and shadow streak. To watch in playtesting: the study takes about a second to re-form him, which may feel slow in play; and crumbling may read like a death once he can die. *(2026-11-16T06:28:40+00:00 — History #36)*
+  - **5 charges and a longer range, for now.** After Lyra's first playtest, 3 charges felt too restrictive and the range could be a little longer: charges 3 → 5, range 5 S → 6 S. To be tested again in proper levels. *(2026-11-16T13:14:39+00:00 — History #48)*
 - **On the ground:** walk, plus **sneak** (slow, near-silent), **run** (fast but noisy), **jump**, and **slide or roll** (under low gaps and closing doors). *(2026-11-16T06:19:39+00:00 — History #31)*
 - **Slide from a run.** While running, press down to drop into a low slide that carries his speed under gaps and closing doors. Claude's recommendation, approved. *(2026-11-16T06:35:14+00:00 — History #42)*
 - **Sneak is a toggle; run is held.** Press once to sneak until pressed again; hold to run. *(2026-11-16T06:31:36+00:00 — History #38)*
@@ -194,7 +196,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 ## C. Current Development Scope
 
-The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink's rules and look settled (#27, #32–#36). First playable piece: the full player (#37); plan and UI approved (#45, #46). **Built and merged to `main`** (see §F): next is Lyra playtesting it on the Fold, then refining what feels wrong (Depth Before Breadth).
+The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink's rules and look settled (#27, #32–#36). First playable piece: the full player (#37); plan and UI approved (#45, #46). **Built and merged to `main`** (see §F): Lyra's first playtest on the Fold went well; grip was far too short and blink a little tight, now raised (#47, #48). Next: test again, keep refining (Depth Before Breadth).
 
 Shortlisted for visual comparison (options, not decisions):
 - **Bodies:** square, rounded square, circle and triangle (all four picked), plus stacked and polygon builds following Lyra's note (#19).
@@ -222,7 +224,7 @@ Shortlisted for visual comparison (options, not decisions):
 
 1. **Title.**
 2. **Everything about the game itself.**
-3. **Blink details** (#27, #32–#36): how many charges; its range; what counts as a thin wall; exactly what guards notice and from how far.
+3. **Blink details** (#27, #32–#36, #48): whether 5 charges and a 6 S range hold up in proper levels; what counts as a thin wall; exactly what guards notice and from how far.
 4. **The player's size, in the game and next to the guards.** Decided when the guards are designed. Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
 5. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). ~~physics~~ (Phaser Arcade, #40). Still open: anything server-side.
 
@@ -230,7 +232,7 @@ Shortlisted for visual comparison (options, not decisions):
 
 ## F. Implementation Status
 
-*Updated 2026-11-16T07:24:16+00:00.*
+*Updated 2026-11-16T13:14:39+00:00.*
 
 | Feature | Status | Notes |
 |---|---|---|
@@ -240,8 +242,8 @@ Shortlisted for visual comparison (options, not decisions):
 | Test room | Built | One room with everything to try: a lit start with a stand-in checkpoint and a rest ledge halfway up the wall, ledges, a thin wall to blink through or climb over, a thick hanging block with a 0.9 S gap only a slide fits under, a metal wall and metal ledge (loud to climb), a second checkpoint, and three lamps with dark stretches between them. `src/game/room/testRoom.ts`. *(2026-11-16T07:24:16+00:00)* |
 | The thief, in the game | Built | Drawn from shapes every frame at the screen's density, exactly as approved (No. 7 body, mask with ties, smirk, dark gloves). Fades with lamp light while his eyes stay lit; ties hang at rest, trail with speed and hang down while he climbs; squash and stretch on jumps and landings; dust puffs. Poses: standing, in the air, sliding, on a wall, hanging from a ceiling. *(2026-11-16T07:24:16+00:00)* |
 | Ground movement | Built | Walk, sneak (toggle), run (held), jump (hold for higher, with a little forgiveness either side of leaving the ground), slide from a run. Under something low the slide becomes a crawl until there's room to stand. *(2026-11-16T07:24:16+00:00)* |
-| Climbing | Built | Press to grab, press to let go. Walls and ceilings, round corners, along undersides and up onto ledges. Grip drains (6 s on walls, 3 s on ceilings) and recovers on the ground; at zero he drops. Jump kicks off a wall. Slower than running; noisy on metal. *(2026-11-16T07:24:16+00:00)* |
-| Blink | Built | Aimed with a power-blue line, range ring and landing ghost. Goes through thin walls and floors, stops short of thick ones. Lands standing, gripping a wall or ceiling, or in the air. 3 charges, refilled only at the stand-in checkpoints. The dust effect, and a loud noise at both ends. *(2026-11-16T07:24:16+00:00)* |
+| Climbing | Built | Press to grab, press to let go. Walls and ceilings, round corners, along undersides and up onto ledges. Grip drains (15 s on walls, 7.5 s on ceilings, #47) and recovers on the ground; at zero he drops. Jump kicks off a wall. Slower than running; noisy on metal. *(2026-11-16T07:24:16+00:00)* |
+| Blink | Built | Aimed with a power-blue line, range ring and landing ghost. Goes through thin walls and floors, stops short of thick ones. Lands standing, gripping a wall or ceiling, or in the air. 5 charges (#48), refilled only at the stand-in checkpoints. Range 6 S. The dust effect, and a loud noise at both ends. *(2026-11-16T07:24:16+00:00)* |
 | Light and darkness | Built | Darkness over the room with the lamps' pools cut out of it, his vision pool (lets you see, never lights him), lit edges on everything standable, layered lamp glows. *(2026-11-16T07:24:16+00:00)* |
 | Noise | Built, nothing listens yet | Silent sneaking and standing, soft walking, loud running, landings by how hard he hits, loud on metal while climbing, loud blinks. No guards yet, so it shows only as rings when switched on in the pause menu. *(2026-11-16T07:24:16+00:00)* |
 | Controls | Built | Keyboard and mouse, gamepad, and touch as approved (fixed stick with run at its edge, diamond of buttons, drag from Blink to aim). *(2026-11-16T07:24:16+00:00)* |
@@ -254,7 +256,7 @@ Shortlisted for visual comparison (options, not decisions):
 - **Gamepad support is untested** with a real pad; the headless browser has none.
 - **The gloves barely show against the dark**, as seen in the Thief Mask Fitting. Nothing has been decided about it.
 - **No guards yet**, so "guards look up" (#28) and "guards can notice a blink" (#34) have nothing to act on. Noise is measured and can be shown as rings, but nothing hears it.
-- **A full-height wall takes longer to climb than his grip lasts** (12 S at 1.6 S/s against 6 s). That's the grip limit working, but it means tall walls need somewhere to rest; the test room has a rest ledge for this.
+- ~~**A full-height wall takes longer to climb than his grip lasts.**~~ Fixed by the grip increase (#47): a full-height test wall now uses about half the meter. The rest ledge stays in the test room for trying the under-ledge climb.
 
 ### Implementation interpretations (technical, not design decisions — flag if wrong)
 - The first guiding principles in §A and the "explain before adding" and merge-to-`main` standing orders in §H were carried over from Lyra's previous design document rather than restated for this project. The three principle sections after them in §A are Lyra's, written for this project (#11–#13).
@@ -329,6 +331,8 @@ Shortlisted for visual comparison (options, not decisions):
 | 44 | 2026-11-16T06:35:14+00:00 | Platform | Touch: drag from the blink button to aim; release to blink, back onto the button to cancel (Claude's recommendation, approved). |
 | 45 | 2026-11-16T06:52:36+00:00 | Platform | Touch layout: diamond buttons, controls over the game in portrait; the rest of the UI mock-up approved as drawn. |
 | 46 | 2026-11-16T06:52:36+00:00 | Workflow | Full-player build plan approved, with Claude's starting values to tune in play. |
+| 47 | 2026-11-16T13:14:39+00:00 | Player | Grip raised after Lyra's first playtest: 15 s on walls, 7.5 s on ceilings (was 6 s and 3 s; amount picked by Claude). |
+| 48 | 2026-11-16T13:14:39+00:00 | Player | Blink, for now: 5 charges (was 3), range 6 S (was 5 S), after Lyra's first playtest. Revisit in proper levels. |
 
 ---
 

@@ -59,14 +59,16 @@ export const CLIMB = {
 }
 
 export const GRIP = {
-  wallSeconds: 6,
-  ceilingSeconds: 3,
+  // Lyra's first playtest: 6 s and 3 s were far too little to climb a level (History #47).
+  wallSeconds: 15,
+  ceilingSeconds: 7.5,
   recoverSeconds: 1.5,
 }
 
 export const BLINK = {
-  charges: 3,
-  range: 5 * S,
+  // Raised after Lyra's first playtest, for now (History #48).
+  charges: 5,
+  range: 6 * S,
   /** Solids thinner than this (in their thinnest direction) can be blinked through. */
   thinMax: 0.5 * S,
   duration: 1.0,
