@@ -5,6 +5,9 @@ A walkable mock-up of Stylised Geometry in a **three-quarter (3/4) view**, made 
 - **The page:** `index.html` in this folder. It's one self-contained file with no build step and no libraries.
 - **Published as an Artifact:** https://claude.ai/artifact/XKwakcWP1cZfYEavJNCbf4
 
+**Decided so far for the city project** (it's separate from the stealth game, History #91 in `STEALTH_GAME_DESIGN.md`):
+- **Three-quarter, not top-down** (Lyra, 2026-11-16T17:18:48+00:00). This came after the Two-View Driving Study (https://claude.ai/artifact/936SPn5kTy12R7vMfub87P), which drives one car through one street seen both ways at once. In three-quarter, the buildings fade when they stand between the camera and the player.
+
 This document explains exactly how it was made, so it can be rebuilt, extended or carried into a real game.
 
 ---
