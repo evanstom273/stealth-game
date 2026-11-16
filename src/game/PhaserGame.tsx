@@ -25,7 +25,10 @@ export function PhaserGame() {
     }
     const observer = new ResizeObserver(resize)
     observer.observe(container)
+    // Re-measure once the page has settled, so pointer positions line up with the canvas.
+    const settle = window.setTimeout(() => game.scale.refresh(), 250)
     return () => {
+      window.clearTimeout(settle)
       observer.disconnect()
       game.destroy(true)
     }

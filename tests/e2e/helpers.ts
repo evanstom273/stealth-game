@@ -42,3 +42,26 @@ export async function holdUntil(page: Page, key: string, until: (t: ThiefState) 
 /** Where a point in the world (units of S) is on screen, in CSS pixels. */
 export const worldToCss = (page: Page, x: number, y: number) =>
   page.evaluate(([wx, wy]) => (window as unknown as { __worldToCss: (x: number, y: number) => { x: number; y: number } }).__worldToCss(wx, wy), [x, y])
+
+export interface GuardState {
+  x: number
+  state: string
+  facing: number
+  suspicion: number
+}
+
+export const guards = (page: Page) => page.evaluate(() => (window as unknown as { __guards: () => GuardState[] }).__guards())
+export const combat = (page: Page) =>
+  page.evaluate(() => (window as unknown as { __combat: () => { step: number; attacking: boolean; charging: boolean; takedown: string | null; context: string | null } }).__combat())
+
+/** Testing hooks: stand him somewhere, and keep a guard calm facing one way. Units of S. */
+export async function setUp(page: Page, thiefX: number, guard?: { i: number; facing: 1 | -1 }) {
+  await page.evaluate(
+    ([x, g]) => {
+      const t = (window as unknown as { __test: { placeThief: (x: number, y: number) => void; holdGuard: (i: number, f: 1 | -1) => void } }).__test
+      if (g) t.holdGuard(g.i, g.facing)
+      t.placeThief(x, 12)
+    },
+    [thiefX, guard ?? null] as const,
+  )
+}

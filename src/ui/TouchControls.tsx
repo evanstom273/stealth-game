@@ -1,6 +1,6 @@
 import { useRef, type PointerEvent as ReactPointerEvent } from 'react'
 import { touch } from '../game/bridge.ts'
-import { BlinkIcon, GrabIcon, JumpIcon, SneakIcon } from './icons.tsx'
+import { AttackIcon, BlinkIcon, DodgeIcon, GrabIcon, JumpIcon, SneakIcon } from './icons.tsx'
 import { useHud } from './useHud.ts'
 
 /**
@@ -18,6 +18,9 @@ const BUTTONS = {
   grab: { right: 44, bottom: 124, size: 66 },
   sneak: { right: 164, bottom: 124, size: 66 },
   blink: { right: 104, bottom: 190, size: 66 },
+  // Combat (first take, History #85): Attack at the diamond's lower left, Dodge at its upper left.
+  attack: { right: 178, bottom: 44, size: 64 },
+  dodge: { right: 180, bottom: 202, size: 52 },
 } as const
 
 function gameRect() {
@@ -173,6 +176,47 @@ export function TouchControls() {
       >
         <SneakIcon />
         <span className="tb-label">Sneak</span>
+      </button>
+      <button
+        type="button"
+        className="tb attack"
+        aria-label="Attack"
+        data-testid="attack"
+        style={place(BUTTONS.attack)}
+        onPointerDown={(e) => {
+          press(e.currentTarget)
+          e.currentTarget.setPointerCapture(e.pointerId)
+          touch.attackPressed = true
+          touch.attackHeld = true
+        }}
+        onPointerUp={(e) => {
+          release(e.currentTarget)
+          touch.attackHeld = false
+          touch.attackReleased = true
+        }}
+        onPointerCancel={(e) => {
+          release(e.currentTarget)
+          touch.attackHeld = false
+          touch.attackReleased = true
+        }}
+      >
+        <AttackIcon />
+        <span className="tb-label">Attack</span>
+      </button>
+      <button
+        type="button"
+        className="tb"
+        aria-label="Dodge"
+        style={place(BUTTONS.dodge)}
+        onPointerDown={(e) => {
+          press(e.currentTarget)
+          touch.dodgePressed = true
+        }}
+        onPointerUp={(e) => release(e.currentTarget)}
+        onPointerCancel={(e) => release(e.currentTarget)}
+      >
+        <DodgeIcon />
+        <span className="tb-label">Dodge</span>
       </button>
       <button
         ref={blinkRef}

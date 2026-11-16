@@ -8,7 +8,7 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16), **breaking out of a facility**: a clinical test facility, our own take on that kind of place (History #77, #78). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T13:52:05+00:00):**
+**Where the project stands (as of 2026-11-16T14:20:55+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -16,6 +16,7 @@ A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry**
 - Lyra is deploying the scaffold to Cloudflare Workers (History #14).
 - Designing the player: look settled (History #15–#25); climbing and ground movement settled (History #26, #28–#31); blink's rules and look settled (History #27, #32–#36).
 - Combat designed in three rounds (History #50–#61); details still open (§E).
+- **Combat is built for testing** (History #85): three test guards (staff watchmen) in the test room, sneak takedowns from behind, the ceiling, a wall and a blink, the jab-cross-shove combo with a finisher, the dodge, and knockout-or-kill. He's invulnerable for now. Merged to `main`, waiting on Lyra's playtest.
 - Designing the guards: archetypes, senses, suspicion, searching, hiding spots, each archetype's behaviour and their size settled (History #63–#80); staff watchman and blind guard, robot torch-bearer on a wheel that can't do stairs, and their look approved (History #81–#84).
 - **The full player is built** (History #37, #45, #46) in a test room, playable with keyboard and mouse, gamepad and touch, and merged to `main`. Lyra's first playtest: good overall; grip raised and blink loosened as a result (History #47, #48).
 
@@ -243,6 +244,8 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink's rules and look settled (#27, #32–#36). First playable piece: the full player (#37); plan and UI approved (#45, #46). **Built and merged to `main`** (see §F): Lyra's first playtest on the Fold went well; grip was far too short and blink a little tight, now raised (#47, #48). Next: test again, keep refining (Depth Before Breadth).
 
+**Combat test build** (History #85), built and merged: Lyra playtests the combat next.
+
 Shortlisted for visual comparison (options, not decisions):
 - **Bodies:** square, rounded square, circle and triangle (all four picked), plus stacked and polygon builds following Lyra's note (#19).
 - **Faces:** thief's mask, two eyes and a mouth, two eyes and no mouth; these can combine.
@@ -282,7 +285,7 @@ Shortlisted for visual comparison (options, not decisions):
 
 ## F. Implementation Status
 
-*Updated 2026-11-16T13:15:23+00:00.*
+*Updated 2026-11-16T14:20:55+00:00.*
 
 | Feature | Status | Notes |
 |---|---|---|
@@ -298,17 +301,26 @@ Shortlisted for visual comparison (options, not decisions):
 | Noise | Built, nothing listens yet | Silent sneaking and standing, soft walking, loud running, landings by how hard he hits, loud on metal while climbing, loud blinks. No guards yet, so it shows only as rings when switched on in the pause menu. *(2026-11-16T07:24:16+00:00)* |
 | Controls | Built | Keyboard and mouse, gamepad, and touch as approved (fixed stick with run at its edge, diamond of buttons, drag from Blink to aim). *(2026-11-16T07:24:16+00:00)* |
 | HUD and menus | Built | Blink charges top left, the Sneaking tag, the pause button and menu (resume, restart room, debug panel, noise rings, full screen), the grip bar under him, and the debug panel. *(2026-11-16T07:24:16+00:00)* |
-| Tests | Passing | 24 unit tests on the game logic (light, grip, noise, climbing, blink targeting); 10 Playwright tests driving every move with the keyboard, mouse and touch on desktop and Fold-sized screens. *(2026-11-16T07:24:16+00:00)* |
+| Tests (player build) | Passing | 24 unit tests on the game logic (light, grip, noise, climbing, blink targeting); 10 Playwright tests driving every move with the keyboard, mouse and touch on desktop and Fold-sized screens. *(2026-11-16T07:24:16+00:00)* |
+| Test guards | Built (for combat testing) | Three staff watchmen as approved (#81, #84) at 1.25 times his size, at x = 8, 12.4 and 22 S: one in the open, one under the first ledge, one past the thin wall under the second ledge. Each stands at its post turning every 2.4 s, sees him with a 25° cone reaching 7 S in light and 1.6 S in the dark (#65) and through nothing solid, fills its "?" (faster the closer he is) and turns it to "!" (#66), then comes over at 2.4 S/s and punches with a 0.45 s wind-up. Gives up after 3.5 s without seeing him and walks back. Flinches when hit, staggers for 1.6 s when shoved, is dazed for 1.2 s by a blink, and comes back 8 s after a knockout or kill (testing only). No hearing yet. *(2026-11-16T14:20:55+00:00)* |
+| Combat | Built (first takes) | Jab, cross, shove: presses during a blow queue up; the shove staggers. Finishers on a staggered or dazed guard within 2.1 S. Sneak attacks on unaware guards: from behind (within 1.3 S), dropping from a ceiling (within 0.9 S to the side, up to 4 S below), leaping off a wall (up to 4 S out, on the open side) and blinking onto them (aim at the guard; he lands behind it and dazes it). Tap Attack to knock out, hold 0.35 s to kill; the power-blue marker's ring fills as you hold. Dodge: a 0.22 s dash (backstep with no direction), attacks miss while it lasts. Guards' punches knock him back with a white flash; he can't be hurt (#85). Hit-stop on blows, sparks, a tiny shake on takedowns (off when the device asks for reduced motion), loud noise for blows. Knockouts slump with eyes shut; kills drain to grey. *(2026-11-16T14:20:55+00:00)* |
+| Combat controls | Built | Attack: left mouse button or F; Y on a gamepad; a touch button at the diamond's lower left. Dodge: Q; RB; a smaller touch button at its upper left. The pause menu gains a Sight cones switch (on by default while testing). *(2026-11-16T14:20:55+00:00)* |
+| Tests | Passing | 33 unit tests (now including guard sight, takedown positions and tap-or-hold) and 16 Playwright tests (now including knockout and kill from behind, combo into finisher, a guard punching him, dodge, blink takedown, and the touch layout), passing three runs in a row. *(2026-11-16T14:20:55+00:00)* |
 | Deployment | In progress (Lyra) | Lyra deploying the scaffold to Cloudflare Workers. Not yet confirmed live. *(2026-11-16T05:51:48+00:00)* |
 
 ### Known issues and limitations
 - **Not yet played on the Fold.** Everything was tested in a headless browser, which renders on the CPU at about 20 fps, so real frame rate and feel on the phone are unknown. He and the darkness are redrawn on small canvases every frame; that's the first place to look if it stutters.
 - **Gamepad support is untested** with a real pad; the headless browser has none.
-- **The gloves barely show against the dark**, as seen in the Thief Mask Fitting. Nothing has been decided about it.
+- **The gloves barely show against the dark**, as seen in the Thief Mask Fitting. Nothing has been decided about it, and it matters more now they're his weapons (#55): his punches are hard to see.
+- **Combat is against one kind of test guard only.** It's the watchman's look with simple behaviour (#85); no hearing, no searching, no torch-bearer or blind guard yet.
+- **He's invulnerable** (#85): there's no health and no losing a fight yet.
 - **No guards yet**, so "guards look up" (#28) and "guards can notice a blink" (#34) have nothing to act on. Noise is measured and can be shown as rings, but nothing hears it.
 - ~~**A full-height wall takes longer to climb than his grip lasts.**~~ Fixed by the grip increase (#47): a full-height test wall now uses about half the meter. The rest ledge stays in the test room for trying the under-ledge climb.
 
 ### Implementation interpretations (technical, not design decisions — flag if wrong)
+- **Combat details beyond the approved first takes (#85):** presses during a blow queue (so mashing never loses blows); a blow connects on the first frame past its contact point (so a slow frame can't skip it); finisher reach is a generous 2.1 S because the shove knocks guards back; wall leaps reach 4 S; takedowns from behind or blinks end with him behind the guard, finishers on his own side of it; sneak takedowns make only a soft noise, open blows a loud one; after a guard's punch he can't attack for a quarter of a second; a guard that's punched while unaware becomes alerted.
+- **Testing switches added:** Sight cones (pause menu, on by default while testing), and `?guards=0` in the address for an empty room. In development the page also exposes `window.__guards()`, `window.__combat()` and `window.__test` (move him, hold a guard still) for the browser tests.
+- **Two bugs found while testing, fixed:** in development, React's double-mount left Phaser measuring the canvas in the wrong place, so mouse aiming was off until the window was resized (production wasn't affected); and the camera used to glide in from the corner on load, which moved aimed points, so it now starts on him.
 - **The guards' sight cones and hearing rings** in the Guard Line-up were drawn to explain the senses; whether players see them in the game hasn't been decided.
 - **Guard size, 1.25×,** is read as overall scale: roughly a quarter taller (and wider) than him. Flag if Lyra meant height only.
 - The first guiding principles in §A and the "explain before adding" and merge-to-`main` standing orders in §H were carried over from Lyra's previous design document rather than restated for this project. The three principle sections after them in §A are Lyra's, written for this project (#11–#13).
@@ -436,7 +448,9 @@ Shortlisted for visual comparison (options, not decisions):
   - `src/game/player/`: the thief: `thiefArt.ts` (drawing), `ThiefView.ts` (canvas and image), `Thief.ts` (movement, climbing, blink).
   - `src/game/room/`: the test room's layout, its drawing, and the darkness.
   - `src/game/input/Controls.ts`: keyboard, mouse, gamepad and touch merged into one set of inputs.
-  - `src/game/scenes/TestRoomScene.ts`: puts it all together, plus the aim line, rings and grip bar.
+  - `src/game/enemy/`: the test guard: `guardArt.ts` (drawing) and `Guard.ts` (behaviour).
+  - `src/game/combat/Combat.ts`: blows, the dodge, takedowns, finishers and the takedown marker. Its rules (sight, takedown positions, tap or hold) are in `src/game/logic/combat.ts`.
+  - `src/game/scenes/TestRoomScene.ts`: puts it all together, plus the aim line, sight cones, rings and grip bar.
   - `src/game/bridge.ts`: what the game tells the React interface, and the touch input going back.
   - `src/ui/`: the HUD, touch controls and pause menu.
   - `tests/e2e/`: Playwright. In development the page exposes `window.__thief()` for the tests; it's left out of production builds.

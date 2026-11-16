@@ -8,7 +8,7 @@ import { lightAt } from '../logic/light.ts'
 import { landingNoise, noiseFor, NOISE, type MoveState } from '../logic/noise.ts'
 import type { Room } from '../room/testRoom.ts'
 import { DUST } from '../style/tokens.ts'
-import { BLINK, BLINK_CFG, BODY, CLIMB, CLIMB_CFG, GRIP, LIGHT, MOVE, S, SLIDE } from '../tuning.ts'
+import { BLINK, BLINK_CFG, BODY, CLIMB, CLIMB_CFG, COMBAT, GRIP, LIGHT, MOVE, S, SLIDE } from '../tuning.ts'
 import type { Pose } from './thiefArt.ts'
 import { ThiefView, type Pixel } from './ThiefView.ts'
 
@@ -64,6 +64,16 @@ export class Thief {
   onNoise: NoiseListener | null = null
   /** Recent changes of mode, for the debug hook. */
   readonly trace: string[] = []
+  /** Set by combat: a pose to draw instead of his movement pose. */
+  combatPose: Pose | null = null
+  /** Set by combat during takedowns: movement is scripted, not his own. */
+  locked = false
+  /** A blink aimed at a guard lands here instead, behind it (set by combat). */
+  blinkSnap: Vec | null = null
+  /** Seconds left of the white flash when he's hit. */
+  flash = 0
+  private dodgeT = 0
+  private dodgeDir = 1
 
   private coyote = 0
   private jumpBuffer = 0
@@ -172,6 +182,52 @@ export class Thief {
     this.squash.vy = 0
   }
 
+  get dodging() {
+    return this.dodgeT > 0
+  }
+
+  /** Combat: place him exactly (takedowns move him along a scripted path). */
+  teleport(b: Rect) {
+    this.setBox(b)
+  }
+
+  /** Combat: hand his movement over to a takedown, or give it back. */
+  lock(on: boolean, landed = true) {
+    this.locked = on
+    if (on) {
+      this.setHeight(BODY.h)
+      this.freeze(true)
+      this.climb = null
+      this.aim = null
+    } else {
+      this.freeze(false)
+      this.mode = landed ? 'ground' : 'air'
+      this.wasGrounded = landed
+    }
+  }
+
+  /** Combat: a guard's punch lands. He's invulnerable for now: a flash and a knock back (History #85). */
+  knock(vx: number, vy: number) {
+    if (this.mode === 'climb') {
+      this.climb = null
+      this.freeze(false)
+    }
+    if (this.mode === 'slide') this.endSlide()
+    this.mode = 'air'
+    this.wasGrounded = false
+    this.body.setVelocity(vx, vy)
+    this.flash = 1
+    this.kick(1.2, 0.85)
+  }
+
+  /** Combat: a quick dash; attacks pass through him while it lasts. */
+  startDodge(dir: number, time: number) {
+    this.dodgeT = time
+    this.dodgeDir = dir >= 0 ? 1 : -1
+    this.kick(1.3, 0.75)
+    this.puff(this.body.center.x, this.body.bottom, 5, BODY.w)
+  }
+
   refill() {
     if (this.charges >= BLINK.charges) return false
     this.charges = BLINK.charges
@@ -193,6 +249,12 @@ export class Thief {
 
   update(dt: number, intent: Intent) {
     this.time += dt
+    this.flash = Math.max(0, this.flash - dt * 6)
+    if (this.locked) {
+      this.light = lightAt(this.centre, this.room.lamps, LIGHT.lampRadius, LIGHT.lampClear)
+      this.render(dt)
+      return
+    }
     if (this.mode === 'blink') {
       this.updateBlink(dt)
       this.render(dt)
@@ -228,6 +290,7 @@ export class Thief {
     else if (intent.aim.fromStick && Math.hypot(intent.aim.fromStick.x, intent.aim.fromStick.y) > 0.25) {
       point = { x: c.x + intent.aim.fromStick.x * BLINK.range, y: c.y + intent.aim.fromStick.y * BLINK.range }
     } else point = { x: c.x + this.facing * BLINK.range * 0.6, y: c.y }
+    if (this.blinkSnap) point = this.blinkSnap
     point = clampToRange(c, point, BLINK.range)
     const solids = this.room.solids
     this.aim = resolveBlink(c, point, solids, BLINK_CFG)
@@ -388,7 +451,11 @@ export class Thief {
     this.wasGrounded = grounded
     if (grounded) this.grip = stepGrip(this.grip, 'ground', dt, GRIP)
 
-    if (this.mode === 'slide') {
+    if (this.dodgeT > 0) {
+      this.dodgeT -= dt
+      body.setVelocityX(this.dodgeDir * (this.dodgeT > 0 ? COMBAT.dodgeSpeed : MOVE.walk * 0.5))
+      this.mode = grounded ? 'ground' : 'air'
+    } else if (this.mode === 'slide') {
       this.updateSlide(dt, intent, grounded)
     } else {
       // Start a slide: press down while running fast (History #42).
@@ -514,18 +581,22 @@ export class Thief {
     this.tie += (tieTarget - this.tie) * Math.min(1, dt * 5)
 
     const pose: Pose =
-      this.mode === 'climb' ? this.climb!.mode : this.mode === 'slide' ? 'slide' : this.mode === 'air' ? 'air' : 'stand'
+      this.combatPose ??
+      (this.dodgeT > 0 ? 'dodge' : this.mode === 'climb' && this.climb ? this.climb.mode : this.mode === 'slide' ? 'slide' : this.mode === 'air' ? 'air' : 'stand')
     let sx = sq.x
     let sy = sq.y
     if (pose === 'slide') {
       sx *= 1.22
       sy *= 0.58
+    } else if (pose === 'dodge') {
+      sx *= 1.12
+      sy *= 0.86
     } else if (this.sneaking && (pose === 'stand' || pose === 'air')) sy *= 0.9
     const anchor = pose === 'ceiling' ? -1.1 * S : pose === 'wall' ? 0 : 0.62 * S
     const o = this.origin
 
     if (this.mode !== 'blink') {
-      this.view.draw({ light: this.light, time: this.time, speed: this.tie, swing: this.swing, pose, climb: this.climbPhase })
+      this.view.draw({ light: this.light, time: this.time, speed: this.tie, swing: this.swing, pose, climb: this.climbPhase }, this.flash)
     }
     this.view.place(o.x, o.y + anchor * (1 - sy), this.facing, sx, sy, this.mode !== 'blink')
     this.drawDust(dt)

@@ -22,6 +22,8 @@ export interface HudState {
   paused: boolean
   showDebug: boolean
   showNoise: boolean
+  /** Testing switch: draw the guards' sight cones (History #85). */
+  showCones: boolean
   debug: DebugInfo | null
 }
 
@@ -63,6 +65,7 @@ export const hud = new Store<HudState>({
   paused: false,
   showDebug: false,
   showNoise: false,
+  showCones: true,
   debug: null,
 })
 
@@ -78,6 +81,10 @@ export const touch = {
   /** Blink aiming: the finger's position over the game canvas, in CSS pixels. */
   aim: { active: false, x: 0, y: 0, hasPoint: false, cancel: false },
   blinkReleased: false,
+  attackPressed: false,
+  attackHeld: false,
+  attackReleased: false,
+  dodgePressed: false,
 }
 
 type Command = 'pause' | 'resume' | 'restart'

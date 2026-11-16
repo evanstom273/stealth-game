@@ -14,6 +14,8 @@ export interface Room {
   checkpoints: Vec[]
   /** Where his feet start. */
   spawn: Vec
+  /** Test guards (History #85): where their feet stand at their posts, and which way they face first. */
+  guards: { x: number; y: number; facing: 1 | -1 }[]
 }
 
 const r = (x: number, y: number, w: number, h: number, metal = false): Solid => ({ x: x * S, y: y * S, w: w * S, h: h * S, metal })
@@ -48,4 +50,11 @@ export const TEST_ROOM: Room = {
     { x: 38.6 * S, y: 12 * S },
   ],
   spawn: { x: 3.5 * S, y: 12 * S },
+  // One in the open, one under the first ledge (hang above it and drop), one past the thin wall
+  // under the second ledge (blink through, or drop from above).
+  guards: [
+    { x: 8 * S, y: 12 * S, facing: 1 },
+    { x: 12.4 * S, y: 12 * S, facing: 1 },
+    { x: 22 * S, y: 12 * S, facing: -1 },
+  ],
 }

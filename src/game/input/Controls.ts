@@ -16,23 +16,29 @@ export interface Intent {
   /** Holding the blink aim. `world` is the aimed point, or null to aim straight ahead. */
   aim: { active: boolean; world: Vec | null; cancel: boolean; fromStick: Vec | null }
   blinkReleased: boolean
+  /** Attack: tap to knock out, hold to kill at takedowns and finishers (History #58). */
+  attackPressed: boolean
+  attackHeld: boolean
+  attackReleased: boolean
+  dodgePressed: boolean
   pausePressed: boolean
   debugPressed: boolean
 }
 
-type Keys = Record<'W' | 'A' | 'S' | 'D' | 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'SHIFT' | 'C' | 'SPACE' | 'E' | 'ESC' | 'BACKTICK', Phaser.Input.Keyboard.Key>
+type Keys = Record<'W' | 'A' | 'S' | 'D' | 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'SHIFT' | 'C' | 'SPACE' | 'E' | 'ESC' | 'BACKTICK' | 'F' | 'Q', Phaser.Input.Keyboard.Key>
 
 const DEAD = 0.2
 
 export class Controls {
   private keys: Keys | null
   private rightWasDown = false
+  private mouseWasDown = false
   private padPrev: Record<string, boolean> = {}
   private scene: Phaser.Scene
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene
-    this.keys = (scene.input.keyboard?.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,SHIFT,C,SPACE,E,ESC,BACKTICK') as Keys) ?? null
+    this.keys = (scene.input.keyboard?.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,SHIFT,C,SPACE,E,ESC,BACKTICK,F,Q') as Keys) ?? null
     scene.input.mouse?.disableContextMenu()
   }
 
@@ -52,18 +58,29 @@ export class Controls {
     let grabPressed = just(k?.E)
     let pausePressed = just(k?.ESC)
     const debugPressed = just(k?.BACKTICK)
+    let dodgePressed = just(k?.Q)
 
     // Mouse: hold the right button to aim a blink, let go to blink.
     const pointer = this.scene.input.activePointer
     const rightDown = pointer.rightButtonDown()
+    // Re-read against the camera every frame: the camera keeps moving while the mouse sits still.
+    const wp = pointer.positionToCamera(this.scene.cameras.main) as Phaser.Math.Vector2
+    const mouseWorld = { x: wp.x, y: wp.y }
     let aim: Intent['aim'] = { active: false, world: null, cancel: false, fromStick: null }
     let blinkReleased = false
-    if (rightDown) aim = { active: true, world: { x: pointer.worldX, y: pointer.worldY }, cancel: false, fromStick: null }
+    if (rightDown) aim = { active: true, world: mouseWorld, cancel: false, fromStick: null }
     if (!rightDown && this.rightWasDown) {
       blinkReleased = true
-      aim = { active: true, world: { x: pointer.worldX, y: pointer.worldY }, cancel: false, fromStick: null }
+      aim = { active: true, world: mouseWorld, cancel: false, fromStick: null }
     }
     this.rightWasDown = rightDown
+    // Attack: F, or the left mouse button (mouse only, so taps on a touch screen don't punch).
+    // Presses and releases come from key events, so a tap shorter than a frame is never lost.
+    const mouseDown = pointer.leftButtonDown() && !pointer.wasTouch
+    let attackHeld = down(k?.F) || mouseDown
+    let attackPressed = (k?.F ? Phaser.Input.Keyboard.JustDown(k.F) : false) || (mouseDown && !this.mouseWasDown)
+    let attackReleased = (k?.F ? Phaser.Input.Keyboard.JustUp(k.F) : false) || (!mouseDown && this.mouseWasDown)
+    this.mouseWasDown = mouseDown
 
     // Gamepad
     const pad = this.scene.input.gamepad?.total ? this.scene.input.gamepad.getPad(0) : null
@@ -85,6 +102,11 @@ export class Controls {
       sneakPressed ||= edge('B', pad.B)
       grabPressed ||= edge('X', pad.X)
       pausePressed ||= edge('start', !!pad.buttons[9]?.pressed)
+      attackHeld ||= pad.Y
+      attackPressed ||= edge('Y', pad.Y)
+      attackReleased ||= !pad.Y && !!this.padPrev.Yheld
+      this.padPrev.Yheld = pad.Y
+      dodgePressed ||= edge('RB', pad.R1 > 0.5)
       const lt = pad.L2 > 0.5
       const rs = { x: pad.rightStick.x, y: pad.rightStick.y }
       if (lt) aim = { active: true, world: null, cancel: false, fromStick: rs }
@@ -110,11 +132,18 @@ export class Controls {
       aim = { active: true, world, cancel: touch.aim.cancel, fromStick: null }
       if (touch.blinkReleased) blinkReleased = true
     }
+    attackHeld ||= touch.attackHeld
+    attackPressed ||= touch.attackPressed
+    attackReleased ||= touch.attackReleased
+    dodgePressed ||= touch.dodgePressed
     touch.jumpPressed = false
     touch.sneakPressed = false
     touch.grabPressed = false
     touch.blinkReleased = false
+    touch.attackPressed = false
+    touch.attackReleased = false
+    touch.dodgePressed = false
 
-    return { moveX, moveY, run, jumpPressed, jumpHeld, sneakPressed, grabPressed, aim, blinkReleased, pausePressed, debugPressed }
+    return { moveX, moveY, run, jumpPressed, jumpHeld, sneakPressed, grabPressed, aim, blinkReleased, attackPressed, attackHeld, attackReleased, dodgePressed, pausePressed, debugPressed }
   }
 }

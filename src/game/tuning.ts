@@ -1,5 +1,6 @@
 import type { BlinkConfig } from './logic/blink.ts'
 import type { ClimbConfig } from './logic/climb.ts'
+import type { SightConfig, TakedownConfig } from './logic/combat.ts'
 
 /**
  * Starting values for the thief, approved as a starting point (design doc, History #46).
@@ -110,4 +111,67 @@ export const BLINK_CFG: BlinkConfig = {
   ceilingGap: CLIMB.ceilingGap,
   minWallFace: 0.6 * S,
   standSnap: 0.35 * S,
+}
+
+/** The test guard (History #85): a staff watchman at 1.25 times his size (History #76, #81). */
+export const GUARD = {
+  scale: 1.25,
+  w: 0.84 * 1.25 * S,
+  h: 1.33 * 1.25 * S,
+  /** From the hitbox top down to the drawing's origin. */
+  originFromTop: 0.71 * 1.25 * S,
+  /** From the hitbox top down to its eyes. */
+  eyeFromTop: 0.27 * 1.25 * S,
+  turnEvery: 2.4,
+  chaseSpeed: 2.4 * S,
+  returnSpeed: 1.4 * S,
+  /** Suspicion per second while he's seen, more when he's close; it fills to 1 to alert. */
+  suspicionRate: 0.9,
+  suspicionCloseBonus: 2.2,
+  suspicionDecay: 0.35,
+  /** Seconds without seeing him before an alerted guard gives up and goes back. */
+  giveUpAfter: 3.5,
+  attackReach: 1.05 * S,
+  windup: 0.45,
+  strike: 0.1,
+  recover: 0.5,
+  cooldown: 0.35,
+  flinch: 0.22,
+  stagger: 1.6,
+  blinkStun: 1.2,
+  /** Testing convenience: downed guards come back after this long. */
+  downFor: 8,
+}
+
+export const SIGHT_CFG: SightConfig = {
+  halfAngle: (25 * Math.PI) / 180,
+  lightRange: 7 * S,
+  darkRange: 1.6 * S,
+}
+
+export const COMBAT = {
+  /** Each blow of the jab, cross, shove combo: its length and when it lands. */
+  attackTime: 0.24,
+  hitFrom: 0.07,
+  /** A press within this long of the last blow carries the combo on. */
+  comboWindow: 0.45,
+  reach: 1.15 * S,
+  dodgeTime: 0.22,
+  dodgeSpeed: 7.5 * S,
+  dodgeCooldown: 0.35,
+  /** Hold Attack this long to kill instead of knocking out. */
+  killHold: 0.35,
+  hitStop: 0.05,
+  /** Knockback when a guard's punch lands on him (he's invulnerable for now). */
+  knockback: { x: 3 * S, y: 2 * S },
+  hurtLock: 0.25,
+}
+
+export const TAKEDOWN_CFG: TakedownConfig = {
+  behindReach: 1.3 * S,
+  dropReach: 0.9 * S,
+  dropDepth: 4 * S,
+  leapReach: 4 * S,
+  /** Generous, because the shove knocks a guard back and the finisher dashes in. */
+  finisherReach: 2.1 * S,
 }

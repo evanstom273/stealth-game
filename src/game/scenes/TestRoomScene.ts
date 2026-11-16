@@ -1,5 +1,7 @@
 import * as Phaser from 'phaser'
 import { commands, hud } from '../bridge.ts'
+import { Combat } from '../combat/Combat.ts'
+import { Guard } from '../enemy/Guard.ts'
 import { Controls } from '../input/Controls.ts'
 import type { Vec } from '../logic/geometry.ts'
 import { NOISE_NAMES } from '../logic/noise.ts'
@@ -9,7 +11,7 @@ import { Darkness } from '../room/Darkness.ts'
 import { DEPTH, drawLamps, drawRoom } from '../room/RoomView.ts'
 import { TEST_ROOM } from '../room/testRoom.ts'
 import { POWER } from '../style/tokens.ts'
-import { BLINK, MOVE, S, screenS } from '../tuning.ts'
+import { BLINK, MOVE, S, SIGHT_CFG, screenS } from '../tuning.ts'
 
 interface Ring {
   x: number
@@ -24,6 +26,10 @@ interface Ring {
 /** The test room: the full thief, no guards, for trying every move (History #37). */
 export class TestRoomScene extends Phaser.Scene {
   private thief!: Thief
+  private guards: Guard[] = []
+  private combat!: Combat
+  private hitStop = 0
+  private reducedMotion = false
   private controls!: Controls
   private darkness!: Darkness
   private fx!: Phaser.GameObjects.Graphics
@@ -69,6 +75,23 @@ export class TestRoomScene extends Phaser.Scene {
 
     this.thief = new Thief(this, room)
     this.physics.add.collider(this.thief.zone, solids)
+    // `?guards=0` in the address: an empty room, for testing movement on its own.
+    const noGuards = new URLSearchParams(window.location.search).get('guards') === '0'
+    this.guards = noGuards ? [] : room.guards.map((g, i) => new Guard(this, { x: g.x, y: g.y }, g.facing, i))
+    for (const g of this.guards) this.physics.add.collider(g.zone, solids)
+    this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    this.combat = new Combat(this, this.thief, this.guards, room.solids, {
+      hitStop: (s) => {
+        this.hitStop = Math.max(this.hitStop, s)
+        this.physics.pause()
+      },
+      shake: () => {
+        if (!this.reducedMotion) this.cameras.main.shake(110, 0.004)
+      },
+      noise: (level, at) => {
+        if (hud.get().showNoise) this.rings.push({ x: at.x, y: at.y, radius: (0.6 + level * 1.4) * S, age: 0, life: 0.7, color: 0xe8e8f0, alpha: 0.4 })
+      },
+    })
     this.thief.onNoise = (level, x, y) => {
       if (hud.get().showNoise) this.rings.push({ x, y, radius: (0.6 + level * 1.4) * S, age: 0, life: 0.7, color: 0xe8e8f0, alpha: 0.4 })
     }
@@ -80,13 +103,17 @@ export class TestRoomScene extends Phaser.Scene {
     cam.setBounds(b.x - 8 * S, b.y - 8 * S, b.w + 16 * S, b.h + 16 * S)
     cam.startFollow(this.thief.zone, true, 0.12, 0.12)
     this.applyZoom()
+    this.snapCamera()
     this.scale.on('resize', this.applyZoom, this)
 
     const stop = commands.listen((c) => {
       if (c === 'pause') this.setPaused(true)
       if (c === 'resume') this.setPaused(false)
       if (c === 'restart') {
+        this.combat.reset()
         this.thief.reset()
+        for (const g of this.guards) g.reset()
+        this.snapCamera()
         this.rings = []
         this.setPaused(false)
       }
@@ -104,9 +131,28 @@ export class TestRoomScene extends Phaser.Scene {
       w.__thief = () => {
         const t = this.thief
         const c = t.centre
-        return { trace: t.trace.slice(-8), x: c.x / S, y: c.y / S, mode: t.mode, state: t.state, charges: t.charges, grip: t.grip, facing: t.facing, sneaking: t.sneaking, climb: t.climb?.mode ?? null, light: t.light }
+        const p = this.input.activePointer.positionToCamera(this.cameras.main) as Phaser.Math.Vector2
+        return { mouse: { x: p.x / S, y: p.y / S, px: this.input.activePointer.x, py: this.input.activePointer.y }, aimEnd: t.aim ? { x: t.aim.end.x / S, y: t.aim.end.y / S } : null, trace: t.trace.slice(-8), x: c.x / S, y: c.y / S, mode: t.mode, state: t.state, charges: t.charges, grip: t.grip, facing: t.facing, sneaking: t.sneaking, climb: t.climb?.mode ?? null, light: t.light }
       }
       w.__loop = () => ({ fps: this.game.loop.actualFps, delta: this.game.loop.delta, raw: this.game.loop.rawDelta, physicsSteps: this.physics.world.stepsLastFrame })
+      w.__guards = () => this.guards.map((g) => ({ x: g.centre.x / S, state: g.state, facing: g.facing, suspicion: g.suspicion }))
+      w.__combat = () => this.combat.status
+      w.__test = {
+        /** Stand him with his feet at (x, y), in units of S. */
+        placeThief: (x: number, y: number) => {
+          this.combat.reset()
+          this.thief.teleport({ x: x * S - 0.4 * S, y: y * S - 1.31 * S, w: 0.8 * S, h: 1.31 * S })
+          this.thief.body.setVelocity(0, 0)
+          this.snapCamera()
+        },
+        /** Keep a guard calm and facing one way, so tests can get behind it. */
+        holdGuard: (i: number, facing: 1 | -1) => {
+          const g = this.guards[i]
+          g.reset()
+          g.facing = facing
+          ;(g as unknown as { turnTimer: number }).turnTimer = 1e9
+        },
+      }
       w.__worldToCss = (x: number, y: number) => {
         const v = this.cameras.main.worldView
         const z = this.cameras.main.zoom / this.dpr
@@ -115,11 +161,20 @@ export class TestRoomScene extends Phaser.Scene {
     }
   }
 
+  /** Puts the camera straight onto him, instead of gliding in from wherever it was. */
+  private snapCamera() {
+    this.lookX = -this.thief.facing * 0.8 * S
+    const cam = this.cameras.main
+    cam.setFollowOffset(this.lookX, 1.0 * S)
+    cam.centerOn(this.thief.centre.x - this.lookX, this.thief.centre.y - 1.0 * S)
+  }
+
   private applyZoom() {
     const minCss = Math.min(this.scale.width, this.scale.height) / this.dpr
     const zoom = (this.dpr * screenS(minCss)) / S
     this.cameras.main.setZoom(zoom)
     this.thief?.setZoom(zoom)
+    for (const g of this.guards) g.setZoom(zoom)
   }
 
   private setPaused(on: boolean) {
@@ -140,9 +195,23 @@ export class TestRoomScene extends Phaser.Scene {
     if (intent.pausePressed) this.setPaused(!this.paused)
     if (intent.debugPressed) hud.set({ showDebug: !hud.get().showDebug })
     if (this.paused) return
+    // Hit-stop: a tiny freeze when a blow lands (guide §7.3).
+    if (this.hitStop > 0) {
+      this.hitStop -= dt
+      if (this.hitStop <= 0) this.physics.resume()
+      return
+    }
 
     const t = this.thief
-    t.update(dt, intent)
+    const moveIntent = this.combat.before(dt, intent)
+    t.update(dt, moveIntent)
+    const him = { centre: t.centre, feetY: t.box.y + t.box.h, light: t.light, hidden: t.mode === 'blink' }
+    for (const g of this.guards) {
+      const strike = g.update(dt, him, TEST_ROOM.solids)
+      if (strike) this.combat.strike(g, strike)
+      g.render()
+    }
+    this.combat.after(dt)
 
     // Stand-in checkpoints refill blink charges (History #33).
     for (const c of TEST_ROOM.checkpoints) {
@@ -163,6 +232,7 @@ export class TestRoomScene extends Phaser.Scene {
     this.dashOffset += dt * 30
     this.drawEffects(dt)
     this.drawStatus()
+    this.combat.draw(dt, this.px)
 
     hud.set({ charges: t.charges, sneaking: t.sneaking, holding: t.mode === 'climb', aiming: !!t.aim })
     this.updateDebug(dt)
@@ -191,6 +261,27 @@ export class TestRoomScene extends Phaser.Scene {
       const radius = r.radius * (0.25 + 0.75 * (1 - Math.pow(1 - q, 3)))
       g.lineStyle(2.5 * px, r.color, r.alpha * (1 - q))
       g.strokeEllipse(r.x, r.y, radius * 2, radius * 1.2)
+    }
+
+    // Sight cones, while testing (History #85): the strong part is how far they see in the dark,
+    // the faint part how far in light.
+    if (hud.get().showCones) {
+      for (const gd of this.guards) {
+        if (gd.down || gd.open) continue
+        const col = gd.state === 'alert' ? 0xff7a3d : gd.state === 'sus' || gd.state === 'return' ? 0xffb347 : 0xe6eaef
+        const e = gd.eye
+        const cone = (r: number, a: number) => {
+          const pts = [new Phaser.Math.Vector2(e.x, e.y)]
+          for (let i = 0; i <= 8; i++) {
+            const ang = -SIGHT_CFG.halfAngle + (2 * SIGHT_CFG.halfAngle * i) / 8
+            pts.push(new Phaser.Math.Vector2(e.x + gd.facing * Math.cos(ang) * r, e.y + Math.sin(ang) * r))
+          }
+          g.fillStyle(col, a)
+          g.fillPoints(pts, true)
+        }
+        cone(SIGHT_CFG.lightRange, gd.state === 'calm' ? 0.014 : 0.03)
+        cone(SIGHT_CFG.darkRange, gd.state === 'calm' ? 0.04 : 0.08)
+      }
     }
 
     const aim = this.thief.aim

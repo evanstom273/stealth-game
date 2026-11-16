@@ -28,6 +28,7 @@ export function PauseMenu() {
         </button>
         <Toggle label="Debug panel" on={h.showDebug} onClick={() => hud.set({ showDebug: !h.showDebug })} />
         <Toggle label="Noise rings" on={h.showNoise} onClick={() => hud.set({ showNoise: !h.showNoise })} />
+        <Toggle label="Sight cones" on={h.showCones} onClick={() => hud.set({ showCones: !h.showCones })} />
         {canFullscreen() && (
           <button
             type="button"
@@ -41,7 +42,7 @@ export function PauseMenu() {
           </button>
         )}
         <p className="px-1 pt-2 text-[12px] leading-snug text-[#9a9ab0]">
-          Keyboard: A/D move, W/S climb, Shift run, C sneak, Space jump, E grab, S while running to slide, hold the right mouse button to aim a blink, Esc to pause, ` for the debug panel.
+          Keyboard: A/D move, W/S climb, Shift run, C sneak, Space jump, E grab, S while running to slide, hold the right mouse button to aim a blink. Attack: left mouse or F (tap to knock out, hold to kill at a takedown). Dodge: Q. Esc to pause, ` for the debug panel.
         </p>
       </div>
     </div>

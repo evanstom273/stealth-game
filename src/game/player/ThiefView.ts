@@ -42,13 +42,21 @@ export class ThiefView {
     this.image.setOrigin(OX / SIZE, OY / SIZE)
   }
 
-  draw(look: ThiefLook) {
+  /** @param flash 0–1: a white flash over him when he's hit. */
+  draw(look: ThiefLook, flash = 0) {
     const ctx = this.tex.context
     const r = this.res
     ctx.setTransform(1, 0, 0, 1, 0, 0)
     ctx.clearRect(0, 0, this.tex.width, this.tex.height)
     ctx.setTransform(S * r, 0, 0, S * r, OX * r, OY * r)
     drawThief(ctx, look)
+    if (flash > 0) {
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
+      ctx.globalCompositeOperation = 'source-atop'
+      ctx.fillStyle = `rgba(255,255,255,${(0.85 * flash).toFixed(3)})`
+      ctx.fillRect(0, 0, this.tex.width, this.tex.height)
+      ctx.globalCompositeOperation = 'source-over'
+    }
     this.tex.refresh()
   }
 

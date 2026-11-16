@@ -6,7 +6,7 @@ import { FOOT, HERO, INK } from '../style/tokens.ts'
  * body's centre at the origin, facing right. Mirror the context to face left.
  */
 
-export type Pose = 'stand' | 'air' | 'slide' | 'wall' | 'ceiling'
+export type Pose = 'stand' | 'air' | 'slide' | 'wall' | 'ceiling' | 'jab' | 'cross' | 'shove' | 'dodge' | 'grab'
 
 export interface ThiefLook {
   /** How lit he is, 0–1. He fades in shadow but his eyes stay lit (History #17). */
@@ -54,6 +54,17 @@ export function glovesFor(pose: Pose, swing: number, climb: number): [number, nu
     }
     case 'slide':
       return [[-0.92, 0.3], [-0.62, 0.42]]
+    // Combat (first takes): his floating gloves do the hitting (History #55).
+    case 'jab':
+      return [[-0.62, 0.1], [1.02, -0.12]]
+    case 'cross':
+      return [[0.98, -0.04], [0.42, 0.24]]
+    case 'shove':
+      return [[0.88, -0.16], [0.94, 0.24]]
+    case 'dodge':
+      return [[-0.96, -0.04], [-0.7, 0.26]]
+    case 'grab':
+      return [[0.7, -0.36], [0.8, 0.1]]
     default:
       return [[-0.76 + swing * 0.08, 0.18 - Math.abs(swing) * 0.03], [0.76 - swing * 0.08, 0.18 - Math.abs(swing) * 0.03]]
   }

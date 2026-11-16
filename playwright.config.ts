@@ -7,7 +7,8 @@ export default defineConfig({
   // The game renders on the CPU in headless browsers, so give tests room and don't run too many at once.
   timeout: 60_000,
   expect: { timeout: 10_000 },
-  workers: 2,
+  // One at a time: the game renders on the CPU here, and timing windows (stuns, combos) need the frames.
+  workers: 1,
   use: {
     baseURL: `http://localhost:${PORT}`,
     trace: 'off',

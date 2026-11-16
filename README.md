@@ -2,7 +2,7 @@
 
 A side-on stealth game in the Stylised Geometry art style. The design lives in [`STEALTH_GAME_DESIGN.md`](STEALTH_GAME_DESIGN.md); the art style in [`stylised-geometry/`](stylised-geometry/).
 
-Right now it's one test room with the full thief in it: walking, sneaking, running, jumping, sliding, free climbing and blinking. There are no guards yet.
+Right now it's one test room with the full thief in it (walking, sneaking, running, jumping, sliding, free climbing and blinking) and three test guards to fight and take down. He's invulnerable for now.
 
 ## Playing
 
@@ -16,9 +16,13 @@ Right now it's one test room with the full thief in it: walking, sneaking, runni
 | Slide | S while running | Down while running | Pull the stick down while running |
 | Grab and let go | E | X | Grab |
 | Blink | Hold the right mouse button to aim, let go | Hold LT, aim with the right stick, let go | Drag out from Blink, let go; slide back onto it to cancel |
+| Attack | Left mouse button or F | Y | Attack |
+| Dodge | Q | RB | Dodge |
 | Pause | Esc | Start | Pause button |
 
-The pause menu has restart, full screen, a debug panel (also on the backtick key) and noise rings. Add `?touch=1` or `?touch=0` to the address to force the touch controls on or off.
+At a takedown or finisher (a power-blue marker over the guard), **tap Attack to knock out, hold it to kill**. Sneak attacks work from behind, dropping from a ceiling, leaping off a wall, or blinking at a guard. In a straight fight, three quick attacks (jab, cross, shove) stagger a guard for a finisher.
+
+The pause menu has restart, full screen, a debug panel (also on the backtick key), noise rings and sight cones. Add `?touch=1` or `?touch=0` to the address to force the touch controls on or off, or `?guards=0` for an empty room.
 
 ## Running it
 
