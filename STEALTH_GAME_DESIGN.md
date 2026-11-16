@@ -8,7 +8,7 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T13:32:49+00:00):**
+**Where the project stands (as of 2026-11-16T13:34:06+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -16,7 +16,7 @@ A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry**
 - Lyra is deploying the scaffold to Cloudflare Workers (History #14).
 - Designing the player: look settled (History #15–#25); climbing and ground movement settled (History #26, #28–#31); blink's rules and look settled (History #27, #32–#36).
 - Combat designed in three rounds (History #50–#61); details still open (§E).
-- Designing the guards: archetypes, sight, hearing, suspicion, searching and hiding spots settled (History #63–#72).
+- Designing the guards: archetypes, senses, suspicion, searching, hiding spots, each archetype's behaviour and their size settled (History #63–#76); their look is next.
 - **The full player is built** (History #37, #45, #46) in a test room, playable with keyboard and mouse, gamepad and touch, and merged to `main`. Lyra's first playtest: good overall; grip raised and blink loosened as a result (History #47, #48).
 
 **Stack:** React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js and Cloudflare Workers: Lyra's normal stack (History #3).
@@ -191,6 +191,10 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **On a noise, it depends how loud:** a quiet noise makes a guard stop and turn to look; a loud one sends it to investigate where it came from. Claude's recommendation, approved. *(2026-11-16T13:32:49+00:00 — History #70)*
 - **Hiding spots:** lockers and cupboards (step in, peek through the slats), under furniture (desks, beds, tables), behind cover (curtains, crates, coat racks: hidden from one side), and vents and ducts (crawlspaces only he fits through, hiding and a hidden route at once). *(2026-11-16T13:32:49+00:00 — History #71)*
 - **Found in a hiding spot: it depends what they know.** If a guard saw him go in, he's caught and has to fight or flee. If a guard is just checking, he can take them out from inside as they open it. Claude's recommendation, approved. *(2026-11-16T13:32:49+00:00 — History #72)*
+- **Watchmen: a mix of patrols and posts.** Some walk set routes, pausing to look around; some stand at posts. Levels decide which. Claude's recommendation, approved. *(2026-11-16T13:34:06+00:00 — History #73)*
+- **Lantern-bearers:** the lantern is a moving lamp, so getting close lights him up; they search with it, swinging it into dark corners and up at ceilings; and the lantern can be put out (knocked from their hand or snuffed), leaving them as blind in the dark as anyone, but alerted. Relighting lamps was not chosen. *(2026-11-16T13:34:06+00:00 — History #74)*
+- **The blind guard finds him by** much sharper hearing (further, and through walls more easily); hearing even sneaking within a short range; touch (bumping into each other means it knows exactly where he is); and remembering where sounds came from, going back to them to build a picture of where he's been. *(2026-11-16T13:34:06+00:00 — History #75)*
+- **Guards are about 1.25 times his size.** Barely bigger than him. *(2026-11-16T13:34:06+00:00 — History #76)*
 
 ### Platforms and input
 - **Keyboard, gamepad and touch, all from the start.** Lyra plays on a Pixel 10 Pro Fold, so the game has to work in portrait, in landscape and on the inner folding screen, as well as on desktop. *(2026-11-16T06:31:36+00:00 — History #39)*
@@ -258,7 +262,7 @@ Shortlisted for visual comparison (options, not decisions):
 2. **Everything about the game itself.**
 3. **Blink details** (#27, #32–#36, #48): whether 5 charges and a 6 S range hold up in proper levels; what counts as a thin wall; exactly what guards notice and from how far.
 4. **Combat details still open** (#50–#61): how many health pips; what attacks, combos, dodges, finishers, takedowns and the takedown marker look like; Attack and Dodge on the touch layout (the diamond has four buttons); how the gloves read as weapons when they vanish in the dark. Combat also needs guards to exist before it can be built or tested.
-5. **The player's size, in the game and next to the guards.** Decided when the guards are designed. Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
+5. **The player's size on screen.** ~~Next to the guards~~ (about 1.25×, #76). Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
 6. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). ~~physics~~ (Phaser Arcade, #40). Still open: anything server-side.
 
 ---
@@ -292,6 +296,7 @@ Shortlisted for visual comparison (options, not decisions):
 - ~~**A full-height wall takes longer to climb than his grip lasts.**~~ Fixed by the grip increase (#47): a full-height test wall now uses about half the meter. The rest ledge stays in the test room for trying the under-ledge climb.
 
 ### Implementation interpretations (technical, not design decisions — flag if wrong)
+- **Guard size, 1.25×,** is read as overall scale: roughly a quarter taller (and wider) than him. Flag if Lyra meant height only.
 - The first guiding principles in §A and the "explain before adding" and merge-to-`main` standing orders in §H were carried over from Lyra's previous design document rather than restated for this project. The three principle sections after them in §A are Lyra's, written for this project (#11–#13).
 - The art style zip was committed unpacked, as the `stylised-geometry/` folder, rather than as the `.zip` file itself, since the guide is written to be copied into a project as a folder.
 - **Linter: oxlint, not ESLint.** The scaffold plan said ESLint from Vite's template, but the template now ships oxlint, so that's what's used.
@@ -390,6 +395,10 @@ Shortlisted for visual comparison (options, not decisions):
 | 70 | 2026-11-16T13:32:49+00:00 | Guards | Quiet noise: turn and look; loud noise: go and investigate (Claude's recommendation, approved). |
 | 71 | 2026-11-16T13:32:49+00:00 | Environment | Hiding spots: lockers and cupboards, under furniture, behind cover, vents and ducts. |
 | 72 | 2026-11-16T13:32:49+00:00 | Guards | Found hiding: caught if they saw him go in; if they're just checking, he can take them out from inside (Claude's recommendation, approved). |
+| 73 | 2026-11-16T13:34:06+00:00 | Guards | Watchmen: a mix of patrol routes (with pauses) and posts (Claude's recommendation, approved). |
+| 74 | 2026-11-16T13:34:06+00:00 | Guards | Lantern-bearers: the lantern lights him when close, they search with it, and it can be put out. |
+| 75 | 2026-11-16T13:34:06+00:00 | Guards | Blind guard: much sharper hearing, hears sneaking up close, touch, remembers where sounds came from. |
+| 76 | 2026-11-16T13:34:06+00:00 | Guards | Guards are about 1.25 times his size. |
 
 ---
 
