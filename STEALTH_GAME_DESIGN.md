@@ -8,7 +8,7 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16), **breaking out of a facility**: a clinical test facility, our own take on that kind of place (History #77, #78). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T13:45:32+00:00):**
+**Where the project stands (as of 2026-11-16T13:47:00+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -16,7 +16,7 @@ A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry**
 - Lyra is deploying the scaffold to Cloudflare Workers (History #14).
 - Designing the player: look settled (History #15–#25); climbing and ground movement settled (History #26, #28–#31); blink's rules and look settled (History #27, #32–#36).
 - Combat designed in three rounds (History #50–#61); details still open (§E).
-- Designing the guards: archetypes, senses, suspicion, searching, hiding spots, each archetype's behaviour and their size settled (History #63–#80); staff watchman and blind guard, robot torch-bearer on a wheel (History #81); the rest of their look is being refined in the Guard Line-up.
+- Designing the guards: archetypes, senses, suspicion, searching, hiding spots, each archetype's behaviour and their size settled (History #63–#80); staff watchman and blind guard, robot torch-bearer on a wheel that can't do stairs, and their look approved (History #81–#84).
 - **The full player is built** (History #37, #45, #46) in a test room, playable with keyboard and mouse, gamepad and touch, and merged to `main`. Lyra's first playtest: good overall; grip raised and blink loosened as a result (History #47, #48).
 
 **Stack:** React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js and Cloudflare Workers: Lyra's normal stack (History #3).
@@ -201,6 +201,8 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **The lantern becomes a torch:** a beam rather than a glow, so the torch-bearer lights whatever they point it at. Same mechanics as #74. *(2026-11-16T13:37:20+00:00 — History #80)*
 - **Which are staff and which are machines:** the **watchman** and the **blind guard** are security staff; the **torch-bearer** is a robot, **on a single wheel instead of legs**. Picked from the Guard Line-up. *(2026-11-16T13:43:07+00:00 — History #81)*
 - **The blind guard's eyes are shut while it's calm, and open milky when it responds** (suspicious or alerted): pale, with no pupils. Chosen over a blindfold and over black eyes. *(2026-11-16T13:45:32+00:00 — History #82)*
+- **The torch-bearer's wheel can't do stairs; that's its weakness.** *(2026-11-16T13:47:00+00:00 — History #83)*
+- **The rest of the guards' look is approved as drawn in the Guard Line-up:** the watchman a tall rectangle in a steel-teal jacket with a circle head under a flat cap; the torch-bearer a wide gunmetal chassis with a screen face on one wheel, the torch in a metal hand; the blind guard a rounded plum capsule; faces changing with state (calm flat and bored, suspicious with a raised brow, alerted wide-eyed and open-mouthed; the robot's screen changing colour and shape the same way); the marker as an amber "?" badge filling, then an orange "!" badge; and the torch's look. *(2026-11-16T13:47:00+00:00 — History #84)*
 
 ### Platforms and input
 - **Keyboard, gamepad and touch, all from the start.** Lyra plays on a Pixel 10 Pro Fold, so the game has to work in portrait, in landscape and on the inner folding screen, as well as on desktop. *(2026-11-16T06:31:36+00:00 — History #39)*
@@ -271,7 +273,7 @@ Shortlisted for visual comparison (options, not decisions):
 3. **How a clinical facility fits stealth that runs on darkness** (bright, clean test spaces against the dark): left open on purpose.
 4. **Blink details** (#27, #32–#36, #48): whether 5 charges and a 6 S range hold up in proper levels; what counts as a thin wall; exactly what guards notice and from how far.
 5. **Combat details still open** (#50–#61): how many health pips; what attacks, combos, dodges, finishers, takedowns and the takedown marker look like; Attack and Dodge on the touch layout (the diamond has four buttons); how the gloves read as weapons when they vanish in the dark. Combat also needs guards to exist before it can be built or tested.
-6. **Guard details still open** (#63–#82): ~~the blind guard's face~~ (#82); what a wheel means for where the torch-bearer can go (stairs, ladders, drops); everything else about their look from the Guard Line-up (shapes, colours, faces per state, the marker) until approved.
+6. **Guard details still open** (#63–#84): ~~the blind guard's face~~ (#82); ~~stairs for the wheel~~ (can't, #83), though ladders and drops aren't decided; ~~their look~~ (#84). Still to come: patrol routes and posts in real levels, and the numbers (how far they see and hear, how fast suspicion builds, how long they search), which are tuning.
 7. **The player's size on screen.** ~~Next to the guards~~ (about 1.25×, #76). Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
 8. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). ~~physics~~ (Phaser Arcade, #40). Still open: anything server-side.
 
@@ -306,6 +308,7 @@ Shortlisted for visual comparison (options, not decisions):
 - ~~**A full-height wall takes longer to climb than his grip lasts.**~~ Fixed by the grip increase (#47): a full-height test wall now uses about half the meter. The rest ledge stays in the test room for trying the under-ledge climb.
 
 ### Implementation interpretations (technical, not design decisions — flag if wrong)
+- **The guards' sight cones and hearing rings** in the Guard Line-up were drawn to explain the senses; whether players see them in the game hasn't been decided.
 - **Guard size, 1.25×,** is read as overall scale: roughly a quarter taller (and wider) than him. Flag if Lyra meant height only.
 - The first guiding principles in §A and the "explain before adding" and merge-to-`main` standing orders in §H were carried over from Lyra's previous design document rather than restated for this project. The three principle sections after them in §A are Lyra's, written for this project (#11–#13).
 - The art style zip was committed unpacked, as the `stylised-geometry/` folder, rather than as the `.zip` file itself, since the guide is written to be copied into a project as a folder.
@@ -415,6 +418,8 @@ Shortlisted for visual comparison (options, not decisions):
 | 80 | 2026-11-16T13:37:20+00:00 | Guards | The lantern-bearer's lantern becomes a torch: a beam, not a glow. |
 | 81 | 2026-11-16T13:43:07+00:00 | Guards | Watchman and blind guard are security staff; the torch-bearer is a robot on a single wheel instead of legs. |
 | 82 | 2026-11-16T13:45:32+00:00 | Guards | Blind guard: eyes shut while calm, opening milky (no pupils) when it responds. |
+| 83 | 2026-11-16T13:47:00+00:00 | Guards | The torch-bearer's wheel can't do stairs: its weakness. |
+| 84 | 2026-11-16T13:47:00+00:00 | Guards | The rest of the guards' look approved as drawn in the Guard Line-up (shapes, colours, faces by state, marker, torch). |
 
 ---
 
