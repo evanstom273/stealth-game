@@ -8,7 +8,7 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T13:14:39+00:00):**
+**Where the project stands (as of 2026-11-16T13:15:23+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -145,10 +145,11 @@ Don't rush through the questions simply to get to implementation. The design pro
 ### Player movement
 *Lyra calls the thief "he". Free climbing and blink are Lyra's examples of how she wants him to move; the rest is refined from them.*
 - **Free climbing.** He can climb anywhere: across walls, across ceilings, everything. *(2026-11-16T06:16:30+00:00 — History #26)*
-  - **Limits** (so it can't get him past everything): **grip** (he can only hold on so long, especially upside down on ceilings, and recovers on floors and ledges); **slow and noisy** (climbing is slower than running, and some surfaces make noise guards can hear); **guards look up** (suspicious guards check ceilings and high walls, so up isn't automatically safe). Unclimbable surfaces, Claude's recommendation, were not chosen. *(2026-11-16T06:19:39+00:00 — History #28)*
+  - **Limits** (so it can't get him past everything): **grip** (he can only hold on so long, ~~especially upside down on ceilings,~~ and recovers on floors and ledges; walls and ceilings drain at the same rate since #49); **slow and noisy** (climbing is slower than running, and some surfaces make noise guards can hear); **guards look up** (suspicious guards check ceilings and high walls, so up isn't automatically safe). Unclimbable surfaces, Claude's recommendation, were not chosen. *(2026-11-16T06:19:39+00:00 — History #28)*
   - **Hangs by his hands.** Upright on walls with the gloves gripping; hangs from ceilings by his hands with his body dangling. The gloves are his climbing tool. Claude's recommendation, approved. *(2026-11-16T06:19:39+00:00 — History #29)*
   - **Controls: press to grab, press to let go.** A toggle rather than holding a button. *(2026-11-16T06:19:39+00:00 — History #30)*
-  - **Much more grip.** After Lyra's first playtest the meter was far too small: she could barely climb one test wall, which would make climbing in real levels hard. Raised from 6 s on walls and 3 s on ceilings to 15 s and 7.5 s (Claude's pick of how much, keeping ceilings at half the wall time). A full-height test wall now uses about half the meter. *(2026-11-16T13:14:39+00:00 — History #47)*
+  - **Much more grip.** After Lyra's first playtest the meter was far too small: she could barely climb one test wall, which would make climbing in real levels hard. Raised from 6 s on walls and 3 s on ceilings to 15 s and ~~7.5 s~~ (Claude's pick of how much; ceilings were kept at half the wall time until #49 made them equal). A full-height test wall now uses about half the meter. *(2026-11-16T13:14:39+00:00 — History #47)*
+  - **Ceilings drain grip at the same rate as walls**: 15 s either way. The faster drain upside down came from the wording Claude wrote for the grip option ("especially upside down on ceilings"), not from a choice Lyra made, so it's gone. *(2026-11-16T13:15:23+00:00 — History #49)*
 - **Blink.** He has a blink ability. *(2026-11-16T06:16:30+00:00 — History #27)*
   - **Aimed, and it can go through thin walls**, doors and floors. Chosen over line-of-sight only (Claude's recommendation) and a fixed short hop. *(2026-11-16T06:27:40+00:00 — History #32)*
   - **Charges that work like spells in Dark Souls:** a set number of blinks that only reset at checkpoints, not over time. *(2026-11-16T06:27:40+00:00 — History #33)*
@@ -232,7 +233,7 @@ Shortlisted for visual comparison (options, not decisions):
 
 ## F. Implementation Status
 
-*Updated 2026-11-16T13:14:39+00:00.*
+*Updated 2026-11-16T13:15:23+00:00.*
 
 | Feature | Status | Notes |
 |---|---|---|
@@ -242,7 +243,7 @@ Shortlisted for visual comparison (options, not decisions):
 | Test room | Built | One room with everything to try: a lit start with a stand-in checkpoint and a rest ledge halfway up the wall, ledges, a thin wall to blink through or climb over, a thick hanging block with a 0.9 S gap only a slide fits under, a metal wall and metal ledge (loud to climb), a second checkpoint, and three lamps with dark stretches between them. `src/game/room/testRoom.ts`. *(2026-11-16T07:24:16+00:00)* |
 | The thief, in the game | Built | Drawn from shapes every frame at the screen's density, exactly as approved (No. 7 body, mask with ties, smirk, dark gloves). Fades with lamp light while his eyes stay lit; ties hang at rest, trail with speed and hang down while he climbs; squash and stretch on jumps and landings; dust puffs. Poses: standing, in the air, sliding, on a wall, hanging from a ceiling. *(2026-11-16T07:24:16+00:00)* |
 | Ground movement | Built | Walk, sneak (toggle), run (held), jump (hold for higher, with a little forgiveness either side of leaving the ground), slide from a run. Under something low the slide becomes a crawl until there's room to stand. *(2026-11-16T07:24:16+00:00)* |
-| Climbing | Built | Press to grab, press to let go. Walls and ceilings, round corners, along undersides and up onto ledges. Grip drains (15 s on walls, 7.5 s on ceilings, #47) and recovers on the ground; at zero he drops. Jump kicks off a wall. Slower than running; noisy on metal. *(2026-11-16T07:24:16+00:00)* |
+| Climbing | Built | Press to grab, press to let go. Walls and ceilings, round corners, along undersides and up onto ledges. Grip drains (15 s on walls and ceilings alike, #47, #49) and recovers on the ground; at zero he drops. Jump kicks off a wall. Slower than running; noisy on metal. *(2026-11-16T07:24:16+00:00)* |
 | Blink | Built | Aimed with a power-blue line, range ring and landing ghost. Goes through thin walls and floors, stops short of thick ones. Lands standing, gripping a wall or ceiling, or in the air. 5 charges (#48), refilled only at the stand-in checkpoints. Range 6 S. The dust effect, and a loud noise at both ends. *(2026-11-16T07:24:16+00:00)* |
 | Light and darkness | Built | Darkness over the room with the lamps' pools cut out of it, his vision pool (lets you see, never lights him), lit edges on everything standable, layered lamp glows. *(2026-11-16T07:24:16+00:00)* |
 | Noise | Built, nothing listens yet | Silent sneaking and standing, soft walking, loud running, landings by how hard he hits, loud on metal while climbing, loud blinks. No guards yet, so it shows only as rings when switched on in the pause menu. *(2026-11-16T07:24:16+00:00)* |
@@ -333,6 +334,7 @@ Shortlisted for visual comparison (options, not decisions):
 | 46 | 2026-11-16T06:52:36+00:00 | Workflow | Full-player build plan approved, with Claude's starting values to tune in play. |
 | 47 | 2026-11-16T13:14:39+00:00 | Player | Grip raised after Lyra's first playtest: 15 s on walls, 7.5 s on ceilings (was 6 s and 3 s; amount picked by Claude). |
 | 48 | 2026-11-16T13:14:39+00:00 | Player | Blink, for now: 5 charges (was 3), range 6 S (was 5 S), after Lyra's first playtest. Revisit in proper levels. |
+| 49 | 2026-11-16T13:15:23+00:00 | Player | Ceilings drain grip at the same rate as walls (15 s). Supersedes the "especially upside down" part of #28 and the half-rate ceilings in #47. |
 
 ---
 

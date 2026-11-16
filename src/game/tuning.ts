@@ -60,8 +60,9 @@ export const CLIMB = {
 
 export const GRIP = {
   // Lyra's first playtest: 6 s and 3 s were far too little to climb a level (History #47).
+  // Ceilings drain at the same rate as walls (History #49).
   wallSeconds: 15,
-  ceilingSeconds: 7.5,
+  ceilingSeconds: 15,
   recoverSeconds: 1.5,
 }
 
