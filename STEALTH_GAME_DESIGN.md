@@ -8,7 +8,7 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16), **breaking out of a facility**: a clinical test facility, our own take on that kind of place (History #77, #78). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T13:43:07+00:00):**
+**Where the project stands (as of 2026-11-16T13:45:32+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -200,6 +200,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **Guards are both security staff and machines.** Which archetypes are which: see #81. *(2026-11-16T13:37:20+00:00 — History #79)*
 - **The lantern becomes a torch:** a beam rather than a glow, so the torch-bearer lights whatever they point it at. Same mechanics as #74. *(2026-11-16T13:37:20+00:00 — History #80)*
 - **Which are staff and which are machines:** the **watchman** and the **blind guard** are security staff; the **torch-bearer** is a robot, **on a single wheel instead of legs**. Picked from the Guard Line-up. *(2026-11-16T13:43:07+00:00 — History #81)*
+- **The blind guard's eyes are shut while it's calm, and open milky when it responds** (suspicious or alerted): pale, with no pupils. Chosen over a blindfold and over black eyes. *(2026-11-16T13:45:32+00:00 — History #82)*
 
 ### Platforms and input
 - **Keyboard, gamepad and touch, all from the start.** Lyra plays on a Pixel 10 Pro Fold, so the game has to work in portrait, in landscape and on the inner folding screen, as well as on desktop. *(2026-11-16T06:31:36+00:00 — History #39)*
@@ -270,7 +271,7 @@ Shortlisted for visual comparison (options, not decisions):
 3. **How a clinical facility fits stealth that runs on darkness** (bright, clean test spaces against the dark): left open on purpose.
 4. **Blink details** (#27, #32–#36, #48): whether 5 charges and a 6 S range hold up in proper levels; what counts as a thin wall; exactly what guards notice and from how far.
 5. **Combat details still open** (#50–#61): how many health pips; what attacks, combos, dodges, finishers, takedowns and the takedown marker look like; Attack and Dodge on the touch layout (the diamond has four buttons); how the gloves read as weapons when they vanish in the dark. Combat also needs guards to exist before it can be built or tested.
-6. **Guard details still open** (#63–#81): the blind guard's face (blindfold or eyes shut); what a wheel means for where the torch-bearer can go (stairs, ladders, drops); everything else about their look from the Guard Line-up (shapes, colours, faces per state, the marker) until approved.
+6. **Guard details still open** (#63–#82): ~~the blind guard's face~~ (#82); what a wheel means for where the torch-bearer can go (stairs, ladders, drops); everything else about their look from the Guard Line-up (shapes, colours, faces per state, the marker) until approved.
 7. **The player's size on screen.** ~~Next to the guards~~ (about 1.25×, #76). Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
 8. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). ~~physics~~ (Phaser Arcade, #40). Still open: anything server-side.
 
@@ -413,6 +414,7 @@ Shortlisted for visual comparison (options, not decisions):
 | 79 | 2026-11-16T13:37:20+00:00 | Guards | Guards are both security staff and machines (which archetype is which undecided). |
 | 80 | 2026-11-16T13:37:20+00:00 | Guards | The lantern-bearer's lantern becomes a torch: a beam, not a glow. |
 | 81 | 2026-11-16T13:43:07+00:00 | Guards | Watchman and blind guard are security staff; the torch-bearer is a robot on a single wheel instead of legs. |
+| 82 | 2026-11-16T13:45:32+00:00 | Guards | Blind guard: eyes shut while calm, opening milky (no pupils) when it responds. |
 
 ---
 
