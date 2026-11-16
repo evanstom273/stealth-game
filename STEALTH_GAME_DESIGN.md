@@ -6,9 +6,10 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 ## A. Project Overview
 
-A **side-on stealth game** (History #1, #15, #91), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16), **breaking out of a facility**: a clinical test facility, our own take on that kind of place (History #77, #78). Working title: none yet; the repository is `stealth-game`.
+A **first-person stealth game**, its characters standing in a 3D world as flat billboards, Daggerfall-style (History #1, #92; it began side-on, #15, #91), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16), **breaking out of a facility**: a clinical test facility, our own take on that kind of place (History #77, #78). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T15:15:52+00:00):**
+**Where the project stands (as of 2026-11-16T17:32:05+00:00):**
+- **Switched to first person** (History #92), after the Billboard Corridor mock-up. Everything built so far is side-on (Phaser, 2D) and stays in the repository as reference. The §B decisions made for side-on stand as intent but are under review (§E, question 9).
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -131,9 +132,12 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 ## B. Confirmed Design Decisions
 
+*Since History #92 the game is first person. Decisions below that were made for the side-on view (movement and climbing, the camera, the touch layout, the takedown animations) stand as intent but are under review: §E, question 9.*
+
 ### Concept
 - **A stealth game.** *(2026-11-16T05:36:10+00:00 — History #1)*
-- **Side-on view**, like a platformer. The Stylised Geometry guide was built and proven side-on; its top-down and isometric rules are untested. Claude's recommendation, approved. *(2026-11-16T05:57:44+00:00 — History #15)*
+- ~~**Side-on view**, like a platformer. The Stylised Geometry guide was built and proven side-on; its top-down and isometric rules are untested. Claude's recommendation, approved.~~ *(2026-11-16T05:57:44+00:00 — History #15; kept by #91; superseded by #92)*
+- **First person, with the characters as billboards** in a 3D world, as in the Billboard Corridor mock-up. Lyra preferred it to side-on by a long way. *(2026-11-16T17:32:05+00:00 — History #92)*
 - **He's breaking out of a facility, not into somewhere.** A clinical test facility: chambers, testing, being watched, in the spirit of the game Portal's setting but our own take, not its look. Lyra is still working out the story. *(2026-11-16T13:37:20+00:00 — History #77)*
 - **He's still a thief**, just breaking out rather than in. *(2026-11-16T13:37:20+00:00 — History #78)*
 
@@ -247,6 +251,20 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 ## C. Current Development Scope
 
+**Switched to first person** (History #92, 2026-11-16T17:32:05+00:00). Next: work out what carries over from the side-on design (§E, question 9) before building anything in the new view.
+
+**Billboard Corridor** (Artifact, 2026-11-16T17:32:05+00:00): https://claude.ai/artifact/AHAgyvbD5BFNBXTpyyiF9H. Saved as `prototypes/billboard-corridor/index.html`. A first-person test-wing corridor in Three.js:
+- **What's in it:** you play the thief, seen as his floating gloves (click or F to punch). A staff watchman at an alcove post turns every 2.4 s, another patrols the corridor, and a second thief walks round a pillar in a side room.
+- **Billboards:** every character is an upright billboard that turns to face you. It shows its front, side or back drawing depending on where you stand, and is redrawn each frame for how lit it is.
+- **Light:** lamps leave dark stretches, with fog into the distance.
+- **Claude's choices, up for change:**
+  - the watchman's front and back views, including the cap's peak from each side
+  - billboards that turn only left and right, with looking up and down limited by default
+  - the world's ink lines baked into its tiles, so they thin with distance like the characters' outlines
+  - the clinical look: pale panels, a teal rail, warm lamps
+  - a knuckle line on the gloves
+  - the second thief, there so you can see his billboard
+
 The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink's rules and look settled (#27, #32–#36). First playable piece: the full player (#37); plan and UI approved (#45, #46). **Built and merged to `main`** (see §F): Lyra's first playtest on the Fold went well; grip was far too short and blink a little tight, now raised (#47, #48). Next: test again, keep refining (Depth Before Breadth).
 
 **Combat test build** (History #85), built and merged. **Lyra's first combat playtest** (2026-11-16T14:30:22+00:00): respawning test guards are fine for now, but three things don't read: **how to do a takedown** (the marker doesn't say what to press, or that tap and hold differ); **whether you knocked a guard out or killed it**; and **takedowns from a ceiling or wall**, which are over too fast to see. Options for all three are in the Takedown Studies; Lyra picked 1D, 2B for knockouts, 2C for kills and 3B (History #86–#89). **Built and merged to `main`** (History #90, see §F). Next: Lyra plays it again.
@@ -287,6 +305,10 @@ Shortlisted for visual comparison (options, not decisions):
 6. **Guard details still open** (#63–#84): ~~the blind guard's face~~ (#82); ~~stairs for the wheel~~ (can't, #83), though ladders and drops aren't decided; ~~their look~~ (#84). Still to come: patrol routes and posts in real levels, and the numbers (how far they see and hear, how fast suspicion builds, how long they search), which are tuning.
 7. **The player's size on screen.** ~~Next to the guards~~ (about 1.25×, #76). Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
 8. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). ~~physics~~ (Phaser Arcade, #40). Still open: anything server-side.
+9. **What carries over from side-on** (#92).
+   - **Likely to carry:** his and the guards' look; light deciding how far guards see him; noise; the guard archetypes, senses, suspicion and searching; knockout or kill with the outlined prompt; blink, though aiming and thin walls need first-person rules.
+   - **Needs rethinking:** climbing walls and especially ceilings; sliding and crawling; the camera and the touch layout; the takedown animations, including the pounce; the engine. Phaser is 2D, and the mock-up uses Three.js.
+   - **New:** how he's seen when he's mostly two gloves; a light meter, since he can't see himself; the gloves vanishing in the dark, which first person makes much more obvious.
 
 ---
 
@@ -316,6 +338,7 @@ Shortlisted for visual comparison (options, not decisions):
 | Deployment | In progress (Lyra) | Lyra deploying the scaffold to Cloudflare Workers. Not yet confirmed live. *(2026-11-16T05:51:48+00:00)* |
 
 ### Known issues and limitations
+- **Everything built is side-on** (#92). Nothing has moved to first person yet. The side-on build stays as reference until §E question 9 is worked through.
 - **Not yet played on the Fold.** Everything was tested in a headless browser, which renders on the CPU at about 20 fps, so real frame rate and feel on the phone are unknown. He and the darkness are redrawn on small canvases every frame; that's the first place to look if it stutters.
 - **Gamepad support is untested** with a real pad; the headless browser has none.
 - **The gloves barely show against the dark**, as seen in the Thief Mask Fitting. Nothing has been decided about it, and it matters more now they're his weapons (#55): his punches are hard to see.
@@ -450,6 +473,7 @@ Shortlisted for visual comparison (options, not decisions):
 | 89 | 2026-11-16T14:31:28+00:00 | Combat | Ceiling and wall takedowns: the pounce, with wind-up, afterimages, hit-stop, ring and a moment pinning the guard; no takedown cam (3B). |
 | 90 | 2026-11-16T15:15:52+00:00 | Workflow | Claude's plan for building the takedown picks approved, including its default that a guard can't turn round once a takedown on it is committed. |
 | 91 | 2026-11-16T17:04:21+00:00 | Concept | Stays a side-on stealth game. Pivoting to a 3/4 GTA-style sandbox was considered after the Three-Quarter Block mock-up (`prototypes/three-quarter-block/`) and turned down; the city becomes its own project later. |
+| 92 | 2026-11-16T17:32:05+00:00 | Concept | The game becomes first person, with the characters as billboards in a 3D world (the Billboard Corridor mock-up, `prototypes/billboard-corridor/`). Supersedes side-on (#15, #91). Side-on decisions stand as intent but are under review. |
 
 ---
 

@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Billboard Corridor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Standalone: the reset the artifact host would otherwise supply. */
+body { margin: 0; }
+[hidden] { display: none !important; }
+/* Layout: a slim header, the corridor as one full-width first-person stage, controls and notes under it. */
+:root {
+  --bg: #eceef2;
+  --panel: #ffffff;
+  --fg: #1b1f27;
+  --muted: #5d6573;
+  --line: #d3d8e0;
+  --accent: #2c7fb8;
+  --chip: #e3e8ef;
+  --font-ui: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #111319; --panel: #191c24; --fg: #e8eaf0; --muted: #9aa3b2; --line: #2a2f3b; --accent: #8fd3ff; --chip: #232835; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #111319; --panel: #191c24; --fg: #e8eaf0; --muted: #9aa3b2; --line: #2a2f3b; --accent: #8fd3ff; --chip: #232835; color-scheme: dark; }
+
+body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 14px 32px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 12px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+h1 { font-size: 1.35rem; font-weight: 800; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); font-size: 0.92rem; max-width: 72ch; }
+
+.stage { position: relative; height: clamp(420px, 72dvh, 780px); border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: #07080c; touch-action: none; user-select: none; -webkit-user-select: none; cursor: crosshair; }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hint { position: absolute; left: 12px; top: 10px; padding: 4px 10px; border-radius: 8px; background: rgba(20,22,30,.62); color: #f2f2f2; font: 500 0.74rem var(--font-mono); pointer-events: none; max-width: calc(100% - 24px); }
+.stick { position: absolute; width: 96px; height: 96px; margin: -48px 0 0 -48px; border-radius: 50%; border: 2px solid rgba(255,255,255,.55); background: rgba(0,0,0,.2); pointer-events: none; }
+.stick i { position: absolute; left: 50%; top: 50%; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; background: rgba(255,255,255,.85); }
+.punch { position: absolute; right: calc(14px + env(safe-area-inset-right, 0px)); bottom: 14px; width: 68px; height: 68px; border-radius: 50%; border: 2px solid rgba(255,255,255,.6); background: rgba(20,22,30,.5); color: #fff; font: 600 0.8rem var(--font-ui); }
+.loading { position: absolute; inset: 0; display: grid; place-items: center; color: #c9d2d6; font: 500 0.9rem var(--font-mono); pointer-events: none; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.seg { display: inline-flex; background: var(--chip); border-radius: 10px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: transparent; color: var(--fg); font: 600 0.86rem var(--font-ui); padding: 5px 11px; border-radius: 8px; cursor: pointer; }
+.seg button[aria-checked="true"] { background: var(--panel); box-shadow: 0 1px 2px rgba(0,0,0,.15); color: var(--accent); }
+.toggle { display: inline-flex; align-items: center; gap: 7px; font-size: 0.9rem; cursor: pointer; }
+.toggle input { width: 17px; height: 17px; accent-color: var(--accent); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+.notes section { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; min-width: 0; }
+.notes h2 { font-size: 0.95rem; margin: 0 0 6px; }
+.notes ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.9rem; }
+.notes li + li { margin-top: 4px; }
+kbd { font: 500 0.76rem var(--font-mono); background: var(--chip); color: var(--fg); border-radius: 5px; padding: 1px 5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Billboard Corridor</h1>
+    <p>Stylised Geometry in first person: the characters stand up as flat billboards in a 3D facility corridor, each switching between its front, side and back drawing depending on where you are.</p>
+  </header>
+
+  <div class="stage" id="stage">
+    <canvas id="gl" aria-label="A dark facility corridor in first person, with guards and the thief drawn as flat billboards"></canvas>
+    <canvas id="hud" aria-hidden="true"></canvas>
+    <div class="loading" id="loading">Loading Three.js…</div>
+    <div class="hint" id="hint">Click to look with the mouse · <kbd>WASD</kbd> move · <kbd>Shift</kbd> run · click or <kbd>F</kbd> punch · <kbd>Esc</kbd> lets go of the mouse</div>
+    <div class="stick" id="stick" hidden><i></i></div>
+    <button class="punch" id="punchBtn" type="button" hidden>Punch</button>
+  </div>
+
+  <div class="controls">
+    <div class="group">
+      <span class="label" id="pitchLabel">Look up and down</span>
+      <div class="seg" role="radiogroup" aria-labelledby="pitchLabel" id="pitchSeg">
+        <button type="button" role="radio" aria-checked="true" data-pitch="limited" id="p-limited">Limited</button>
+        <button type="button" role="radio" aria-checked="false" data-pitch="free" id="p-free">Free</button>
+      </div>
+    </div>
+    <label class="toggle"><input type="checkbox" id="labels"> Label which drawing each one shows</label>
+  </div>
+
+  <div class="notes">
+    <section>
+      <h2>What to try</h2>
+      <ul>
+        <li>Watch the guard in the alcove: it turns every few seconds, and its drawing switches between side and front as it does.</li>
+        <li>Let the patrolling guard walk past you, then follow it: front as it comes, side as it passes, back as it goes.</li>
+        <li>Walk round the pillar in the side room while the thief does his loop, through the lamp's light and out into the dark, where only his eyes are left.</li>
+        <li>Switch <strong>Look up and down</strong> to Free and look down at someone up close: that's when a billboard shows it's a flat card.</li>
+        <li>Punch: the floating gloves are your hands. In the dark they nearly vanish, which is the same open problem as in the stealth game.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Claude's choices, up for change</h2>
+      <ul>
+        <li>The watchman's front and back views (the game only has its side view), including how the cap's peak looks from each.</li>
+        <li>Billboards turn left and right only, like Daggerfall's and Doom's; looking up and down is limited by default.</li>
+        <li>The world's ink lines baked into its tiles, so they thin with distance the same way the characters' outlines do.</li>
+        <li>A clinical test-wing look: pale panels, a teal rail, pools of lamp light with dark stretches between.</li>
+        <li>A second copy of the thief, so you can see his billboard while you play as him.</li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js'
+import { mergeGeometries } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/utils/BufferGeometryUtils.js'
+
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+const isTouch = window.matchMedia('(any-pointer: coarse)').matches
+const INK = '#1d2230'
+
+// ---------- The map: one unit is S, his height unit. Tiles are 1.6 S. ----------
+const T = 1.6, WALL_H = 3.2, EYE = 1.05
+const MAP = [
+  '########################',
+  '##########...###########',
+  '##########...###########',
+  '#......................#',
+  '#......................#',
+  '#......................#',
+  '########...#############',
+  '#####.........##########',
+  '#####.........##########',
+  '#####...##....##########',
+  '#####...##....##########',
+  '#####.........##########',
+  '########################',
+]
+const ROWS = MAP.length, COLS = MAP[0].length
+const wallAt = (c, r) => r < 0 || r >= ROWS || c < 0 || c >= COLS || MAP[r][c] === '#'
+const tileX = (c) => c * T + T / 2, tileZ = (r) => r * T + T / 2
+const LAMPS = [[3, 4], [11, 1], [20, 4], [6, 8]].map(([c, r]) => ({ x: tileX(c), z: tileZ(r) }))
+
+// ---------- Textures: flat fills with the ink lines baked in ----------
+function canvasTex(w, h, paint) {
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h
+  const g = cv.getContext('2d'); paint(g, w, h)
+  const tex = new THREE.CanvasTexture(cv)
+  tex.colorSpace = THREE.SRGBColorSpace
+  tex.anisotropy = 8
+  return tex
+}
+const floorTex = canvasTex(128, 128, (g, w, h) => {
+  g.fillStyle = '#8c979c'; g.fillRect(0, 0, w, h)
+  g.strokeStyle = 'rgba(29,34,48,0.18)'; g.lineWidth = 2; g.strokeRect(20, 20, w - 40, h - 40)
+  g.strokeStyle = INK; g.lineWidth = 6; g.strokeRect(0, 0, w, h)
+})
+const ceilTex = canvasTex(128, 128, (g, w, h) => {
+  g.fillStyle = '#5b656c'; g.fillRect(0, 0, w, h)
+  g.strokeStyle = INK; g.lineWidth = 6; g.strokeRect(0, 0, w, h)
+})
+const paintWall = (sign) => (g, w, h) => {
+  // 1.6 S wide by 3.2 S tall: pale panel, a teal rail at hip height, a dark skirting, ink on every edge.
+  const u = h / 3.2
+  g.fillStyle = '#cdd5d9'; g.fillRect(0, 0, w, h)
+  g.fillStyle = '#3fa7a0'; g.fillRect(0, h - 1.15 * u, w, 0.14 * u)
+  g.fillStyle = '#4f5d64'; g.fillRect(0, h - 0.24 * u, w, 0.24 * u)
+  g.strokeStyle = INK; g.lineWidth = 3
+  g.beginPath(); g.moveTo(0, h - 1.15 * u); g.lineTo(w, h - 1.15 * u); g.moveTo(0, h - 1.01 * u); g.lineTo(w, h - 1.01 * u); g.moveTo(0, h - 0.24 * u); g.lineTo(w, h - 0.24 * u); g.stroke()
+  g.strokeStyle = 'rgba(29,34,48,0.22)'; g.lineWidth = 2; g.beginPath(); g.moveTo(0, 0.9 * u); g.lineTo(w, 0.9 * u); g.stroke()
+  if (sign) {
+    g.fillStyle = '#2e5d8a'; g.fillRect(w * 0.12, 1.15 * u, w * 0.76, 0.6 * u)
+    g.strokeStyle = INK; g.lineWidth = 4; g.strokeRect(w * 0.12, 1.15 * u, w * 0.76, 0.6 * u)
+    g.fillStyle = '#ffffff'; g.font = `800 ${0.2 * u}px Outfit, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'
+    g.fillText('TEST WING', w / 2, 1.33 * u); g.fillText('B', w / 2, 1.57 * u)
+  }
+  g.strokeStyle = INK; g.lineWidth = 6; g.strokeRect(0, 0, w, h)
+}
+const wallTex = canvasTex(128, 256, paintWall(false))
+const signTex = canvasTex(128, 256, paintWall(true))
+
+// ---------- The thief, from the game's thiefArt.ts, with front and back views ----------
+const HERO = [242, 242, 242], TINT = [217, 219, 232], ROOM = [20, 20, 28], FOOT = [42, 42, 58]
+const KIT = '#20202c', K = 0.68
+const mix = (a, b, t) => `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(',')})`
+const hexRgb = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]
+const TRAP = [[-0.32, -0.12], [0.32, -0.12], [0.5, 0.5], [-0.5, 0.5]]
+function rr(ctx, x, y, w, h, r) {
+  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r)
+  ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h); ctx.lineTo(x + r, y + h)
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r); ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath()
+}
+function tie(ctx, x, y, deg, len) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate((deg * Math.PI) / 180)
+  ctx.beginPath(); ctx.moveTo(0, -0.032); ctx.lineTo(len, -0.024); ctx.lineTo(len - 0.045, 0); ctx.lineTo(len, 0.024); ctx.lineTo(0, 0.032); ctx.closePath()
+  ctx.fillStyle = KIT; ctx.fill(); ctx.lineWidth = 0.022; ctx.strokeStyle = INK; ctx.stroke(); ctx.restore()
+}
+function drawThief(ctx, o) {
+  const L = o.light, d = 0.88 * (1 - L), t = o.time, sp = o.speed, sw = o.swing
+  const side = o.dir === 'side', front = o.dir === 'front', back = o.dir === 'back'
+  const hx = side ? 0.03 : 0, hy = -0.42, hr = 0.27, eyeY = -0.43
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round'
+  const headPath = () => { ctx.beginPath(); ctx.arc(hx, hy, hr, 0, Math.PI * 2) }
+  const sway = (i) => Math.sin(t * 13 + i * 1.7) * 7 * sp + Math.sin(t * 1.6 + i) * 4 * (1 - sp)
+  if (side) {
+    const knotX = hx - Math.sqrt(hr * hr - (eyeY - hy) ** 2)
+    const rest = [118, 140], run = [172, 191]
+    for (let i = 0; i < 2; i++) tie(ctx, knotX, eyeY, rest[i] + (run[i] - rest[i]) * sp + sway(i), i ? 0.24 : 0.3)
+  } else if (front) {
+    const a = [148 + 14 * sp, 32 - 14 * sp]
+    for (let i = 0; i < 2; i++) tie(ctx, 0, eyeY, a[i] + sway(i), 0.42)
+  }
+  const gl = side
+    ? [[-0.76 + sw * 0.08, 0.18 - Math.abs(sw) * 0.03], [0.76 - sw * 0.08, 0.18 - Math.abs(sw) * 0.03]]
+    : [[-0.74, 0.18 + sw * 0.06], [0.74, 0.18 - sw * 0.06]]
+  const gloves = () => { ctx.fillStyle = KIT; ctx.lineWidth = 0.045; ctx.strokeStyle = INK; for (const [gx, gy] of gl) { ctx.beginPath(); ctx.arc(gx, gy, 0.17, 0, Math.PI * 2); ctx.fill(); ctx.stroke() } }
+  if (back) gloves()
+  ctx.fillStyle = mix(FOOT, ROOM, 0.6 * (1 - L)); ctx.strokeStyle = INK; ctx.lineWidth = 0.04
+  const lift = [Math.max(0, sw) * 0.07, Math.max(0, -sw) * 0.07]
+  const feet = side ? [[-0.44, 0.4], [0.04, 0.4]] : [[-0.42, 0.4], [0.02, 0.4]]
+  feet.forEach(([fx, fy], i) => { rr(ctx, fx, fy - lift[i], 0.4, 0.22, 0.06); ctx.fill(); ctx.stroke() })
+  const g = ctx.createLinearGradient(0, -0.7, 0, 0.5)
+  g.addColorStop(0, mix(HERO, ROOM, d)); g.addColorStop(1, mix(TINT, ROOM, d))
+  ctx.fillStyle = g; ctx.lineWidth = 0.06
+  ctx.beginPath(); TRAP.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.closePath(); ctx.fill(); ctx.stroke()
+  headPath(); ctx.fill()
+  ctx.save(); headPath(); ctx.clip(); ctx.fillStyle = KIT; ctx.fillRect(-1, eyeY - 0.15 * K, 2, 0.3 * K); ctx.restore()
+  headPath(); ctx.stroke()
+  if (side) {
+    const knotX = hx - Math.sqrt(hr * hr - (eyeY - hy) ** 2)
+    ctx.beginPath(); ctx.arc(knotX + 0.01, eyeY, 0.05, 0, Math.PI * 2); ctx.fillStyle = KIT; ctx.fill(); ctx.lineWidth = 0.022; ctx.stroke()
+  }
+  if (back) {
+    ctx.beginPath(); ctx.arc(0, eyeY, 0.06, 0, Math.PI * 2); ctx.fillStyle = KIT; ctx.fill(); ctx.lineWidth = 0.022; ctx.strokeStyle = INK; ctx.stroke()
+    const a = [102, 80]
+    for (let i = 0; i < 2; i++) tie(ctx, 0, eyeY, a[i] + sway(i) * 0.6, i ? 0.26 : 0.32)
+  }
+  if (!back) {
+    const ecx = side ? 0.03 + 0.04 * K : 0
+    if (L < 1) {
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'
+      const rg = ctx.createRadialGradient(ecx, eyeY, 0, ecx, eyeY, 0.36)
+      rg.addColorStop(0, `rgba(255,244,220,${(0.5 * (1 - L)).toFixed(3)})`); rg.addColorStop(1, 'rgba(255,244,220,0)')
+      ctx.fillStyle = rg; ctx.beginPath(); ctx.ellipse(ecx, eyeY, 0.36, 0.24, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore()
+    }
+    const px = side ? 0.028 * K : 0, py = side ? 0.005 * K : 0.012 * K
+    for (const ex of [ecx - 0.19 * K, ecx + 0.19 * K]) {
+      ctx.beginPath(); ctx.ellipse(ex, eyeY, 0.085 * K, 0.1 * K, 0, 0, Math.PI * 2); ctx.fillStyle = '#f2f2f2'; ctx.fill()
+      ctx.beginPath(); ctx.arc(ex + px, eyeY + py, 0.042 * K, 0, Math.PI * 2); ctx.fillStyle = INK; ctx.fill()
+    }
+    const fx = side ? 0.03 : -0.01
+    ctx.beginPath(); ctx.moveTo(fx - 0.13 * K, eyeY + 0.27 * K); ctx.quadraticCurveTo(fx + 0.01 * K, eyeY + 0.36 * K, fx + 0.15 * K, eyeY + 0.2 * K)
+    ctx.lineWidth = 0.05 * K; ctx.strokeStyle = INK; ctx.stroke()
+    gloves()
+  }
+}
+
+// ---------- The staff watchman, from the game's guardArt.ts, with front and back views ----------
+const GC = { body: '#3e5a6e', dark: '#2a3e4d', skin: '#c9ced8', feet: '#2a2f38' }
+function drawGuard(ctx, o) {
+  const L = o.light, dk = 0.88 * (1 - L)
+  const c = (h) => mix(hexRgb(h), ROOM, dk)
+  const side = o.dir === 'side', back = o.dir === 'back'
+  const sw = o.swing
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round'
+  const paint = (fill, lw) => { ctx.fillStyle = c(fill); ctx.strokeStyle = INK; ctx.lineWidth = lw; ctx.fill(); ctx.stroke() }
+  const hands = side
+    ? [[-0.68 + sw * 0.08, 0.18], [0.68 - sw * 0.08, 0.18]]
+    : [[-0.68, 0.18 + sw * 0.05], [0.68, 0.18 - sw * 0.05]]
+  const drawHands = () => { for (const [x, y] of hands) { ctx.beginPath(); ctx.arc(x, y, 0.16, 0, Math.PI * 2); paint(GC.skin, 0.04) } }
+  if (back) drawHands()
+  // Feet, lifting in turn as it walks.
+  const lift = [Math.max(0, sw) * 0.06, Math.max(0, -sw) * 0.06]
+  const feet = side ? [-0.4, 0.06] : [-0.4, 0.04]
+  feet.forEach((x, i) => { ctx.beginPath(); ctx.roundRect(x, 0.4 - lift[i], 0.36, 0.22, 0.05); paint(GC.feet, 0.04) })
+  const bob = o.moving ? Math.abs(sw) * 0.03 : 0
+  ctx.save(); ctx.translate(0, -bob)
+  ctx.beginPath(); ctx.roundRect(-0.42, -0.16, 0.84, 0.66, 0.08); paint(GC.body, 0.05)
+  ctx.strokeStyle = c(GC.dark); ctx.lineWidth = 0.07; ctx.beginPath(); ctx.moveTo(-0.4, 0.26); ctx.lineTo(0.4, 0.26); ctx.stroke()
+  ctx.beginPath(); ctx.arc(0, -0.43, 0.28, 0, Math.PI * 2); paint(GC.skin, 0.05)
+  if (!back) {
+    // Calm face: two dot eyes and a flat mouth, shifted the way it faces in the side view.
+    const fx = side ? 0.06 : 0
+    ctx.fillStyle = INK
+    for (const x of [fx - 0.12, fx + 0.12]) { ctx.beginPath(); ctx.ellipse(x, -0.44, 0.045, 0.04, 0, 0, Math.PI * 2); ctx.fill() }
+    ctx.strokeStyle = INK; ctx.lineWidth = 0.03; ctx.beginPath(); ctx.moveTo(fx - 0.07, -0.25); ctx.lineTo(fx + 0.07, -0.25); ctx.stroke()
+  }
+  // Cap: the peak points forward from the side, spreads either side from the front, and is a thin edge from behind.
+  ctx.beginPath(); ctx.roundRect(-0.22, -0.82, 0.44, 0.16, 0.04); paint(GC.dark, 0.03)
+  ctx.beginPath()
+  if (side) { ctx.moveTo(-0.3, -0.64); ctx.lineTo(0.44, -0.64); ctx.lineTo(0.38, -0.7); ctx.lineTo(-0.24, -0.7) }
+  else if (back) { ctx.moveTo(-0.26, -0.645); ctx.lineTo(0.26, -0.645); ctx.lineTo(0.24, -0.69); ctx.lineTo(-0.24, -0.69) }
+  else { ctx.moveTo(-0.38, -0.62); ctx.lineTo(0.38, -0.62); ctx.lineTo(0.3, -0.7); ctx.lineTo(-0.3, -0.7) }
+  ctx.closePath(); paint(GC.dark, 0.03)
+  ctx.restore()
+  if (!back) drawHands()
+}
+
+// ---------- Characters as billboards ----------
+const PX = 100 // canvas pixels per S
+function makeBillboard(kind, scene) {
+  const size = kind === 'guard' ? 3.0 : 2.4
+  const cv = document.createElement('canvas'); cv.width = cv.height = Math.round(size * PX)
+  const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshBasicMaterial({ map: tex, alphaTest: 0.45, fog: true, side: THREE.DoubleSide }))
+  // A soft ground shadow to anchor it (the style guide's note on top-down applies here too).
+  const sh = new THREE.Mesh(new THREE.CircleGeometry(kind === 'guard' ? 0.62 : 0.48, 24), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false, fog: true }))
+  sh.rotation.x = -Math.PI / 2; sh.position.y = 0.01
+  scene.add(mesh); scene.add(sh)
+  return { kind, cv, ctx: cv.getContext('2d'), tex, mesh, shadow: sh, size, x: 0, z: 0, fx: 1, fz: 0, view: 'front', flip: 1, walk: 0, swing: 0, speed: 0, moving: false, time: 0, light: 1, r: kind === 'guard' ? 0.5 : 0.36 }
+}
+const shadowTex = canvasTex(64, 64, (g, w) => {
+  const r = g.createRadialGradient(w / 2, w / 2, 0, w / 2, w / 2, w / 2)
+  r.addColorStop(0, 'rgba(10,12,18,0.55)'); r.addColorStop(1, 'rgba(10,12,18,0)')
+  g.fillStyle = r; g.fillRect(0, 0, w, w)
+})
+
+function lightAt(x, z) {
+  let l = 0.03
+  for (const lp of LAMPS) {
+    const d = Math.hypot(x - lp.x, z - lp.z)
+    l = Math.max(l, d < 1.5 ? 1 : d > 6 ? 0 : 1 - (d - 1.5) / 4.5)
+  }
+  return l
+}
+
+// ---------- Three.js scene ----------
+const stage = document.getElementById('stage')
+const glCanvas = document.getElementById('gl')
+const hud = document.getElementById('hud'), hctx = hud.getContext('2d')
+const renderer = new THREE.WebGLRenderer({ canvas: glCanvas, antialias: true })
+renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1))
+const scene = new THREE.Scene()
+scene.background = new THREE.Color(0x07080c)
+scene.fog = new THREE.Fog(0x07080c, 4, 21)
+const camera = new THREE.PerspectiveCamera(72, 1, 0.05, 60)
+camera.rotation.order = 'YXZ'
+document.getElementById('loading').remove()
+
+// Build the corridor: a floor and ceiling tile for every open square, and a wall wherever it meets a closed one.
+{
+  const floors = [], ceils = [], wallsNS = [], wallsEW = [], signs = []
+  const m = new THREE.Matrix4()
+  const add = (list, geo, pos, rotX, rotY) => {
+    const e = new THREE.Euler(rotX, rotY, 0, 'YXZ')
+    m.makeRotationFromEuler(e); m.setPosition(pos)
+    list.push(geo.clone().applyMatrix4(m))
+  }
+  const tile = new THREE.PlaneGeometry(T, T), wall = new THREE.PlaneGeometry(T, WALL_H)
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+    if (wallAt(c, r)) continue
+    const x = tileX(c), z = tileZ(r)
+    add(floors, tile, new THREE.Vector3(x, 0, z), -Math.PI / 2, 0)
+    add(ceils, tile, new THREE.Vector3(x, WALL_H, z), Math.PI / 2, 0)
+    if (wallAt(c, r - 1)) add(wallsNS, wall, new THREE.Vector3(x, WALL_H / 2, z - T / 2), 0, 0)
+    if (wallAt(c, r + 1)) add(wallsNS, wall, new THREE.Vector3(x, WALL_H / 2, z + T / 2), 0, Math.PI)
+    if (wallAt(c - 1, r)) add(wallsEW, wall, new THREE.Vector3(x - T / 2, WALL_H / 2, z), 0, Math.PI / 2)
+    // The far end of the corridor gets the sign.
+    if (wallAt(c + 1, r)) add(c === COLS - 2 && r === 4 ? signs : wallsEW, wall, new THREE.Vector3(x + T / 2, WALL_H / 2, z), 0, -Math.PI / 2)
+  }
+  const mesh = (list, map, tone) => { if (list.length) scene.add(new THREE.Mesh(mergeGeometries(list), new THREE.MeshLambertMaterial({ map, color: new THREE.Color(tone, tone, tone) }))) }
+  // Each face gets a flat tone by which way it points, as the 3/4 boxes did.
+  mesh(floors, floorTex, 1); mesh(ceils, ceilTex, 1); mesh(wallsNS, wallTex, 1); mesh(wallsEW, wallTex, 0.82); mesh(signs, signTex, 0.82)
+}
+scene.add(new THREE.AmbientLight(0x8a98a8, 0.2))
+for (const lp of LAMPS) {
+  const light = new THREE.PointLight(0xffe2b8, 7, 9, 1.5)
+  light.position.set(lp.x, WALL_H - 0.35, lp.z)
+  scene.add(light)
+  const fixture = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.08, 0.5), new THREE.MeshBasicMaterial({ color: 0xfff1d0 }))
+  fixture.position.set(lp.x, WALL_H - 0.04, lp.z)
+  scene.add(fixture)
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(fixture.geometry), new THREE.LineBasicMaterial({ color: 0x1d2230 }))
+  edges.position.copy(fixture.position); scene.add(edges)
+}
+
+// ---------- Who's in the corridor ----------
+const postGuard = makeBillboard('guard', scene)
+Object.assign(postGuard, { x: tileX(11), z: tileZ(1) + 0.4, fx: 0, fz: 1, turnT: 2.4, turnI: 1 })
+const patrol = makeBillboard('guard', scene)
+Object.assign(patrol, { x: tileX(6), z: tileZ(4), fx: 1, fz: 0, pause: 0, from: tileX(5), to: tileX(20) })
+const twin = makeBillboard('thief', scene)
+const LOOP = [[6.4, 7.7], [12.6, 7.7], [12.6, 11.4], [6.4, 11.4]].map(([c, r]) => ({ x: c * T, z: r * T + T / 2 - 0.3 }))
+Object.assign(twin, { x: LOOP[0].x, z: LOOP[0].z, leg: 0 })
+const npcs = [postGuard, patrol, twin]
+const POST_FACING = [[-1, 0], [0, 1], [1, 0], [0, 1]]
+
+function stepNpcs(dt) {
+  // The alcove guard turns every 2.4 s: west, out into the corridor, east, out again.
+  postGuard.turnT -= dt
+  if (postGuard.turnT <= 0) { postGuard.turnT = 2.4; postGuard.turnI = (postGuard.turnI + 1) % 4; [postGuard.fx, postGuard.fz] = POST_FACING[postGuard.turnI] }
+  postGuard.moving = false
+  // The patrol walks the corridor end to end, pausing and turning at each end.
+  if (patrol.pause > 0) { patrol.pause -= dt; patrol.moving = false; if (patrol.pause <= 0) patrol.fx = -patrol.fx }
+  else {
+    patrol.x += patrol.fx * 1.3 * dt; patrol.moving = true
+    if ((patrol.fx > 0 && patrol.x >= patrol.to) || (patrol.fx < 0 && patrol.x <= patrol.from)) patrol.pause = 1.4
+  }
+  // The thief's twin walks round the pillar.
+  const target = LOOP[(twin.leg + 1) % LOOP.length]
+  const dx = target.x - twin.x, dz = target.z - twin.z, d = Math.hypot(dx, dz)
+  if (d < 0.05) twin.leg = (twin.leg + 1) % LOOP.length
+  else { const s = Math.min(d, 1.5 * dt); twin.x += (dx / d) * s; twin.z += (dz / d) * s; twin.fx = dx / d; twin.fz = dz / d }
+  twin.moving = true
+  for (const n of npcs) {
+    n.time += dt
+    if (n.moving) n.walk += dt * 9
+    n.swing += ((n.moving ? Math.sin(n.walk) : 0) - n.swing) * Math.min(1, dt * 12)
+    n.speed += ((n.moving ? 0.45 : 0) - n.speed) * Math.min(1, dt * 5)
+    n.light = lightAt(n.x, n.z)
+  }
+}
+
+// Which drawing to show: front if it's facing you, back if it's facing away, otherwise its side, turned the way it faces on screen.
+const camRight = new THREE.Vector3()
+function chooseView(n) {
+  const tx = camera.position.x - n.x, tz = camera.position.z - n.z, tl = Math.hypot(tx, tz) || 1
+  const ang = Math.acos(Math.max(-1, Math.min(1, (n.fx * tx + n.fz * tz) / tl))) * (180 / Math.PI)
+  // A little stickiness at the edges so it doesn't flicker between drawings.
+  if (n.view === 'front') { if (ang > 50) n.view = 'side' }
+  else if (n.view === 'back') { if (ang < 130) n.view = 'side' }
+  else { if (ang < 40) n.view = 'front'; else if (ang > 140) n.view = 'back' }
+  camRight.set(1, 0, 0).applyQuaternion(camera.quaternion)
+  n.flip = n.fx * camRight.x + n.fz * camRight.z >= 0 ? 1 : -1
+}
+
+function paintBillboard(n) {
+  const g = n.ctx, W = n.cv.width
+  g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, W)
+  if (n.kind === 'guard') {
+    const k = PX * 1.25
+    g.setTransform(k * (n.view === 'side' ? n.flip : 1), 0, 0, k, W / 2, W - 10 - 0.62 * k)
+    drawGuard(g, { dir: n.view, swing: n.swing, moving: n.moving, light: n.light })
+  } else {
+    g.setTransform(PX * (n.view === 'side' ? n.flip : 1), 0, 0, PX, W / 2, W - 10 - 0.62 * PX)
+    drawThief(g, { dir: n.view, time: n.time, speed: n.speed, swing: n.swing, light: n.light })
+  }
+  n.tex.needsUpdate = true
+  // Stand it on the floor, turned to face the camera around the vertical only.
+  n.mesh.position.set(n.x, n.size / 2 - 0.1, n.z)
+  n.mesh.rotation.set(0, Math.atan2(camera.position.x - n.x, camera.position.z - n.z), 0)
+  n.shadow.position.set(n.x, 0.01, n.z)
+}
+
+// ---------- You ----------
+const me = { x: tileX(2), z: tileZ(4), yaw: -Math.PI / 2, pitch: 0, walk: 0, moveAmt: 0, punchT: 9, punchSide: 1, light: 1 }
+const R_ME = 0.3
+function collide(x, z, r) {
+  for (let pass = 0; pass < 2; pass++) {
+    const c0 = Math.floor((x - r) / T), c1 = Math.floor((x + r) / T), r0 = Math.floor((z - r) / T), r1 = Math.floor((z + r) / T)
+    for (let rr2 = r0; rr2 <= r1; rr2++) for (let cc = c0; cc <= c1; cc++) {
+      if (!wallAt(cc, rr2)) continue
+      const bx = Math.max(cc * T, Math.min(x, cc * T + T)), bz = Math.max(rr2 * T, Math.min(z, rr2 * T + T))
+      const dx = x - bx, dz = z - bz, d = Math.hypot(dx, dz)
+      if (d < r && d > 1e-4) { x = bx + (dx / d) * r; z = bz + (dz / d) * r }
+    }
+    for (const n of npcs) {
+      const dx = x - n.x, dz = z - n.z, d = Math.hypot(dx, dz), min = r + n.r
+      if (d < min && d > 1e-4) { x = n.x + (dx / d) * min; z = n.z + (dz / d) * min }
+    }
+  }
+  return [x, z]
+}
+
+// ---------- Input ----------
+const keys = new Set()
+let pitchMode = 'limited'
+window.addEventListener('keydown', (e) => {
+  const k = e.key.toLowerCase()
+  if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k) && document.activeElement?.tagName !== 'INPUT') e.preventDefault()
+  if (k === 'f' && !e.repeat) punch()
+  keys.add(k)
+})
+window.addEventListener('keyup', (e) => keys.delete(e.key.toLowerCase()))
+window.addEventListener('blur', () => keys.clear())
+function punch() { if (me.punchT < 0.18) return; me.punchT = 0; me.punchSide = -me.punchSide }
+const look = (dx, dy) => {
+  me.yaw -= dx * 0.0032
+  const lim = pitchMode === 'free' ? 1.4 : 0.35
+  me.pitch = Math.max(-lim, Math.min(lim, me.pitch - dy * 0.0032))
+}
+const locked = () => document.pointerLockElement === stage
+document.addEventListener('mousemove', (e) => { if (locked()) look(e.movementX, e.movementY) })
+const stickEl = document.getElementById('stick')
+const stick = { id: null, ox: 0, oy: 0, x: 0, y: 0 }
+const drag = { id: null, lx: 0, ly: 0 }
+stage.addEventListener('pointerdown', (e) => {
+  if (e.target.closest('button')) return
+  const r = stage.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top
+  if (e.pointerType === 'mouse') {
+    if (locked()) { punch(); return }
+    // Ask for the mouse; if the page can't have it, dragging looks around instead.
+    try { const p = stage.requestPointerLock?.(); if (p && p.catch) p.catch(() => {}) } catch { /* not allowed here */ }
+    drag.id = e.pointerId; drag.lx = e.clientX; drag.ly = e.clientY; stage.setPointerCapture(e.pointerId)
+    return
+  }
+  // Touch: the left half walks, the right half looks.
+  if (px < r.width / 2 && stick.id === null) {
+    stick.id = e.pointerId; stick.ox = px; stick.oy = py; stick.x = stick.y = 0
+    stickEl.style.left = px + 'px'; stickEl.style.top = py + 'px'; stickEl.hidden = false; stickEl.firstElementChild.style.transform = 'translate(0,0)'
+  } else if (drag.id === null) { drag.id = e.pointerId; drag.lx = e.clientX; drag.ly = e.clientY }
+  stage.setPointerCapture(e.pointerId)
+})
+stage.addEventListener('pointermove', (e) => {
+  if (e.pointerId === stick.id) {
+    const r = stage.getBoundingClientRect()
+    let dx = e.clientX - r.left - stick.ox, dy = e.clientY - r.top - stick.oy
+    const len = Math.hypot(dx, dy), max = 40
+    if (len > max) { dx *= max / len; dy *= max / len }
+    stick.x = dx / max; stick.y = dy / max
+    stickEl.firstElementChild.style.transform = `translate(${dx}px,${dy}px)`
+  } else if (e.pointerId === drag.id && !locked()) {
+    look((e.clientX - drag.lx) * (e.pointerType === 'mouse' ? 1 : 1.4), (e.clientY - drag.ly) * (e.pointerType === 'mouse' ? 1 : 1.4))
+    drag.lx = e.clientX; drag.ly = e.clientY
+  }
+})
+const endPointer = (e) => {
+  if (e.pointerId === stick.id) { stick.id = null; stick.x = stick.y = 0; stickEl.hidden = true }
+  if (e.pointerId === drag.id) drag.id = null
+}
+stage.addEventListener('pointerup', endPointer)
+stage.addEventListener('pointercancel', endPointer)
+const punchBtn = document.getElementById('punchBtn')
+punchBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); punch() })
+if (isTouch) { punchBtn.hidden = false; document.getElementById('hint').textContent = 'Left side: walk (push to the edge to run) · Right side: look · Punch button' }
+const pitchSeg = document.getElementById('pitchSeg')
+pitchSeg.addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-pitch]')
+  if (!b) return
+  pitchMode = b.dataset.pitch
+  for (const x of pitchSeg.querySelectorAll('button')) x.setAttribute('aria-checked', String(x === b))
+  if (pitchMode === 'limited') me.pitch = Math.max(-0.35, Math.min(0.35, me.pitch))
+})
+const labels = document.getElementById('labels')
+
+// ---------- Sizing ----------
+let W = 0, H = 0, dpr = 1
+function resize() {
+  const r = stage.getBoundingClientRect()
+  W = r.width; H = r.height; dpr = Math.min(2, window.devicePixelRatio || 1)
+  renderer.setSize(W, H, false)
+  camera.aspect = W / H; camera.updateProjectionMatrix()
+  hud.width = Math.round(W * dpr); hud.height = Math.round(H * dpr)
+}
+new ResizeObserver(resize).observe(stage)
+resize()
+
+// ---------- His gloves, floating in view ----------
+function drawHud(dt) {
+  const g = hctx
+  g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H)
+  const r = Math.min(W, H) * 0.12
+  const bob = reduceMotion ? 0 : Math.sin(me.walk) * r * 0.14 * me.moveAmt
+  me.punchT += dt
+  for (const side of [-1, 1]) {
+    let x = W / 2 + side * Math.min(W * 0.3, r * 3.2), y = H - r * 0.35 + (side > 0 ? bob : -bob) + Math.sin(performance.now() / 900 + side) * r * 0.03
+    let rad = r
+    if (side === me.punchSide && me.punchT < 0.24) {
+      const p = Math.sin((Math.PI * me.punchT) / 0.24)
+      x += (W / 2 + side * r * 0.5 - x) * p; y += (H * 0.6 - y) * p; rad = r * (1 - 0.4 * p)
+    }
+    g.fillStyle = KIT; g.strokeStyle = INK; g.lineWidth = rad * 0.1
+    g.beginPath(); g.arc(x, y, rad, 0, Math.PI * 2); g.fill(); g.stroke()
+    // A knuckle line, as on the touch Attack button, so they read as fists.
+    g.strokeStyle = '#4a4a60'; g.lineWidth = rad * 0.09; g.lineCap = 'round'
+    g.beginPath(); g.arc(x, y + rad * 0.35, rad * 0.62, Math.PI * 1.22, Math.PI * 1.78); g.stroke()
+  }
+  // A small aim dot.
+  g.fillStyle = 'rgba(242,242,242,0.7)'; g.beginPath(); g.arc(W / 2, H / 2, 2.5, 0, Math.PI * 2); g.fill()
+  if (labels.checked) {
+    g.font = '600 12px "JetBrains Mono", monospace'; g.textAlign = 'center'; g.textBaseline = 'bottom'
+    const v = new THREE.Vector3()
+    for (const n of npcs) {
+      if (!inSight(n)) continue
+      v.set(n.x, n.kind === 'guard' ? 2.25 : 1.75, n.z).project(camera)
+      if (v.z > 1 || v.z < -1) continue
+      const sx = (v.x * 0.5 + 0.5) * W, sy = (-v.y * 0.5 + 0.5) * H
+      const text = n.view === 'side' ? `side ${n.flip > 0 ? '→' : '←'}` : n.view
+      const tw = g.measureText(text).width + 12
+      g.fillStyle = 'rgba(20,22,30,0.72)'; g.fillRect(sx - tw / 2, sy - 20, tw, 18)
+      g.fillStyle = '#8fd3ff'; g.fillText(text, sx, sy - 4)
+    }
+  }
+}
+
+// Nothing solid between you and them: step along the line and check the map.
+function inSight(n) {
+  const x0 = camera.position.x, z0 = camera.position.z, dx = n.x - x0, dz = n.z - z0
+  const steps = Math.ceil(Math.hypot(dx, dz) / 0.2)
+  for (let i = 1; i < steps; i++) if (wallAt(Math.floor((x0 + (dx * i) / steps) / T), Math.floor((z0 + (dz * i) / steps) / T))) return false
+  return true
+}
+
+// ---------- Loop ----------
+let last = performance.now()
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now
+  // Movement relative to where you're looking.
+  let ix = (keys.has('d') ? 1 : 0) - (keys.has('a') ? 1 : 0)
+  let iz = (keys.has('s') || keys.has('arrowdown') ? 1 : 0) - (keys.has('w') || keys.has('arrowup') ? 1 : 0)
+  if (keys.has('arrowleft')) me.yaw += 2.2 * dt
+  if (keys.has('arrowright')) me.yaw -= 2.2 * dt
+  let run = keys.has('shift')
+  if (stick.id !== null && Math.hypot(stick.x, stick.y) > 0.2) { ix = stick.x; iz = stick.y; run = Math.hypot(stick.x, stick.y) > 0.92 }
+  const mag = Math.hypot(ix, iz)
+  if (mag > 1) { ix /= mag; iz /= mag }
+  const speed = run ? 4.7 : 2.6
+  const fwdX = -Math.sin(me.yaw), fwdZ = -Math.cos(me.yaw), rtX = Math.cos(me.yaw), rtZ = -Math.sin(me.yaw)
+  const moving = mag > 0.05
+  if (moving) {
+    const vx = (rtX * ix - fwdX * iz) * speed, vz = (rtZ * ix - fwdZ * iz) * speed
+    ;[me.x, me.z] = collide(me.x + vx * dt, me.z + vz * dt, R_ME)
+    me.walk += dt * (run ? 13 : 9)
+  }
+  me.moveAmt += ((moving ? 1 : 0) - me.moveAmt) * Math.min(1, dt * 6)
+
+  stepNpcs(dt)
+  ;[me.x, me.z] = collide(me.x, me.z, R_ME)
+
+  const headBob = reduceMotion ? 0 : Math.abs(Math.sin(me.walk)) * 0.04 * me.moveAmt
+  camera.position.set(me.x, EYE + headBob, me.z)
+  camera.rotation.set(me.pitch, me.yaw, 0)
+  camera.updateMatrixWorld()
+  for (const n of npcs) { chooseView(n); paintBillboard(n) }
+  renderer.render(scene, camera)
+  drawHud(dt)
+  requestAnimationFrame(frame)
+}
+requestAnimationFrame(frame)
+</script>
+</body>
+</html>
