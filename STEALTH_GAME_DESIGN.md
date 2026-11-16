@@ -8,13 +8,13 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T06:00:59+00:00):**
+**Where the project stands (as of 2026-11-16T06:13:40+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
 - How we work is set out below: Depth Before Breadth, Artifacts as a visual workshop, and structured rounds of design questions (History #11–#13).
 - Lyra is deploying the scaffold to Cloudflare Workers (History #14).
-- Designing the player: two rounds of questions done (History #15–#18); body and face picked from the Thief Line-up (History #20, #21).
+- Designing the player: three rounds of questions done (History #15–#18, #22–#24); body and face picked from the Thief Line-up (History #20, #21); mask style being compared.
 
 **Stack:** React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js and Cloudflare Workers: Lyra's normal stack (History #3).
 - **React** is the outer shell; **Phaser** (v4) runs the game inside a single React component (History #7, #9).
@@ -135,6 +135,9 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **An expert thief.** Small but brilliant at this: confident, a bit smug, and its size is an advantage it knows how to use. *(2026-11-16T06:00:59+00:00 — History #18)*
 - **Body: No. 7, "Stacked"** from the Thief Line-up: a small circle head on a rounded trapezoid body. Lyra's pick; proportions still to be refined. *(2026-11-16T06:09:50+00:00 — History #20)*
 - **Face: mask + mouth.** A dark mask band across the eyes (white eyes with pupils inside it) and a mouth below; the line-up drew the mouth as a smirk. Lyra's pick. *(2026-11-16T06:09:50+00:00 — History #21)*
+- **Head kept as drawn.** The small head stays; the face's readability at game size will be handled another way, such as the player's size in the game. *(2026-11-16T06:13:40+00:00 — History #22)*
+- **Resting mouth: the smirk.** Lopsided, turned up on the side it's facing: smug, in control, enjoying it. Claude's recommendation, approved. *(2026-11-16T06:13:40+00:00 — History #23)*
+- **Dark gloves.** The floating hands are the same dark as the mask rather than the body's white, so mask and gloves read as one thief's kit. A deliberate break from the guide's "hands in the body's fill". *(2026-11-16T06:13:40+00:00 — History #24)*
 
 ### Art and presentation
 - **Art style: Stylised Geometry**, as set out in `stylised-geometry/STYLISED_GEOMETRY.md` and its reference sheets. *(2026-11-16T05:36:10+00:00 — History #2)*
@@ -163,13 +166,15 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 ## C. Current Development Scope
 
-The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); now refining them, then the game.
+The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24). Now choosing between three mask styles, then the game.
 
 Shortlisted for visual comparison (options, not decisions):
 - **Bodies:** square, rounded square, circle and triangle (all four picked), plus stacked and polygon builds following Lyra's note (#19).
 - **Faces:** thief's mask, two eyes and a mouth, two eyes and no mouth; these can combine.
 
 **Thief Line-up** (Artifact, round 2 visual options): https://claude.ai/artifact/JJtcAFFG3k7kV3fym82UXV. It shows eight bodies (Nos. 1–4: square, rounded square, circle, triangle; Nos. 5–8: hooded, teardrop, stacked, leaning), four faces (mask, mask + mouth, eyes + mouth, eyes only), a light slider, each body at game size, and a walk through a lamp's light. Things Claude drew that weren't asked for, all up for rejection: Nos. 5–8, a smirk on the faces with a mouth, mask + mouth as a combined face, the look of the lit eyes, how far the player fades (to about 12% brightness), and the guide's default hands and feet.
+
+**Thief Mask Fitting** (Artifact, round 3): https://claude.ai/artifact/3qpxJDtQ17eQkx3taQwPiN. No. 7 with the smirk and dark gloves in three masks: A, plain band; B, band with ties (knotted at the back, two notched tails that trail when moving and drop at rest); C, domino (dips between the eyes, outer corners flick up just past the head). Each in light and full shadow, at S = 48, 64 and 80 px, and walking under a lamp. Claude's choices, up for change: the tie and domino details, and gloves matching the mask's dark.
 
 ---
 
@@ -185,7 +190,7 @@ Shortlisted for visual comparison (options, not decisions):
 
 1. **Title.**
 2. **Everything about the game itself.**
-3. **The player's size next to the guards.** Decided when the guards are designed.
+3. **The player's size, in the game and next to the guards.** Decided when the guards are designed. Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
 4. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). Still open: physics, and anything server-side.
 
 ---
@@ -244,6 +249,9 @@ Shortlisted for visual comparison (options, not decisions):
 | 19 | 2026-11-16T06:00:59+00:00 | Art | Bodies aren't limited to one primitive: polygons and stacked or combined shapes are fair game (Lyra's note). |
 | 20 | 2026-11-16T06:09:50+00:00 | Player | Body: No. 7 "Stacked" from the Thief Line-up, a small circle head on a rounded trapezoid body. |
 | 21 | 2026-11-16T06:09:50+00:00 | Player | Face: mask + mouth. |
+| 22 | 2026-11-16T06:13:40+00:00 | Player | Head kept as drawn; face readability at game size to be handled another way (e.g. the player's in-game size). |
+| 23 | 2026-11-16T06:13:40+00:00 | Player | Resting mouth: the smirk (Claude's recommendation, approved). |
+| 24 | 2026-11-16T06:13:40+00:00 | Player | Dark gloves, matching the mask, instead of hands in the body's white. |
 
 ---
 
