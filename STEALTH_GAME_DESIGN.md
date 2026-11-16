@@ -8,7 +8,7 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T13:31:53+00:00):**
+**Where the project stands (as of 2026-11-16T13:32:49+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -16,7 +16,7 @@ A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry**
 - Lyra is deploying the scaffold to Cloudflare Workers (History #14).
 - Designing the player: look settled (History #15–#25); climbing and ground movement settled (History #26, #28–#31); blink's rules and look settled (History #27, #32–#36).
 - Combat designed in three rounds (History #50–#61); details still open (§E).
-- Designing the guards: archetypes, sight, suspicion and searching settled (History #63–#68).
+- Designing the guards: archetypes, sight, hearing, suspicion, searching and hiding spots settled (History #63–#72).
 - **The full player is built** (History #37, #45, #46) in a test room, playable with keyboard and mouse, gamepad and touch, and merged to `main`. Lyra's first playtest: good overall; grip raised and blink loosened as a result (History #47, #48).
 
 **Stack:** React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js and Cloudflare Workers: Lyra's normal stack (History #3).
@@ -187,6 +187,10 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **Suspicion shows as a marker overhead** (a filling "?" that turns to "!"), not through the guard's eye. *(2026-11-16T13:31:53+00:00 — History #66)*
 - **A proper search:** guards go to where he was last seen or heard, check hiding spots nearby, bring other guards in to spread out, and give up after a while, going back to their routes on edge (#61). *(2026-11-16T13:31:53+00:00 — History #67)*
 - **Hiding spots in the environment,** such as lockers. *(2026-11-16T13:31:53+00:00 — History #68)*
+- **Sound carries through walls, muffled:** quieter through walls, and thin walls let more through than thick ones. Claude's recommendation, approved. *(2026-11-16T13:32:49+00:00 — History #69)*
+- **On a noise, it depends how loud:** a quiet noise makes a guard stop and turn to look; a loud one sends it to investigate where it came from. Claude's recommendation, approved. *(2026-11-16T13:32:49+00:00 — History #70)*
+- **Hiding spots:** lockers and cupboards (step in, peek through the slats), under furniture (desks, beds, tables), behind cover (curtains, crates, coat racks: hidden from one side), and vents and ducts (crawlspaces only he fits through, hiding and a hidden route at once). *(2026-11-16T13:32:49+00:00 — History #71)*
+- **Found in a hiding spot: it depends what they know.** If a guard saw him go in, he's caught and has to fight or flee. If a guard is just checking, he can take them out from inside as they open it. Claude's recommendation, approved. *(2026-11-16T13:32:49+00:00 — History #72)*
 
 ### Platforms and input
 - **Keyboard, gamepad and touch, all from the start.** Lyra plays on a Pixel 10 Pro Fold, so the game has to work in portrait, in landscape and on the inner folding screen, as well as on desktop. *(2026-11-16T06:31:36+00:00 — History #39)*
@@ -382,6 +386,10 @@ Shortlisted for visual comparison (options, not decisions):
 | 66 | 2026-11-16T13:31:53+00:00 | Guards | Suspicion shows as a marker overhead ("?" filling to "!"). |
 | 67 | 2026-11-16T13:31:53+00:00 | Guards | Searching: go to the last known spot, check hiding spots, bring others in, give up after a while (then on edge). |
 | 68 | 2026-11-16T13:31:53+00:00 | Environment | Hiding spots in the environment, such as lockers. |
+| 69 | 2026-11-16T13:32:49+00:00 | Guards | Sound carries through walls, muffled (more through thin walls) (Claude's recommendation, approved). |
+| 70 | 2026-11-16T13:32:49+00:00 | Guards | Quiet noise: turn and look; loud noise: go and investigate (Claude's recommendation, approved). |
+| 71 | 2026-11-16T13:32:49+00:00 | Environment | Hiding spots: lockers and cupboards, under furniture, behind cover, vents and ducts. |
+| 72 | 2026-11-16T13:32:49+00:00 | Guards | Found hiding: caught if they saw him go in; if they're just checking, he can take them out from inside (Claude's recommendation, approved). |
 
 ---
 
