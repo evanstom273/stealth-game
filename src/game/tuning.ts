@@ -31,6 +31,8 @@ export const MOVE = {
   jumpCut: 0.45,
   coyoteTime: 0.08,
   jumpBuffer: 0.12,
+  /** A grab pressed slightly early still catches a surface that comes into reach. */
+  grabBuffer: 0.25,
   maxFall: 16 * S,
 }
 

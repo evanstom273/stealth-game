@@ -114,10 +114,12 @@ export function findGrab(box: Rect, facing: 1 | -1, wantUp: boolean, solids: rea
   }
   const tryMantle = (): GrabResult | null => {
     for (const side of [facing, -facing as 1 | -1]) {
-      for (const { i } of wallsBeside(box, side, solids, cfg)) {
-        const s = solids[i]
-        // The top edge has to be within reach of his hands: between a little above his head and his middle.
-        if (s.y < box.y - cfg.reachUp || s.y > midY(box)) continue
+      // A ledge end ahead of him, or just behind his middle if he's partly under it: hands reach over the edge.
+      const candidates = solids
+        .map((s) => ({ s, ahead: side > 0 ? s.x - midX(box) : midX(box) - right(s) }))
+        .filter(({ s, ahead }) => ahead >= -0.1 * box.w && ahead <= box.w / 2 + cfg.reachSide && s.y >= box.y - cfg.reachUp && s.y <= midY(box))
+        .sort((a, b) => Math.abs(a.ahead) - Math.abs(b.ahead))
+      for (const { s } of candidates) {
         const b = mantleBox(box, s, side, cfg)
         if (free(b, solids)) return { kind: 'mantle', box: b }
       }

@@ -112,6 +112,14 @@ describe('grabbing', () => {
     expect(g?.kind).toBe('mantle')
     expect(g?.box.y).toBeCloseTo(ledge.y - H)
   })
+  it('climbs onto a ledge he is partly underneath', () => {
+    const ledge = { x: 300, y: 768 - 2 * S, w: 4 * S, h: 0.4 * S }
+    // Just past the ledge's end, his head a little below its underside.
+    const box = { x: 300 - W / 2 + 3, y: ledge.y + ledge.h + 0.28 * S, w: W, h: H }
+    const g = findGrab(box, 1, false, [floor, ledge], climbCfg)
+    expect(g?.kind).toBe('mantle')
+    expect(g?.box.y).toBeCloseTo(ledge.y - H)
+  })
   it('finds nothing in the open', () => {
     expect(findGrab(standing(100), 1, false, [floor], climbCfg)).toBeNull()
   })

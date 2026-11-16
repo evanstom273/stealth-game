@@ -8,13 +8,14 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T06:52:36+00:00):**
+**Where the project stands (as of 2026-11-16T07:24:16+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
 - How we work is set out below: Depth Before Breadth, Artifacts as a visual workshop, and structured rounds of design questions (History #11–#13).
 - Lyra is deploying the scaffold to Cloudflare Workers (History #14).
 - Designing the player: look settled (History #15–#25); climbing and ground movement settled (History #26, #28–#31); blink's rules and look settled (History #27, #32–#36).
+- **The full player is built** (History #37, #45, #46) in a test room, playable with keyboard and mouse, gamepad and touch, and merged to `main`. Waiting on Lyra's first playtest on the Fold.
 
 **Stack:** React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js and Cloudflare Workers: Lyra's normal stack (History #3).
 - **React** is the outer shell; **Phaser** (v4) runs the game inside a single React component (History #7, #9).
@@ -193,7 +194,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 ## C. Current Development Scope
 
-The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink's rules and look settled (#27, #32–#36). First playable piece: the full player (#37); plan and UI approved (#45, #46), being built.
+The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink's rules and look settled (#27, #32–#36). First playable piece: the full player (#37); plan and UI approved (#45, #46). **Built and merged to `main`** (see §F): next is Lyra playtesting it on the Fold, then refining what feels wrong (Depth Before Breadth).
 
 Shortlisted for visual comparison (options, not decisions):
 - **Bodies:** square, rounded square, circle and triangle (all four picked), plus stacked and polygon builds following Lyra's note (#19).
@@ -229,28 +230,50 @@ Shortlisted for visual comparison (options, not decisions):
 
 ## F. Implementation Status
 
-*Updated 2026-11-16T05:51:48+00:00.*
+*Updated 2026-11-16T07:24:16+00:00.*
 
 | Feature | Status | Notes |
 |---|---|---|
 | Design doc | Done | `STEALTH_GAME_DESIGN.md` (originally `GAME_DESIGN.md`). *(2026-11-16T05:36:10+00:00; renamed 2026-11-16T05:38:21+00:00)* |
 | Art style reference | Added | `stylised-geometry/`, unpacked from `stylised-geometry.zip` as supplied; `sheets/make_sheets.py` added by Lyra. *(2026-11-16T05:36:10+00:00; script 2026-11-16T05:37:53+00:00)* |
 | Project scaffold | Done | Vite, React, TypeScript (strict), Tailwind v4, Phaser 4.2.1, and the Cloudflare Vite plugin with `wrangler`. One empty scene; the style guide's colour tokens in `src/game/style/tokens.ts`. Typecheck, lint and build pass; the Playwright smoke test passes in development and was checked to fail when the scene throws; the production build runs in the Workers runtime with one canvas and no console errors. *(2026-11-16T05:49:12+00:00)* |
+| Test room | Built | One room with everything to try: a lit start with a stand-in checkpoint and a rest ledge halfway up the wall, ledges, a thin wall to blink through or climb over, a thick hanging block with a 0.9 S gap only a slide fits under, a metal wall and metal ledge (loud to climb), a second checkpoint, and three lamps with dark stretches between them. `src/game/room/testRoom.ts`. *(2026-11-16T07:24:16+00:00)* |
+| The thief, in the game | Built | Drawn from shapes every frame at the screen's density, exactly as approved (No. 7 body, mask with ties, smirk, dark gloves). Fades with lamp light while his eyes stay lit; ties hang at rest, trail with speed and hang down while he climbs; squash and stretch on jumps and landings; dust puffs. Poses: standing, in the air, sliding, on a wall, hanging from a ceiling. *(2026-11-16T07:24:16+00:00)* |
+| Ground movement | Built | Walk, sneak (toggle), run (held), jump (hold for higher, with a little forgiveness either side of leaving the ground), slide from a run. Under something low the slide becomes a crawl until there's room to stand. *(2026-11-16T07:24:16+00:00)* |
+| Climbing | Built | Press to grab, press to let go. Walls and ceilings, round corners, along undersides and up onto ledges. Grip drains (6 s on walls, 3 s on ceilings) and recovers on the ground; at zero he drops. Jump kicks off a wall. Slower than running; noisy on metal. *(2026-11-16T07:24:16+00:00)* |
+| Blink | Built | Aimed with a power-blue line, range ring and landing ghost. Goes through thin walls and floors, stops short of thick ones. Lands standing, gripping a wall or ceiling, or in the air. 3 charges, refilled only at the stand-in checkpoints. The dust effect, and a loud noise at both ends. *(2026-11-16T07:24:16+00:00)* |
+| Light and darkness | Built | Darkness over the room with the lamps' pools cut out of it, his vision pool (lets you see, never lights him), lit edges on everything standable, layered lamp glows. *(2026-11-16T07:24:16+00:00)* |
+| Noise | Built, nothing listens yet | Silent sneaking and standing, soft walking, loud running, landings by how hard he hits, loud on metal while climbing, loud blinks. No guards yet, so it shows only as rings when switched on in the pause menu. *(2026-11-16T07:24:16+00:00)* |
+| Controls | Built | Keyboard and mouse, gamepad, and touch as approved (fixed stick with run at its edge, diamond of buttons, drag from Blink to aim). *(2026-11-16T07:24:16+00:00)* |
+| HUD and menus | Built | Blink charges top left, the Sneaking tag, the pause button and menu (resume, restart room, debug panel, noise rings, full screen), the grip bar under him, and the debug panel. *(2026-11-16T07:24:16+00:00)* |
+| Tests | Passing | 24 unit tests on the game logic (light, grip, noise, climbing, blink targeting); 10 Playwright tests driving every move with the keyboard, mouse and touch on desktop and Fold-sized screens. *(2026-11-16T07:24:16+00:00)* |
 | Deployment | In progress (Lyra) | Lyra deploying the scaffold to Cloudflare Workers. Not yet confirmed live. *(2026-11-16T05:51:48+00:00)* |
 
 ### Known issues and limitations
-- None yet.
+- **Not yet played on the Fold.** Everything was tested in a headless browser, which renders on the CPU at about 20 fps, so real frame rate and feel on the phone are unknown. He and the darkness are redrawn on small canvases every frame; that's the first place to look if it stutters.
+- **Gamepad support is untested** with a real pad; the headless browser has none.
+- **The gloves barely show against the dark**, as seen in the Thief Mask Fitting. Nothing has been decided about it.
+- **No guards yet**, so "guards look up" (#28) and "guards can notice a blink" (#34) have nothing to act on. Noise is measured and can be shown as rings, but nothing hears it.
+- **A full-height wall takes longer to climb than his grip lasts** (12 S at 1.6 S/s against 6 s). That's the grip limit working, but it means tall walls need somewhere to rest; the test room has a rest ledge for this.
 
 ### Implementation interpretations (technical, not design decisions — flag if wrong)
 - The first guiding principles in §A and the "explain before adding" and merge-to-`main` standing orders in §H were carried over from Lyra's previous design document rather than restated for this project. The three principle sections after them in §A are Lyra's, written for this project (#11–#13).
 - The art style zip was committed unpacked, as the `stylised-geometry/` folder, rather than as the `.zip` file itself, since the guide is written to be copied into a project as a folder.
 - **Linter: oxlint, not ESLint.** The scaffold plan said ESLint from Vite's template, but the template now ships oxlint, so that's what's used.
 - **Colour tokens** cover the whole colour-jobs table in the guide's §5.1, so they include power-light (`#cfeaff`) and hot tell (`#fff0d8`) as well as the seven in §12.4. The guide's squash, light-radius and hit-stop numbers are left out until something moves, because they were tuned for a platformer.
-- **The scene's background is `#14141c`**, the reference sheets' backdrop, until worlds get their own palettes (guide §5.3).
-- **The canvas resizes to fill the window** (Phaser's `RESIZE` scale mode). No fixed resolution or aspect ratio has been decided.
+- **The room's colours are placeholders from the reference sheets** (`#14141c` wall and so on) until worlds get their own palettes (guide §5.3).
+- **The canvas fills the window at the screen's pixel density** (capped at 2×), sized by hand rather than Phaser's `RESIZE` mode so it stays crisp on the Fold. The camera zoom is set from the screen's shorter side, so he's about 56 CSS px on the phone and 64 on desktop. No fixed resolution or aspect ratio has been decided.
+- **Phaser's start-up time-step clamp is off** (`fps.panicMax: 0`), so he moves at the right speed from the first frame on slower devices.
 - **Vite's 500 kB chunk-size warning is raised to 2 MB**, because Phaser alone is about 1.5 MB minified (about 425 kB gzipped) and would trip it on every build.
 - **`@playwright/test` is pinned to 1.63.0**, to match the browser installed in Claude's cloud environment. On a new machine, `npx playwright install chromium` fetches the matching browser.
-- **Vitest passes with no tests** for now, as there's no game logic to test yet.
+- **Climbing details:** jump while holding a wall kicks off away from it; jump while hanging from a ceiling drops him; grab while holding on lets go. Grip drains whenever he's holding on, moving or not, and recovers only standing on a floor or ledge. Faces shorter than 0.6 S, like a ledge's edge, can't be held as walls; he climbs up onto them instead. He goes round corners on his own: up a wall into a ceiling, along a ceiling into a wall, off the end of a ceiling onto its outside face, and over the top of a wall or ledge onto it.
+- **Grabbing is forgiving:** a grab pressed up to a quarter of a second early still catches a surface that comes into reach, and his hands reach over a ledge's end that's just above him, so jump-then-grab at a ledge pulls him up onto it.
+- **Running overrides sneaking while it's held**; sneak stays toggled on underneath. A slide needs at least 80% of run speed.
+- **Blink landing order:** standing if there's floor within 0.35 S below, otherwise holding a wall in reach, otherwise hanging from a ceiling in reach, otherwise in the air (he falls). Blink works while climbing. A thick wall cuts it short, marked by a tick on the aim line. With no aim point (a gamepad stick at rest), it aims ahead of him.
+- **Noise levels:** sneaking and standing are silent, walking soft, sliding noticeable, running and blinking loud; landings scale with impact; climbing is soft, or loud on metal.
+- **Lamp light:** full within 1.5 S of a lamp, fading to nothing at 6 S. Two of the three lamps hang lower than first sketched so the floor beneath them is properly lit.
+- **The camera** looks 0.8 S ahead of the way he faces and keeps a little more room above him than below.
+- **Testing switches** (not design): the debug panel (backtick key or the pause menu), noise rings (pause menu), and `?touch=1` or `?touch=0` in the address to force touch controls on or off. The stand-in checkpoints refill charges and do nothing else.
 
 ---
 
@@ -313,6 +336,17 @@ Shortlisted for visual comparison (options, not decisions):
 
 - **Repository:** `evanstom273/stealth-game`. Working branch `ccr-cbb584dc-kvemny`.
 - **Art style reference:** `stylised-geometry/STYLISED_GEOMETRY.md` and `stylised-geometry/sheets/01-anatomy.svg` to `07-colour.svg`, regenerated by `stylised-geometry/sheets/make_sheets.py` (Python standard library only; takes the output folder as its one argument). The guide was developed in a side-on platformer; rules it marks **(untested)** haven't been through a real game yet.
-- **Project layout:** `src/main.tsx` and `src/App.tsx` (React shell); `src/game/PhaserGame.tsx` (the React component holding the canvas); `src/game/createGame.ts` (Phaser config); `src/game/scenes/` (scenes); `src/game/style/tokens.ts` (the art style's colour tokens); `tests/e2e/` (Playwright); `wrangler.jsonc` (Cloudflare). Commands are in the README.
+- **Project layout:**
+  - `src/App.tsx`: the React shell. `src/game/PhaserGame.tsx` holds the canvas; `src/game/createGame.ts` configures Phaser.
+  - `src/game/tuning.ts`: every starting value (speeds, grip, blink, light) in one place, for tuning.
+  - `src/game/logic/`: plain, unit-tested game logic: geometry, light, grip, noise, climbing, blink targeting.
+  - `src/game/player/`: the thief: `thiefArt.ts` (drawing), `ThiefView.ts` (canvas and image), `Thief.ts` (movement, climbing, blink).
+  - `src/game/room/`: the test room's layout, its drawing, and the darkness.
+  - `src/game/input/Controls.ts`: keyboard, mouse, gamepad and touch merged into one set of inputs.
+  - `src/game/scenes/TestRoomScene.ts`: puts it all together, plus the aim line, rings and grip bar.
+  - `src/game/bridge.ts`: what the game tells the React interface, and the touch input going back.
+  - `src/ui/`: the HUD, touch controls and pause menu.
+  - `tests/e2e/`: Playwright. In development the page exposes `window.__thief()` for the tests; it's left out of production builds.
+  - Commands are in the README.
 - **Explain before adding** *(carried over from Lyra's previous design document)*: before building anything, Claude says what it's about to add and how, then waits for the go-ahead.
 - **Workflow** *(Lyra's standing order across all her projects)*: after committing to the working branch, always merge straight to `main` as well; no need to ask each time.

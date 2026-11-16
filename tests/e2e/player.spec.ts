@@ -43,6 +43,19 @@ test.describe('the thief on keyboard and mouse', () => {
     await expect.poll(async () => (await thief(page)).mode).toBe('ground')
   })
 
+  test('jumps at a ledge, grabs, and climbs up onto it', async ({ page }) => {
+    await boot(page)
+    // Ledge 1 spans x 8.5 to 13.5 with its top at y 8.6. Stand just short of its left end.
+    await holdUntil(page, 'd', (t) => t.x > 7.7)
+    await expect.poll(async () => Math.abs((await thief(page)).x)).toBeGreaterThan(7.6)
+    // A full jump (holding Space), with grab pressed just after take-off: the grab waits until the edge is in reach.
+    await page.keyboard.down('Space')
+    await expect.poll(async () => (await thief(page)).mode).toBe('air')
+    await page.keyboard.press('e')
+    await expect.poll(async () => { const t = await thief(page); return t.mode === 'ground' && t.y < 8.6 }).toBe(true)
+    await page.keyboard.up('Space')
+  })
+
   test('blinks with the right mouse button, spending a charge, and a checkpoint refills it', async ({ page }) => {
     await boot(page)
     const start = await thief(page)

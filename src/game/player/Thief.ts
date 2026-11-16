@@ -67,6 +67,7 @@ export class Thief {
 
   private coyote = 0
   private jumpBuffer = 0
+  private grabBuffer = 0
   private jumpCut = false
   private wasGrounded = false
   private lastVy = 0
@@ -350,8 +351,10 @@ export class Thief {
     const running = intent.run && Math.abs(intent.moveX) > 0.1
 
     // Grab: hold a wall or ceiling, or climb onto a ledge in reach.
-    if (intent.grabPressed && this.mode !== 'slide') {
+    this.grabBuffer = intent.grabPressed ? MOVE.grabBuffer : Math.max(0, this.grabBuffer - dt)
+    if (this.grabBuffer > 0 && this.mode !== 'slide') {
       const g = findGrab(this.box, this.facing, intent.moveY < -0.5, this.room.solids, CLIMB_CFG)
+      if (g) this.grabBuffer = 0
       if (g?.kind === 'climb') {
         this.freeze(true)
         this.setBox(g.box)
