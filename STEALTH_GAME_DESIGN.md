@@ -8,7 +8,7 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T06:35:14+00:00):**
+**Where the project stands (as of 2026-11-16T06:46:01+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -191,7 +191,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 ## C. Current Development Scope
 
-The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink's rules and look settled (#27, #32–#36). First playable piece: the full player (#37), being planned.
+The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink's rules and look settled (#27, #32–#36). First playable piece: the full player (#37). Plan proposed; a UI mock-up of the HUD and controls is being reviewed first.
 
 Shortlisted for visual comparison (options, not decisions):
 - **Bodies:** square, rounded square, circle and triangle (all four picked), plus stacked and polygon builds following Lyra's note (#19).
@@ -202,6 +202,8 @@ Shortlisted for visual comparison (options, not decisions):
 **Thief Mask Fitting** (Artifact, round 3): https://claude.ai/artifact/3qpxJDtQ17eQkx3taQwPiN. No. 7 with the smirk and dark gloves in three masks: A, plain band; B, band with ties (knotted at the back, two notched tails that trail when moving and drop at rest); C, domino (dips between the eyes, outer corners flick up just past the head). Each in light and full shadow, at S = 48, 64 and 80 px, and walking under a lamp. Claude's choices, up for change: the tie and domino details, and gloves matching the mask's dark.
 
 **Thief Blink Studies** (Artifact, blink looks): https://claude.ai/artifact/G34hV17S54p8gSnqsmDbZU. Four looping test rooms, one per look: A, pop and ring; B, shatter and reassemble (pieces of his own shapes); C, shadow streak; D, turning to dust (Lyra's option, drawn as crumbling into the guide's dust squares from the head down and gathering back at the far end). In each he aims through a thin wall, blinks to the far floor, back, then up to the ceiling, landing gripping. Claude's choices, up for change: power blue for the aim line, landing marker and rings; a first take on the hanging pose; lit eye streaks in the shadow streak; the reading of "turning to dust"; all timings.
+
+**Thief Control Layout** (Artifact, UI mock-up, 2026-11-16T06:46:01+00:00): https://claude.ai/artifact/SZvQfYxAyDTpgY8jjx86hn. Requested by Lyra before the full player is built. An interactive mock-up of the HUD and controls on the Fold's outer screen (portrait and landscape, about 412 × 915), its inner screen (about 790 × 820) and desktop (1280 × 720): fixed thumbstick, Jump, Grab, Sneak and Blink buttons, drag-from-Blink aiming with a range ring and landing ghost, blink charges as pips, a Sneaking tag, a grip bar, an optional debug panel, and the keyboard and gamepad map. Variants to compare: buttons in an arc or a diamond; portrait controls over the game or in a band below it. Claude's choices, up for change: run on touch by pushing the stick to its edge; charges as dust squares; the icons; the Sneaking tag; the key and button bindings; S = 56 px on phones and 64 px on desktop.
 
 ---
 
