@@ -8,7 +8,7 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T06:46:01+00:00):**
+**Where the project stands (as of 2026-11-16T06:52:36+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -161,6 +161,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **Keyboard, gamepad and touch, all from the start.** Lyra plays on a Pixel 10 Pro Fold, so the game has to work in portrait, in landscape and on the inner folding screen, as well as on desktop. *(2026-11-16T06:31:36+00:00 — History #39)*
 - **Touch: a fixed thumbstick** in the same corner for moving and climbing. *(2026-11-16T06:35:14+00:00 — History #43)*
 - **Touch: drag from the blink button to aim.** The landing marker follows the finger; let go to blink, slide back onto the button to cancel. Claude's recommendation, approved. *(2026-11-16T06:35:14+00:00 — History #44)*
+- **Touch layout approved from the Thief Control Layout mock-up:** buttons in a **diamond** (Jump bottom, Grab right, Sneak left, Blink top, charges as pips above Blink), and the controls **over the game** in portrait (no separate band). Run on touch is pushing the stick to its edge. Lyra approved the mock-up's other choices with it: blink charges as dust-square pips top left, a "Sneaking" tag while sneak is on, the grip bar under him, the icons, and the keyboard and gamepad map. *(2026-11-16T06:52:36+00:00 — History #45)*
 
 ### Art and presentation
 - **Art style: Stylised Geometry**, as set out in `stylised-geometry/STYLISED_GEOMETRY.md` and its reference sheets. *(2026-11-16T05:36:10+00:00 — History #2)*
@@ -168,6 +169,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 ### Development approach
 - **First playable piece: the full player.** Lyra wants to test all of the player's mechanics together (look, light, ground movement, climbing, blink) rather than one at a time. Claude builds it in stages internally, testing each before the next, so it's still not one-shotted. *(2026-11-16T06:31:36+00:00 — History #37)*
+- **The full-player build plan is approved** (Lyra: "Do it"), including Claude's proposed starting values to tune in play: S = 64 world px, drawn at about 56 CSS px on phones and 64 on desktop; sneak about 40% of walking speed and run about 1.8×; grip about 6 s on walls and 3 s upside down; 3 blink charges; blink range about 5 S; walls thinner than half his width count as thin. Also a stand-in checkpoint marker, a debug panel, and noise rings in place of guards for testing. *(2026-11-16T06:52:36+00:00 — History #46)*
 - **Not one-shotting the game.** It's built a piece at a time, the way Lyra built a previous project: each piece is made, tested, refined, tested and refined further before moving on to the next. *(2026-11-16T05:43:12+00:00 — History #6)*
 - **Depth before breadth.** Each mechanic is made polished, satisfying and fully functional before new ones are added. Workflow: Design → Implement → Test → Refine → Test Again → Refine Further → Move On. In full in §A. *(2026-11-16T05:51:48+00:00 — History #11)*
 - **Claude Artifacts as a visual workshop.** Characters, animations, environments, small mechanic prototypes and UI are designed, compared and refined in Artifacts, approved by Lyra, then used as the reference for implementation. In full in §A. *(2026-11-16T05:51:48+00:00 — History #12)*
@@ -191,7 +193,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 ## C. Current Development Scope
 
-The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink's rules and look settled (#27, #32–#36). First playable piece: the full player (#37). Plan proposed; a UI mock-up of the HUD and controls is being reviewed first.
+The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink's rules and look settled (#27, #32–#36). First playable piece: the full player (#37); plan and UI approved (#45, #46), being built.
 
 Shortlisted for visual comparison (options, not decisions):
 - **Bodies:** square, rounded square, circle and triangle (all four picked), plus stacked and polygon builds following Lyra's note (#19).
@@ -302,6 +304,8 @@ Shortlisted for visual comparison (options, not decisions):
 | 42 | 2026-11-16T06:35:14+00:00 | Player | Slide from a run: press down while running (Claude's recommendation, approved). |
 | 43 | 2026-11-16T06:35:14+00:00 | Platform | Touch: a fixed thumbstick for moving and climbing. |
 | 44 | 2026-11-16T06:35:14+00:00 | Platform | Touch: drag from the blink button to aim; release to blink, back onto the button to cancel (Claude's recommendation, approved). |
+| 45 | 2026-11-16T06:52:36+00:00 | Platform | Touch layout: diamond buttons, controls over the game in portrait; the rest of the UI mock-up approved as drawn. |
+| 46 | 2026-11-16T06:52:36+00:00 | Workflow | Full-player build plan approved, with Claude's starting values to tune in play. |
 
 ---
 
