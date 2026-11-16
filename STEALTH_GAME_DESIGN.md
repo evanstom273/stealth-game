@@ -174,6 +174,13 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **Sneak is a toggle; run is held.** Press once to sneak until pressed again; hold to run. *(2026-11-16T06:31:36+00:00 — History #38)*
 - **In first person** (History #92), the moves are:
   - **Climbing stays, redone for first person.** The details are still to be designed. *(2026-11-16T17:38:38+00:00 — History #94)*
+  - **The blink view is kept simple** (Lyra: "I was imagining the blink view would be simpler, less info"):
+    - **The room:** a bare silhouette, one tone for anywhere you can stand and one for walls.
+    - **Height:** shown only by **lean**, GTA 2 style. Raised things lean away from the middle of the view so you see their sides.
+    - **Danger:** just the guards themselves, with no sight cones, no light and dark, and no lamps.
+    - **Aiming:** all four aids stay: the landing ghost, the range ring, the aim line (with a tick where a thick wall stops it), and a label saying where you'll land.
+
+    *(2026-11-16T17:55:42+00:00 — History #106, #107)*
   - **Blink in first person (Lyra's idea):** the camera switches to a **top-down** view and time slows. You choose where to go within range, then you're back in first person at the new spot. *(2026-11-16T17:43:37+00:00 — History #104, #105)*
   - ~~**Blink stays. Lyra has an idea for how it works in first person**, still to come.~~ *(2026-11-16T17:38:38+00:00 — History #95)*
   - **Sneak becomes crouching:** lower view, slower, quieter. *(2026-11-16T17:38:38+00:00 — History #100)*
@@ -269,6 +276,16 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 **Switched to first person** (History #92; first-person decisions #93–#103, 2026-11-16T17:32:05+00:00). Next: work out what carries over from the side-on design (§E, question 9) before building anything in the new view.
 
+**Top-Down Blink Study** (Artifact, 2026-11-16T17:55:42+00:00): https://claude.ai/artifact/8tHWDukGJzkB7crdFqPqGt.
+- **Version 1** compared five ways of showing height in the blink view, as switches you could combine: shading, drop shadows, edges and hatching, height numbers, and lean. It also had sight cones, light and dark, lamps, and a full-detail chamber: a mezzanine with steps, crates one and two high, a platform, a loading pit, a thick wall with a doorway, and a glass office.
+- **Version 2** is Lyra's pick (#106, #107).
+- **Claude's choices in version 2, up for change:**
+  - the two tones
+  - a thin ink outline round anything raised or sunken
+  - glass drawn thin in the wall tone
+  - a lean of 5% per step of height
+  - the faint blue edge for slowed time
+
 **Billboard Corridor** (Artifact, 2026-11-16T17:32:05+00:00): https://claude.ai/artifact/AHAgyvbD5BFNBXTpyyiF9H. Saved as `prototypes/billboard-corridor/index.html`. A first-person test-wing corridor in Three.js:
 - **What's in it:** you play the thief, seen as his floating gloves (click or F to punch). A staff watchman at an alcove post turns every 2.4 s, another patrols the corridor, and a second thief walks round a pillar in a side room.
 - **Billboards:** every character is an upright billboard that turns to face you. It shows its front, side or back drawing depending on where you stand, and is redrawn each frame for how lit it is.
@@ -326,7 +343,7 @@ Shortlisted for visual comparison (options, not decisions):
    - **Still open:**
      - How climbing works in first person (#94).
      - Blink, now settled as a top-down view with time slowed (#104, #105). Still open within it:
-       - how the top-down view shows height, since the levels have floors and ledges at different heights
+       - ~~how the top-down view shows height~~ (lean, #106)
        - which way he faces on landing
        - whether the camera pulls up and drops back down or cuts
        - whether guards see the blink happen
@@ -515,6 +532,8 @@ Shortlisted for visual comparison (options, not decisions):
 | 103 | 2026-11-16T17:38:38+00:00 | Combat | The combo, finisher and dodge carry over into first person. |
 | 104 | 2026-11-16T17:43:37+00:00 | Player movement | Blink in first person (Lyra's idea): the camera switches to a map view and time slows; you choose where to go within range. |
 | 105 | 2026-11-16T17:43:37+00:00 | Player movement | The blink view is top-down. |
+| 106 | 2026-11-16T17:55:42+00:00 | Player movement | The blink view shows height by lean only (Top-Down Blink Study). |
+| 107 | 2026-11-16T17:55:42+00:00 | Player movement | The blink view is simpler: a bare two-tone silhouette of the room, the guards but no sight cones, light or lamps, and all four aiming aids (ghost, range ring, aim line, landing label). |
 
 ---
 
