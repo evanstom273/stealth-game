@@ -6,14 +6,15 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 ## A. Project Overview
 
-A **stealth game** (History #1), drawn in the **Stylised Geometry** art style (History #2). Working title: none yet; the repository is `stealth-game`.
+A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T05:51:48+00:00):**
+**Where the project stands (as of 2026-11-16T05:57:44+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
 - How we work is set out below: Depth Before Breadth, Artifacts as a visual workshop, and structured rounds of design questions (History #11–#13).
 - Lyra is deploying the scaffold to Cloudflare Workers (History #14).
+- Designing the player: first round of questions done (History #15–#17).
 
 **Stack:** React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js and Cloudflare Workers: Lyra's normal stack (History #3).
 - **React** is the outer shell; **Phaser** (v4) runs the game inside a single React component (History #7, #9).
@@ -126,6 +127,11 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 ### Concept
 - **A stealth game.** *(2026-11-16T05:36:10+00:00 — History #1)*
+- **Side-on view**, like a platformer. The Stylised Geometry guide was built and proven side-on; its top-down and isometric rules are untested. Claude's recommendation, approved. *(2026-11-16T05:57:44+00:00 — History #15)*
+
+### The player
+- **A thief who's small and out of place.** Lyra chose both "a thief" (breaking in to take something) and "small and out of place" (sneaking past things far bigger than it; stealth as vulnerability). How skilled a thief it is hasn't been decided. *(2026-11-16T05:57:44+00:00 — History #16)*
+- **Fades in shadow; the eyes stay lit.** The player's body dims when hidden while the eyes stay bright, so how visible the player is reads straight off the player. This deliberately breaks the style's rule that characters are never darkened, for the player only. Claude's recommendation, approved. *(2026-11-16T05:57:44+00:00 — History #17)*
 
 ### Art and presentation
 - **Art style: Stylised Geometry**, as set out in `stylised-geometry/STYLISED_GEOMETRY.md` and its reference sheets. *(2026-11-16T05:36:10+00:00 — History #2)*
@@ -153,7 +159,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 ## C. Current Development Scope
 
-The scaffold is built and tested (see §F). Nothing else is in development; the next piece hasn't been chosen.
+The scaffold is built and tested (see §F). **In design: the player.** Round 1 of questions is done (view, who the player is, how they look when hidden). Next: the player's look, then visual options in Artifacts, then the game.
 
 ---
 
@@ -220,6 +226,9 @@ The scaffold is built and tested (see §F). Nothing else is in development; the 
 | 12 | 2026-11-16T05:51:48+00:00 | Workflow | Development Workflow: Claude Artifacts for visual design and prototyping (in full in §A). |
 | 13 | 2026-11-16T05:51:48+00:00 | Workflow | Design Workflow: structured rounds of questions and collaborative decision-making (in full in §A). |
 | 14 | 2026-11-16T05:51:48+00:00 | Deployment | Deployed on Cloudflare Workers (Lyra deploying the scaffold). |
+| 15 | 2026-11-16T05:57:44+00:00 | Concept | Side-on view (Claude's recommendation, approved). |
+| 16 | 2026-11-16T05:57:44+00:00 | Player | The player is a thief who's small and out of place (both options chosen; the question was single-select by mistake, corrected in conversation). |
+| 17 | 2026-11-16T05:57:44+00:00 | Player | The player fades in shadow while the eyes stay lit, deliberately breaking the style's "characters are never darkened" rule for the player only (Claude's recommendation, approved). |
 
 ---
 
