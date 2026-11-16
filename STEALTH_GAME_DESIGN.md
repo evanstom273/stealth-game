@@ -174,7 +174,8 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **Sneak is a toggle; run is held.** Press once to sneak until pressed again; hold to run. *(2026-11-16T06:31:36+00:00 — History #38)*
 - **In first person** (History #92), the moves are:
   - **Climbing stays, redone for first person.** The details are still to be designed. *(2026-11-16T17:38:38+00:00 — History #94)*
-  - **Blink stays. Lyra has an idea for how it works in first person**, still to come. *(2026-11-16T17:38:38+00:00 — History #95)*
+  - **Blink in first person (Lyra's idea):** the camera switches to a **top-down** view and time slows. You choose where to go within range, then you're back in first person at the new spot. *(2026-11-16T17:43:37+00:00 — History #104, #105)*
+  - ~~**Blink stays. Lyra has an idea for how it works in first person**, still to come.~~ *(2026-11-16T17:38:38+00:00 — History #95)*
   - **Sneak becomes crouching:** lower view, slower, quieter. *(2026-11-16T17:38:38+00:00 — History #100)*
   - **The slide from a run stays.** *(2026-11-16T17:38:38+00:00 — History #100)*
   - **He crawls through gaps too low to crouch through.** *(2026-11-16T17:38:38+00:00 — History #100)*
@@ -324,7 +325,11 @@ Shortlisted for visual comparison (options, not decisions):
    - **Settled:** the engine (#96), the levels (#97), the billboard drawings (#98), looking up and down (#99), the ground moves (#100), takedowns (#101), the light meter (#102) and fighting (#103). How he's seen isn't a problem (#93).
    - **Still open:**
      - How climbing works in first person (#94).
-     - Blink in first person: Lyra's idea, to come (#95).
+     - Blink, now settled as a top-down view with time slowed (#104, #105). Still open within it:
+       - how the top-down view shows height, since the levels have floors and ledges at different heights
+       - which way he faces on landing
+       - whether the camera pulls up and drops back down or cuts
+       - whether guards see the blink happen
      - The touch layout for first person.
      - The camera's feel: field of view, head bob, how leaning looks.
      - What the light meter looks like.
@@ -508,6 +513,8 @@ Shortlisted for visual comparison (options, not decisions):
 | 101 | 2026-11-16T17:38:38+00:00 | Combat | First-person takedowns: the gloves do it on screen, the view lunges and dips, and the pounce becomes a drop from above. No third-person shot. |
 | 102 | 2026-11-16T17:38:38+00:00 | Combat | How hidden he is: both his gloves fading as the meter and a meter on screen. |
 | 103 | 2026-11-16T17:38:38+00:00 | Combat | The combo, finisher and dodge carry over into first person. |
+| 104 | 2026-11-16T17:43:37+00:00 | Player movement | Blink in first person (Lyra's idea): the camera switches to a map view and time slows; you choose where to go within range. |
+| 105 | 2026-11-16T17:43:37+00:00 | Player movement | The blink view is top-down. |
 
 ---
 
