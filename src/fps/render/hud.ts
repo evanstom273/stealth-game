@@ -137,6 +137,8 @@ export interface MapState {
   guards: MapGuard[]
   alpha: number
   time: number
+  /** How to pick and close, for the device in use. */
+  hint: string
 }
 
 const GROUND = '#c8d0d5', WALL = '#2c323b', SIDE_GROUND = '#8d969c', SIDE_WALL = '#1d2128'
@@ -144,15 +146,54 @@ const GROUND = '#c8d0d5', WALL = '#2c323b', SIDE_GROUND = '#8d969c', SIDE_WALL =
 /** Pixels per S in the blink view: the whole range and a bit, in the shorter side. */
 export const mapScale = (w: number, h: number) => Math.min(w, h) / (BLINK.range * 2 + 4.5)
 
+/** Height lean: raised things push away from the middle of the view, lower ones draw in. */
+const leanAt = (y: number, eyeY: number) => 1 + Math.max(-1.5, Math.min(3, y - eyeY)) * BLINK.lean
+
+/** Where a point on the ground shows in the blink view, in CSS pixels. */
+export function mapToScreen(w: number, h: number, mid: { x: number; y: number; z: number }, x: number, y: number, z: number): [number, number] {
+  const sc = mapScale(w, h), f = leanAt(y, mid.y)
+  return [w / 2 + (x - mid.x) * sc * f, h / 2 + (z - mid.z) * sc * f]
+}
+
+/** The top of whatever is drawn at (x, z) in the blink view: walls show as a block 3 above him. */
+function topDrawn(L: Level, x: number, z: number, wallTop: number): number {
+  const c = Math.floor(x), r = Math.floor(z)
+  let top = isWall(L, c, r) ? wallTop : floorAt(L, c, r)
+  for (const b of L.boxes) if (x >= b.x0 && x < b.x1 && z >= b.z0 && z < b.z1) top = Math.max(top, b.y1)
+  for (const b of L.thin) if (x >= b.x0 && x < b.x1 && z >= b.z0 && z < b.z1) top = wallTop
+  return top
+}
+
+/**
+ * The spot on the ground under a point in the blink view (a click or a tap): the highest surface
+ * drawn there, undoing its lean, so picking the top of a crate picks the crate.
+ */
+export function screenToMap(L: Level, w: number, h: number, mid: { x: number; y: number; z: number }, sx: number, sy: number): { x: number; z: number } {
+  const sc = mapScale(w, h), wallTop = mid.y + 3
+  const at = (y: number) => {
+    const f = leanAt(y, mid.y)
+    return { x: mid.x + (sx - w / 2) / (sc * f), z: mid.z + (sy - h / 2) / (sc * f) }
+  }
+  // Every height something is drawn at nearby, highest first: the first whose surface is really there wins.
+  const flat = at(mid.y)
+  const heights = new Set<number>([wallTop])
+  for (let r = Math.floor(flat.z) - 2; r <= Math.floor(flat.z) + 2; r++) for (let c = Math.floor(flat.x) - 2; c <= Math.floor(flat.x) + 2; c++) if (!isWall(L, c, r)) heights.add(floorAt(L, c, r))
+  for (const b of L.boxes) heights.add(b.y1)
+  for (const y of [...heights].sort((a, b) => b - a)) {
+    const p = at(y)
+    if (Math.abs(topDrawn(L, p.x, p.z, wallTop) - y) < 0.02) return p
+  }
+  return flat
+}
+
 /** Draws the blink view: a bare two-tone room, height shown only by lean, the guards, and the aiming aids. */
 export function drawBlinkMap(g: CanvasRenderingContext2D, w: number, h: number, m: MapState) {
   if (m.alpha <= 0.01) return
   const L = m.level
   const sc = mapScale(w, h)
   const cx = w / 2, cy = h / 2
-  // Height lean: raised things push away from the middle of the view, lower ones draw in.
   const P = (x: number, z: number, y: number): [number, number] => {
-    const f = 1 + Math.max(-1.5, Math.min(3, y - m.y)) * BLINK.lean
+    const f = leanAt(y, m.y)
     return [cx + (x - m.x) * sc * f, cy + (z - m.z) * sc * f]
   }
   g.save()
@@ -251,6 +292,14 @@ export function drawBlinkMap(g: CanvasRenderingContext2D, w: number, h: number, 
     g.fillStyle = 'rgba(13,26,36,0.9)'; g.beginPath(); g.roundRect(gx - tw / 2, ty, tw, Math.max(20, 0.46 * sc), 0.14 * sc); g.fill()
     g.strokeStyle = '#8fd3ff'; g.lineWidth = 1.5; g.stroke()
     g.fillStyle = '#e6f4ff'; g.fillText(text, gx, ty + Math.max(20, 0.46 * sc) / 2 + 1)
+  }
+
+  // How to pick and how to close, along the top, under the charges and pause (clear of the touch buttons).
+  if (m.aim && m.hint) {
+    g.font = `500 ${Math.max(12, 0.28 * sc)}px Outfit, system-ui, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'
+    const hw = g.measureText(m.hint).width + 24, hy = 88
+    g.fillStyle = 'rgba(13,26,36,0.75)'; g.beginPath(); g.roundRect(cx - hw / 2, hy - 13, hw, 26, 13); g.fill()
+    g.fillStyle = '#cfe9ff'; g.fillText(m.hint, cx, hy + 1)
   }
 
   // Time slowed: a faint power-blue edge round the view.

@@ -66,7 +66,8 @@ export class Player {
   state = 'idle'
   private noiseTimer = 0
   blink: BlinkState | null = null
-  private wasBlinkHeld = false
+  /** Turns a point over the blink view (CSS pixels) into a spot on the ground: set by the game, which draws the view. */
+  fromScreen: ((x: number, y: number) => { x: number; z: number }) | null = null
   readonly trace: string[] = []
   onNoise: ((level: number, at: V3) => void) | null = null
   onDust: ((at: V3, height: number) => void) | null = null
@@ -168,16 +169,15 @@ export class Player {
   update(dt: number, I: Intent, pxPerS: number) {
     if (dt <= 0) return
     this.flash = Math.max(0, this.flash - dt * 3)
-    const blinkEdge = I.blinkHeld && !this.wasBlinkHeld
-    this.wasBlinkHeld = I.blinkHeld
     if (this.mode !== 'locked' && !this.blink) {
       this.yaw += I.dyaw
       this.pitch = Math.max(-1.48, Math.min(1.48, this.pitch + I.dpitch))
     }
     if (this.blink) this.updateBlink(dt, I, pxPerS)
-    else if (blinkEdge && this.charges > 0 && (this.mode === 'ground' || this.mode === 'air' || this.mode === 'wall' || this.mode === 'ceiling')) {
+    else if (I.blinkPressed && this.charges > 0 && (this.mode === 'ground' || this.mode === 'air' || this.mode === 'wall' || this.mode === 'ceiling')) {
+      // Blink opens the view; it stays open until he picks a spot or closes it (History #109).
       this.startBlink()
-      this.updateBlink(0, I, pxPerS)
+      this.updateBlink(0, { ...I, blinkPressed: false, selectPressed: false, backPressed: false }, pxPerS)
     } else {
       switch (this.mode) {
         case 'ground':
@@ -436,7 +436,7 @@ export class Player {
   /** How far the camera leans: sideways offset and roll. */
   get leanAmount() { return this.lean * this.leanRoom }
 
-  // ---------- Blink (History #104–#107) ----------
+  // ---------- Blink (History #104–#109) ----------
 
   private startBlink() {
     const b = this.body
@@ -459,7 +459,7 @@ export class Player {
     if (bl.phase === 'enter' || bl.phase === 'aim') {
       if (I.aim.kind === 'delta') { bl.ax += I.aim.x / pxPerS; bl.az += I.aim.y / pxPerS }
       else if (I.aim.kind === 'stick' && Math.hypot(I.aim.x, I.aim.y) > 0.2) { bl.ax = bl.from.x + I.aim.x * BLINK.range; bl.az = bl.from.z + I.aim.y * BLINK.range }
-      else if (I.aim.kind === 'drag') { const k = BLINK.range / 120; bl.ax = bl.from.x + I.aim.x * k; bl.az = bl.from.z + I.aim.y * k }
+      else if (I.aim.kind === 'point') { const q = this.fromScreen?.(I.aim.x, I.aim.y); if (q) { bl.ax = q.x; bl.az = q.z } }
       const dx = bl.ax - bl.from.x, dz = bl.az - bl.from.z, d = Math.hypot(dx, dz), max = BLINK.range + 1
       if (d > max) { bl.ax = bl.from.x + (dx / d) * max; bl.az = bl.from.z + (dz / d) * max }
       let landing = resolveBlink(this.L, bl.from, bl.ax, bl.az, BLINK.range)
@@ -467,18 +467,17 @@ export class Player {
       bl.landing = landing
       bl.t += dt
       if (bl.phase === 'enter' && bl.t >= BLINK.enter) { bl.phase = 'aim'; bl.t = 0 }
-      if (I.blinkReleased || !I.blinkHeld) {
-        const near = Math.hypot(bl.ax - bl.from.x, bl.az - bl.from.z) < 0.5
-        if (I.blinkCancel || !landing || near) {
-          bl.phase = 'exit'; bl.t = 0; bl.cancelled = true
-          this.note('blink cancelled')
-        } else {
-          bl.phase = 'travel'; bl.t = 0
-          this.charges--
-          this.onDust?.(bl.from, b.h)
-          this.emit(NOISE.loud, bl.from)
-          this.note('blink')
-        }
+      if (I.blinkPressed || I.backPressed) {
+        // Blink again (or B) closes the view without going anywhere.
+        bl.phase = 'exit'; bl.t = 0; bl.cancelled = true
+        this.note('blink cancelled')
+      } else if (I.selectPressed && landing && Math.hypot(bl.ax - bl.from.x, bl.az - bl.from.z) >= 0.5) {
+        // Picking a spot goes there at once, and the view closes behind him.
+        bl.phase = 'travel'; bl.t = 0
+        this.charges--
+        this.onDust?.(bl.from, b.h)
+        this.emit(NOISE.loud, bl.from)
+        this.note('blink')
       }
       return
     }

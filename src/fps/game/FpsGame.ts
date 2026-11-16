@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { commands, hud } from '../../game/bridge.ts'
+import type { AttackGlyph } from '../../game/input/device.ts'
 import { NOISE_NAMES } from '../../game/logic/noise.ts'
 import { viewFrom } from '../art/views.ts'
 import { TEST_WING } from '../level/testWing.ts'
@@ -7,7 +8,7 @@ import type { Level, V3 } from '../level/level.ts'
 import { forward } from '../logic/climb.ts'
 import { lightAt } from '../logic/rules.ts'
 import { buildLevelView, type LevelView } from '../render/levelMesh.ts'
-import { drawBlinkMap, drawCentre, Gloves, mapScale } from '../render/hud.ts'
+import { drawBlinkMap, drawCentre, Gloves, mapScale, mapToScreen, screenToMap } from '../render/hud.ts'
 import { GuardSprite, Particles, shadowTexture } from '../render/sprites.ts'
 import { BLINK, LEAN, LOOK } from '../tuning.ts'
 import { Combat } from './Combat.ts'
@@ -16,12 +17,20 @@ import { Guard } from './Guard.ts'
 import { Player } from './Player.ts'
 
 /** One-frame presses, which mustn't be lost while the game is frozen for a hit-stop. */
-const PRESSES = ['jumpPressed', 'crouchPressed', 'grabPressed', 'attackPressed', 'attackReleased', 'dodgePressed'] as const
+const PRESSES = ['jumpPressed', 'crouchPressed', 'grabPressed', 'attackPressed', 'attackReleased', 'dodgePressed', 'blinkPressed', 'selectPressed', 'backPressed'] as const
 
 /**
  * The first-person game (History #92): Three.js inside the React shell, with our own loop.
  * Owns the scene, the level, the thief, the guards, combat, the controls and the HUD drawn over it.
  */
+/** How to pick a spot and close the blink view, for each kind of controls. */
+const BLINK_HINT: Record<AttackGlyph, string> = {
+  key: 'Click where to blink · right-click to close',
+  mouse: 'Click where to blink · right-click to close',
+  pad: 'A to blink · B or LT to close',
+  touch: 'Tap where to go · Blink to close',
+}
+
 export class FpsGame {
   private L: Level = TEST_WING
   private root: HTMLElement
@@ -76,6 +85,8 @@ export class FpsGame {
     this.particles = new Particles(this.scene)
 
     this.player = new Player(this.L)
+    // A click or tap on the blink view: the spot under it (History #109).
+    this.player.fromScreen = (x, y) => screenToMap(this.L, this.w, this.h, this.player.blink?.from ?? this.player.pos, x, y)
     const noGuards = new URLSearchParams(window.location.search).get('guards') === '0'
     this.guards = noGuards ? [] : this.L.guards.map((s) => new Guard(this.L, s))
     const shadow = shadowTexture()
@@ -161,6 +172,7 @@ export class FpsGame {
         this.hitStop -= dt
         for (const k of PRESSES) if (intent[k]) this.carried[k] = true
         if (intent.attackPresses) this.carried.attackPresses = (this.carried.attackPresses ?? 0) + intent.attackPresses
+        if (intent.aim.kind === 'point') this.carried.aim = intent.aim
       } else {
         if (Object.keys(this.carried).length) {
           intent = { ...intent, ...this.carried, attackPresses: intent.attackPresses + (this.carried.attackPresses ?? 0) }
@@ -268,6 +280,7 @@ export class FpsGame {
         guards: this.guards.map((gd) => ({ x: gd.x, y: gd.y, z: gd.z, fx: gd.fx, fz: gd.fz, face: gd.faceLook, pose: gd.pose, time: gd.time, walk: gd.walk, hidden: gd.state === 'dead' })),
         alpha: mapA,
         time: now / 1000,
+        hint: BLINK_HINT[this.combat.glyph],
       })
     }
     const gl = this.combat.gloves
@@ -311,6 +324,8 @@ export class FpsGame {
       holdGuard: (i: number, fx: number, fz: number) => this.guards[i].holdStill(fx, fz),
       freezeGuard: (i: number, fx: number, fz: number) => { this.guards[i].holdStill(fx, fz); this.guards[i].frozen = true },
       aimBlink: (x: number, z: number) => p.aimAt(x, z),
+      /** Where a spot on the ground shows in the open blink view, in CSS pixels over the game. */
+      mapPoint: (x: number, y: number, z: number) => (p.blink ? mapToScreen(this.w, this.h, p.blink.from, x, y, z) : null),
     }
   }
 }

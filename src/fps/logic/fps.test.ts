@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { buildLevel, type Box, type Level } from '../level/level.ts'
 import { TEST_WING } from '../level/testWing.ts'
+import { mapToScreen, screenToMap } from '../render/hud.ts'
 import { BODY, SIGHT, TAKEDOWN } from '../tuning.ts'
 import { makeBody, moveBody } from './body.ts'
 import { stepCeiling, stepWall, tryGrab } from './climb.ts'
@@ -137,6 +138,18 @@ describe('blink, from above', () => {
     expect(vent?.posture).toBe('crawl')
     const duct = resolveBlink(TEST_WING, { x: 4.5, y: 0, z: 15 }, 4.5, 13.5, 6)
     expect(duct?.posture).toBe('crouch')
+  })
+})
+
+describe('picking a spot in the blink view', () => {
+  const mid = { x: 2.5, y: 0, z: 5.5 }
+  it('a click on the ledge or the crate picks the top of it, not the floor its lean falls over', () => {
+    for (const [x, y, z] of [[4.6, 2, 3.4], [6.5, 1, 5.5], [8, 0, 2.2]]) {
+      const [sx, sy] = mapToScreen(760, 480, mid, x, y, z)
+      const p = screenToMap(L, 760, 480, mid, sx, sy)
+      expect(p.x).toBeCloseTo(x, 4)
+      expect(p.z).toBeCloseTo(z, 4)
+    }
   })
 })
 

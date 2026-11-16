@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 
-// The first-person game (History #92–#107) in the Test Wing. Positions are in S, y up, z south.
+// The first-person game (History #92–#109) in the Test Wing. Positions are in S, y up, z south.
 // The headless browser renders on the CPU at a few frames a second, so tests poll generously.
 test.use({ viewport: { width: 760, height: 480 } })
 
@@ -35,6 +35,7 @@ type Hooks = {
   holdGuard: (i: number, fx: number, fz: number) => void
   freezeGuard: (i: number, fx: number, fz: number) => void
   aimBlink: (x: number, z: number) => void
+  mapPoint: (x: number, y: number, z: number) => [number, number] | null
 }
 const run = <A extends unknown[], T>(page: Page, fn: (h: Hooks, ...a: A) => T, ...args: A): Promise<T> =>
   page.evaluate(([src, a]) => new Function('h', 'a', `return (${src})(h, ...a)`)((window as unknown as { __fps: unknown }).__fps, a), [fn.toString(), args] as const) as Promise<T>
@@ -140,34 +141,58 @@ test.describe('first person: climbing', () => {
 })
 
 test.describe('first person: blink from the top-down view', () => {
-  test('holding the right button opens the view, aiming picks a landing, letting go blinks there', async ({ page }) => {
+  /** Where a spot on the ground shows in the open blink view, in page pixels. */
+  const onMap = async (page: Page, x: number, y: number, z: number) => {
+    const box = (await page.locator('[data-game-root]').boundingBox())!
+    const p = (await run(page, (h, a: number, b: number, c: number) => h.mapPoint(a, b, c), x, y, z))!
+    return { x: box.x + p[0], y: box.y + p[1] }
+  }
+
+  test('the right button opens the view and it stays open; a click on the catwalk blinks there and it closes', async ({ page }) => {
     const errors = await boot(page, '&guards=0')
     await run(page, (h, n: number) => h.place(20, 0, 15, n, 0), EAST)
     const box = (await page.locator('[data-game-root]').boundingBox())!
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
-    await page.mouse.down({ button: 'right' })
-    await expect.poll(async () => (await state(page)).blink, poll).not.toBeNull()
-    await run(page, (h) => h.aimBlink(23.5, 13.7))
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, { button: 'right' })
+    await expect.poll(async () => (await state(page)).blink, poll).toBe('aim')
+    // Let go long since: still open.
+    await page.waitForTimeout(400)
+    expect((await state(page)).blink).toBe('aim')
+    const at = await onMap(page, 23.5, 2.75, 13.7)
+    await page.mouse.move(at.x, at.y)
     await expect.poll(async () => (await state(page)).landing?.surface, poll).toBe('catwalk')
-    await page.mouse.up({ button: 'right' })
+    await page.mouse.down()
+    await page.mouse.up()
     await expect.poll(async () => { const s = await state(page); return s.blink === null && Math.abs(s.y - 2.75) < 0.01 }, poll).toBe(true)
     expect((await state(page)).charges).toBe(4)
     expect(errors).toEqual([])
   })
 
+  test('the right button again closes it without blinking or spending a charge', async ({ page }) => {
+    await boot(page, '&guards=0')
+    await run(page, (h, n: number) => h.place(20, 0, 15, n, 0), EAST)
+    await page.mouse.click(380, 240, { button: 'right' })
+    await expect.poll(async () => (await state(page)).blink, poll).toBe('aim')
+    await run(page, (h) => h.aimBlink(23.5, 13.7))
+    await page.mouse.click(380, 240, { button: 'right' })
+    await expect.poll(async () => (await state(page)).blink, poll).toBeNull()
+    const s = await state(page)
+    expect(s.charges).toBe(5)
+    expect(Math.hypot(s.x - 20, s.z - 15)).toBeLessThan(0.05)
+    expect(s.y).toBeCloseTo(0, 3)
+  })
+
   test('goes through the glass office wall, and a thick wall stops it', async ({ page }) => {
     await boot(page, '&guards=0')
     await run(page, (h, n: number) => h.place(23.5, 0, 20.5, n, 0), EAST)
-    await page.mouse.move(380, 240)
-    await page.mouse.down({ button: 'right' })
-    await expect.poll(async () => (await state(page)).blink, poll).not.toBeNull()
-    await run(page, (h) => h.aimBlink(19.5, 20.5))
-    await expect.poll(async () => (await state(page)).landing?.glass, poll).toBe(true)
+    await page.mouse.click(380, 240, { button: 'right' })
+    await expect.poll(async () => (await state(page)).blink, poll).toBe('aim')
     await run(page, (h) => h.aimBlink(28, 23.5))
     await expect.poll(async () => (await state(page)).landing?.cut, poll).toBe(true)
-    await run(page, (h) => h.aimBlink(19.5, 20.5))
+    const at = await onMap(page, 19.5, 0, 20.5)
+    await page.mouse.move(at.x, at.y)
     await expect.poll(async () => (await state(page)).landing?.glass, poll).toBe(true)
-    await page.mouse.up({ button: 'right' })
+    await page.mouse.down()
+    await page.mouse.up()
     await expect.poll(async () => (await state(page)).x, poll).toBeLessThan(21.9)
   })
 })
@@ -249,5 +274,23 @@ test.describe('first person on touch', () => {
     expect((await combat(page)).glyph).toBe('touch')
     await page.getByTestId('attack').click()
     await expect.poll(async () => (await guards(page))[0].state, poll).toBe('ko')
+  })
+
+  test('tapping Blink opens the view, a tap on the catwalk goes straight there, and Blink again closes it', async ({ page }) => {
+    await boot(page, '&touch=1&guards=0')
+    await run(page, (h, n: number) => h.place(20, 0, 15, n, 0), EAST)
+    const blink = page.getByTestId('blink')
+    await blink.tap()
+    await expect(blink).toHaveAttribute('aria-pressed', 'true', { timeout: 20_000 })
+    await blink.tap()
+    await expect(blink).toHaveAttribute('aria-pressed', 'false', { timeout: 20_000 })
+    expect((await state(page)).charges).toBe(5)
+    await blink.tap()
+    await expect(blink).toHaveAttribute('aria-pressed', 'true', { timeout: 20_000 })
+    const box = (await page.locator('[data-game-root]').boundingBox())!
+    const p = (await run(page, (h) => h.mapPoint(23.5, 2.75, 13.7)))!
+    await page.touchscreen.tap(box.x + p[0], box.y + p[1])
+    await expect.poll(async () => { const s = await state(page); return s.blink === null && Math.abs(s.y - 2.75) < 0.01 }, poll).toBe(true)
+    expect((await state(page)).charges).toBe(4)
   })
 })

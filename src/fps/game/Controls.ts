@@ -24,11 +24,17 @@ export interface Intent {
   dodgePressed: boolean
   /** -1 left to 1 right. */
   lean: number
-  blinkHeld: boolean
-  blinkReleased: boolean
-  blinkCancel: boolean
-  /** Blink aim: mouse movement in pixels, a stick's direction, or a finger's drag from where it started. */
-  aim: { kind: 'none' | 'delta' | 'stick' | 'drag'; x: number; y: number }
+  /** Blink opens and closes the top-down view (History #109). */
+  blinkPressed: boolean
+  /** Picks the spot in the blink view: a click, a tap, or A. */
+  selectPressed: boolean
+  /** Closes the blink view without blinking: B on a gamepad. */
+  backPressed: boolean
+  /**
+   * Where to aim in the blink view: mouse movement in pixels (mouse captured), a stick's direction,
+   * or a point over the view in CSS pixels (the mouse when it isn't captured, or a tap).
+   */
+  aim: { kind: 'none' | 'delta' | 'stick' | 'point'; x: number; y: number }
   pausePressed: boolean
   debugPressed: boolean
   attackGlyph: AttackGlyph
@@ -48,11 +54,16 @@ export class Controls {
   private ups = new Set<string>()
   private mouseDX = 0
   private mouseDY = 0
+  /** Left-button presses with the mouse captured: attacks, and picks in the blink view. */
   private leftPresses = 0
+  /** Left-button presses without it captured: only ever picks in the blink view. */
+  private loosePicks = 0
   private leftReleases = 0
   private leftHeld = false
-  private rightHeld = false
-  private rightReleased = false
+  private rightPresses = 0
+  /** The pointer over the view when the mouse isn't captured, in CSS pixels. */
+  private pointer: { x: number; y: number } | null = null
+  private pointerMoved = false
   private padPrev: Record<string, boolean> = {}
   private device: DeviceState = startDevice(wantsTouchControls())
   private keySeen = false
@@ -70,6 +81,11 @@ export class Controls {
       t.addEventListener(type, h)
       this.cleanup.push(() => t.removeEventListener(type, h))
     }
+    const locked = () => document.pointerLockElement === this.target
+    const local = (e: MouseEvent) => {
+      const r = this.target.getBoundingClientRect()
+      return { x: e.clientX - r.left, y: e.clientY - r.top }
+    }
     on<KeyboardEvent>(window, 'keydown', (e) => {
       if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'AltLeft', 'AltRight', 'Tab'].includes(e.code) && !(e.target instanceof HTMLButtonElement)) e.preventDefault()
       this.keySeen = true
@@ -77,37 +93,36 @@ export class Controls {
       this.held.add(e.code)
     })
     on<KeyboardEvent>(window, 'keyup', (e) => { this.ups.add(e.code); this.held.delete(e.code) })
-    on(window, 'blur', () => { this.held.clear(); this.leftHeld = this.rightHeld = false })
+    on(window, 'blur', () => { this.held.clear(); this.leftHeld = false })
     on<MouseEvent>(document, 'mousemove', (e) => {
-      if (document.pointerLockElement === this.target) { this.mouseDX += e.movementX; this.mouseDY += e.movementY }
+      if (locked()) { this.mouseDX += e.movementX; this.mouseDY += e.movementY }
+    })
+    on<PointerEvent>(this.target, 'pointermove', (e) => {
+      if (e.pointerType !== 'mouse' || locked()) return
+      this.pointer = local(e)
+      this.pointerMoved = true
     })
     on<PointerEvent>(this.target, 'pointerdown', (e) => {
       if (e.pointerType !== 'mouse') return
       this.mouseSeen = true
-      if (document.pointerLockElement !== this.target) {
-        // The first click takes the mouse for looking; it doesn't attack.
+      if (e.button === 2) this.rightPresses++
+      if (!locked()) {
+        // The first click takes the mouse for looking; it doesn't attack. In the blink view it picks the spot.
+        if (e.button === 0) { this.pointer = local(e); this.pointerMoved = true; this.loosePicks++ }
         this.lock()
-        if (e.button === 2) this.rightHeld = true
         return
       }
       if (e.button === 0) { this.leftPresses++; this.leftHeld = true }
-      if (e.button === 2) this.rightHeld = true
     })
-    const up = (e: PointerEvent) => {
+    on<PointerEvent>(window, 'pointerup', (e) => {
       if (e.pointerType !== 'mouse') return
       if (e.button === 0 && this.leftHeld) { this.leftReleases++; this.leftHeld = false }
-      if (e.button === 2 && this.rightHeld) { this.rightReleased = true; this.rightHeld = false }
-    }
-    on<PointerEvent>(window, 'pointerup', up)
+    })
     on<MouseEvent>(this.target, 'contextmenu', (e) => e.preventDefault())
     on(document, 'pointerlockchange', () => {
-      const locked = document.pointerLockElement === this.target
-      if (this.wasLocked && !locked) {
-        this.leftHeld = false
-        if (this.rightHeld) { this.rightHeld = false; this.rightReleased = true }
-        this.onLockLost?.()
-      }
-      this.wasLocked = locked
+      const now = locked()
+      if (this.wasLocked && !now) { this.leftHeld = false; this.onLockLost?.() }
+      this.wasLocked = now
     })
   }
 
@@ -155,10 +170,12 @@ export class Controls {
     let attackHeld = k('KeyF') || this.leftHeld
     let attackReleased = this.ups.has('KeyF') || this.leftReleases > 0
     let dodgePressed = just('KeyQ')
-    let blinkHeld = this.rightHeld
-    let blinkReleased = this.rightReleased
-    let blinkCancel = false
-    let aim: Intent['aim'] = this.mouseDX || this.mouseDY ? { kind: 'delta', x: this.mouseDX, y: this.mouseDY } : { kind: 'none', x: 0, y: 0 }
+    let blinkPressed = this.rightPresses > 0
+    let selectPressed = this.leftPresses > 0 || this.loosePicks > 0
+    let backPressed = false
+    let aim: Intent['aim'] = { kind: 'none', x: 0, y: 0 }
+    if (this.mouseDX || this.mouseDY) aim = { kind: 'delta', x: this.mouseDX, y: this.mouseDY }
+    else if (this.pointer && this.pointerMoved) aim = { kind: 'point', x: this.pointer.x, y: this.pointer.y }
     let pausePressed = just('Escape')
     const debugPressed = just('Backquote')
 
@@ -176,22 +193,24 @@ export class Controls {
       if (lb) lean = lx
       else if (lx || ly) { moveX = lx; moveZ = -ly }
       run ||= (pad.buttons[7]?.value ?? 0) > 0.5
-      jumpPressed ||= edge('A', b(0)); jumpHeld ||= b(0)
-      crouchPressed ||= edge('B', b(1))
+      // A jumps, and picks the spot in the blink view; B crouches, and closes it.
+      const a = edge('A', b(0)), bb = edge('B', b(1))
+      jumpPressed ||= a; jumpHeld ||= b(0); selectPressed ||= a
+      crouchPressed ||= bb; backPressed ||= bb
       grabPressed ||= edge('X', b(2))
       const padAttack = edge('Y', b(3))
       attackPressed ||= padAttack; attackPresses += padAttack ? 1 : 0; attackHeld ||= b(3); attackReleased ||= fall('Y', b(3))
       dodgePressed ||= edge('RB', b(5))
       pausePressed ||= edge('Start', b(9))
-      const lt = (pad.buttons[6]?.value ?? 0) > 0.5
-      if (lt) { blinkHeld = true; aim = { kind: 'stick', x: rx, y: ry } }
-      if (fall('LT', lt)) blinkReleased = true
-      if (!lt) { dyaw -= rx * LOOK.stick * dt; dpitch -= ry * LOOK.stick * dt }
+      blinkPressed ||= edge('LT', (pad.buttons[6]?.value ?? 0) > 0.5)
+      // The right stick looks, and aims in the blink view (the player decides which it is).
+      if (rx || ry) aim = { kind: 'stick', x: rx, y: ry }
+      dyaw -= rx * LOOK.stick * dt; dpitch -= ry * LOOK.stick * dt
     }
 
     // Touch.
     const t = touch
-    const touchUsed = !!(t.moveX || t.moveY || t.lookDX || t.lookDY || t.jumpPressed || t.sneakPressed || t.grabPressed || t.attackPressed || t.attackHeld || t.dodgePressed || t.aim.active || t.blinkReleased || t.lean)
+    const touchUsed = !!(t.moveX || t.moveY || t.lookDX || t.lookDY || t.jumpPressed || t.sneakPressed || t.grabPressed || t.attackPressed || t.attackHeld || t.dodgePressed || t.blinkPressed || t.tap.pending || t.lean)
     if (t.moveX || t.moveY) { moveX = t.moveX; moveZ = -t.moveY; run ||= Math.hypot(t.moveX, t.moveY) > STICK_RUN }
     dyaw -= t.lookDX * LOOK.mouse * 1.6
     dpitch -= t.lookDY * LOOK.mouse * 1.6
@@ -201,21 +220,20 @@ export class Controls {
     grabPressed ||= t.grabPressed
     attackPressed ||= t.attackPressed; attackPresses += t.attackPressed ? 1 : 0; attackHeld ||= t.attackHeld; attackReleased ||= t.attackReleased
     dodgePressed ||= t.dodgePressed
-    if (t.aim.active || t.blinkReleased) {
-      blinkHeld = t.aim.active
-      aim = { kind: 'drag', x: t.aim.x, y: t.aim.y }
-      if (t.blinkReleased) { blinkReleased = true; blinkCancel = t.aim.cancel }
-    }
+    blinkPressed ||= t.blinkPressed
+    // A tap on the blink view goes straight there (History #109).
+    if (t.tap.pending) { aim = { kind: 'point', x: t.tap.x, y: t.tap.y }; selectPressed = true }
     t.lookDX = 0; t.lookDY = 0
-    t.jumpPressed = t.sneakPressed = t.grabPressed = t.attackPressed = t.attackReleased = t.dodgePressed = t.blinkReleased = false
+    t.jumpPressed = t.sneakPressed = t.grabPressed = t.attackPressed = t.attackReleased = t.dodgePressed = t.blinkPressed = false
+    t.tap.pending = false
 
     this.device = trackDevice(this.device, { key: this.keySeen, keyAttack, mouse: this.mouseSeen, mouseAttack, pad: padUsed, touch: touchUsed })
     this.keySeen = this.mouseSeen = false
     this.downs.clear(); this.ups.clear()
     this.mouseDX = this.mouseDY = 0
-    this.leftPresses = this.leftReleases = 0
-    this.rightReleased = false
+    this.leftPresses = this.leftReleases = this.loosePicks = this.rightPresses = 0
+    this.pointerMoved = false
 
-    return { moveX, moveZ, run, dyaw, dpitch, jumpPressed, jumpHeld, crouchPressed, grabPressed, attackPressed, attackPresses, attackHeld, attackReleased, dodgePressed, lean, blinkHeld, blinkReleased, blinkCancel, aim, pausePressed, debugPressed, attackGlyph: attackGlyph(this.device) }
+    return { moveX, moveZ, run, dyaw, dpitch, jumpPressed, jumpHeld, crouchPressed, grabPressed, attackPressed, attackPresses, attackHeld, attackReleased, dodgePressed, lean, blinkPressed, selectPressed, backPressed, aim, pausePressed, debugPressed, attackGlyph: attackGlyph(this.device) }
   }
 }

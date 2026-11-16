@@ -109,7 +109,7 @@ export class Combat {
   badgeFor(g: Guard): { hold: number; showButton: boolean } | null {
     if (this.takedown) return null
     if (this.charge) return this.charge.guard === g ? { hold: this.charge.t / COMBAT.killHold, showButton: true } : null
-    // Aiming a blink at it, letting go of Blink is what does it, so no Attack button.
+    // Aiming a blink at it, picking the spot is what does it, so no Attack button.
     if (this.player.blink && this.blinkTarget === g) return { hold: 0, showButton: false }
     return this.context?.guard === g ? { hold: 0, showButton: true } : null
   }
@@ -144,7 +144,7 @@ export class Combat {
   }
 
   private still(I: Intent): Intent {
-    return { ...I, moveX: 0, moveZ: 0, jumpPressed: false, grabPressed: false, crouchPressed: false, run: false, blinkHeld: false }
+    return { ...I, moveX: 0, moveZ: 0, jumpPressed: false, grabPressed: false, crouchPressed: false, run: false, blinkPressed: false, selectPressed: false, backPressed: false }
   }
 
   /** Before he moves: decides what Attack and Dodge do, and returns the input he moves with. */

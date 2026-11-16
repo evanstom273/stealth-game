@@ -43,7 +43,7 @@ export function PauseMenu({ firstPerson = false }: { firstPerson?: boolean }) {
         )}
         {firstPerson ? (
           <p className="px-1 pt-2 text-[12px] leading-snug text-[#9a9ab0]">
-            Click the view to look with the mouse. WASD move, Shift run, C crouch (while running: slide), Space jump, E grab (walls, ceilings when looking up, ledges), hold Alt with A or D to lean. Hold the right mouse button for the blink view, aim with the mouse, let go to blink. Attack: left mouse or F (tap to knock out, hold to kill at a takedown). Dodge: Q. Arrow keys look too. Esc to pause, ` for the debug panel.
+            Click the view to look with the mouse. WASD move, Shift run, C crouch (while running: slide), Space jump, E grab (walls, ceilings when looking up, ledges), hold Alt with A or D to lean. Right-click for the blink view, aim with the mouse and left-click to blink there; right-click again to close it. Attack: left mouse or F (tap to knock out, hold to kill at a takedown). Dodge: Q. Arrow keys look too. Esc to pause, ` for the debug panel.
           </p>
         ) : (
         <p className="px-1 pt-2 text-[12px] leading-snug text-[#9a9ab0]">

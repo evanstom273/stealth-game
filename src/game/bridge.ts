@@ -89,6 +89,9 @@ export const touch = {
   lookDX: 0,
   lookDY: 0,
   lean: 0,
+  /** First person: Blink opens and closes the top-down view, and a tap on it goes there (History #109). */
+  blinkPressed: false,
+  tap: { x: 0, y: 0, pending: false },
 }
 
 const coarse = () => typeof window !== 'undefined' && window.matchMedia('(any-pointer: coarse)').matches

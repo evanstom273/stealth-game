@@ -6,8 +6,8 @@ import { useHud } from '../../ui/useHud.ts'
 /**
  * Touch controls for first person (Claude's first take; the layout is still open): the left half of
  * the screen walks with a floating stick (push to its edge to run), the right half drags to look,
- * and buttons sit bottom right. Drag out from Blink to aim in the top-down view; let go to blink,
- * or come back onto the button to cancel. Lean buttons sit on either edge.
+ * and buttons sit bottom right. Tap Blink for the top-down view, then tap where to go and he goes
+ * at once; tap Blink again to close it (History #109). Lean buttons sit on either edge.
  */
 
 const STICK_MAX = 46
@@ -61,11 +61,15 @@ export function FpsTouchControls() {
   const knob = useRef<HTMLDivElement>(null)
   const stick = useRef<{ id: number; x: number; y: number } | null>(null)
   const look = useRef<{ id: number; x: number; y: number } | null>(null)
-  const blinkEl = useRef<HTMLButtonElement>(null)
 
   const padDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect()
     const x = e.clientX - r.left, y = e.clientY - r.top
+    if (h.aiming) {
+      // The blink view is open: a tap anywhere picks the spot.
+      touch.tap.x = x; touch.tap.y = y; touch.tap.pending = true
+      return
+    }
     e.currentTarget.setPointerCapture(e.pointerId)
     if (x < r.width / 2 && !stick.current) {
       stick.current = { id: e.pointerId, x, y }
@@ -103,11 +107,6 @@ export function FpsTouchControls() {
     if (look.current?.id === e.pointerId) look.current = null
   }
 
-  const blinkCentre = () => {
-    const b = blinkEl.current!.getBoundingClientRect()
-    return { x: b.left + b.width / 2, y: b.top + b.height / 2, r: b.width / 2 }
-  }
-
   return (
     <div className="touch-layer" data-testid="touch-controls">
       <div className="fps-pad" onPointerDown={padDown} onPointerMove={padMove} onPointerUp={padUp} onPointerCancel={padUp} />
@@ -132,34 +131,15 @@ export function FpsTouchControls() {
         <DodgeIcon />
       </Btn>
       <button
-        ref={blinkEl}
         type="button"
-        className={`tb blink${h.charges === 0 ? ' empty' : ''}`}
+        className={`tb blink${h.charges === 0 ? ' empty' : ''}${h.aiming ? ' aiming' : ''}`}
         aria-label="Blink"
+        aria-pressed={h.aiming}
+        data-testid="blink"
         style={place(BUTTONS.blink)}
         onPointerDown={(e) => {
           e.stopPropagation()
-          e.currentTarget.setPointerCapture(e.pointerId)
-          e.currentTarget.classList.add('aiming')
-          touch.aim.active = true
-          touch.aim.x = 0; touch.aim.y = 0; touch.aim.cancel = false
-        }}
-        onPointerMove={(e) => {
-          if (!touch.aim.active) return
-          const c = blinkCentre()
-          touch.aim.x = e.clientX - c.x; touch.aim.y = e.clientY - c.y
-          touch.aim.cancel = Math.hypot(touch.aim.x, touch.aim.y) < c.r
-        }}
-        onPointerUp={(e) => {
-          e.currentTarget.classList.remove('aiming')
-          touch.aim.active = false
-          touch.blinkReleased = true
-        }}
-        onPointerCancel={(e) => {
-          e.currentTarget.classList.remove('aiming')
-          touch.aim.active = false
-          touch.aim.cancel = true
-          touch.blinkReleased = true
+          touch.blinkPressed = true
         }}
       >
         <span className="tb-pips">{Array.from({ length: h.maxCharges }, (_, i) => <i key={i} className={i < h.charges ? 'on' : ''} />)}</span>

@@ -24,7 +24,7 @@ Click the view to look with the mouse (Esc lets go of it and pauses).
 | Grab and let go | E: a wall in front, a ceiling when looking up, a ledge to pull up onto | X | Grab |
 | Climb | W / S up and down, A / D along, Space kicks off | Left stick | Stick |
 | Lean | Hold Alt, then A or D | Hold LB, left stick | Lean buttons on the edges |
-| Blink | Hold the right mouse button for the top-down view, aim with the mouse, let go | Hold LT, aim with the right stick, let go | Drag out from Blink, let go; back onto it to cancel |
+| Blink | Right-click for the top-down view, aim with the mouse, left-click to blink; right-click again to close | LT for the view, aim with the right stick, A to blink; B or LT to close | Tap Blink, then tap where to go; tap Blink again to close |
 | Attack | Left mouse button or F | Y | Attack |
 | Dodge | Q | RB | Dodge |
 | Pause | Esc | Start | Pause button |
