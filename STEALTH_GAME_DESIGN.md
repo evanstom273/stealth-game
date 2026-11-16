@@ -8,7 +8,7 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16), **breaking out of a facility**: a clinical test facility, our own take on that kind of place (History #77, #78). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T14:30:22+00:00):**
+**Where the project stands (as of 2026-11-16T14:31:28+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -182,6 +182,11 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **Health is shown as pips** in the HUD, coming back one at a time while he's hidden (#57). How many isn't decided. Chosen over showing damage on his body (Claude's recommendation, from the guide's §8.3). *(2026-11-16T13:27:43+00:00 — History #60)*
 - **Rewards for staying unseen:** an **end-of-level rating** (seen or not, knockouts, kills, time), and **guards stay relaxed** while he's unseen: once they've seen him, they're on edge for the rest of the level. *(2026-11-16T13:27:43+00:00 — History #61)*
 - **Combat is built before the guards' full stealth behaviour**, so Lyra can get a feel for it: a simple test enemy (the approved staff watchman) that stands at a post turning left and right, comes over and attacks when it sees him, and can be taken down; he's invulnerable for now. Claude's plan approved with its defaults, including first takes to tune in play: a jab, cross and shove combo whose third hit staggers; a dash dodge (backstep with no direction held); blink takedowns by aiming at a guard, which stuns it on arrival; a power-blue takedown marker whose ring fills while Attack is held; knockouts slumping and kills draining to grey; Attack on left mouse or F, Y, or a touch button left of the diamond, and Dodge on Q, RB, or a smaller touch button above it; sight cones shown while testing (switchable); downed guards returning after about 8 seconds as a testing convenience. *(2026-11-16T13:52:05+00:00 — History #85)*
+- **Takedowns made readable**, picked from the Takedown Studies after Lyra's first combat playtest:
+  - **The prompt: option D.** When a takedown or finisher is on, the guard is outlined in power blue, turning red-orange once a hold tips into a kill; above it, the badge with the Attack button for your controls and "tap · hold" underneath, as drawn in the study. *(2026-11-16T14:31:28+00:00 — History #86)*
+  - **Knockout: option B.** The guard lies on its back with its eyes shut and little Zs drift up while it's out. *(2026-11-16T14:31:28+00:00 — History #87)*
+  - **Kill: option C.** The guard shatters into the shapes it's made of (chunks of body, arcs of head, cap, hands), which scatter and fade, leaving nothing lying there. *(2026-11-16T14:31:28+00:00 — History #88)*
+  - **Ceiling and wall takedowns: option B, the pounce.** A quarter-second wind-up on the surface, a leap with afterimages, a hit-stop and ring on impact, and a moment pinning the guard before he steps off. No takedown cam. *(2026-11-16T14:31:28+00:00 — History #89)*
 
 
 ### Guards
@@ -244,7 +249,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink's rules and look settled (#27, #32–#36). First playable piece: the full player (#37); plan and UI approved (#45, #46). **Built and merged to `main`** (see §F): Lyra's first playtest on the Fold went well; grip was far too short and blink a little tight, now raised (#47, #48). Next: test again, keep refining (Depth Before Breadth).
 
-**Combat test build** (History #85), built and merged. **Lyra's first combat playtest** (2026-11-16T14:30:22+00:00): respawning test guards are fine for now, but three things don't read: **how to do a takedown** (the marker doesn't say what to press, or that tap and hold differ); **whether you knocked a guard out or killed it**; and **takedowns from a ceiling or wall**, which are over too fast to see. Options for all three are in the Takedown Studies, for Lyra to pick from before anything changes in the game.
+**Combat test build** (History #85), built and merged. **Lyra's first combat playtest** (2026-11-16T14:30:22+00:00): respawning test guards are fine for now, but three things don't read: **how to do a takedown** (the marker doesn't say what to press, or that tap and hold differ); **whether you knocked a guard out or killed it**; and **takedowns from a ceiling or wall**, which are over too fast to see. Options for all three are in the Takedown Studies; Lyra picked 1D, 2B for knockouts, 2C for kills and 3B (History #86–#89).
 
 **Takedown Studies** (Artifact, 2026-11-16T14:30:22+00:00): https://claude.ai/artifact/9PjeTfLjLqrT8VYuQR2jFT. Looping scenes, option A in each row being what's in the game now. **1. The prompt:** A badge only; B badge plus the Attack button for your controls (keyboard, gamepad or touch) and "tap · hold"; C a two-stage badge saying "Knock out", then turning red-orange and saying "Kill" as the hold tips over; D the guard outlined in power blue, turning red-orange for a kill (combines with B or C). **2. Outcomes:** knockout A slump with eyes shut, B with Zs drifting up, C seeing stars then eyes shut; kill A drain to grey, B grey with crossed eyes, C shatter into its own shapes, D collapse into a dark silhouette that sinks away. **3. Ceiling and wall takedowns:** A quick, B a pounce (wind-up, afterimages, hit-stop and ring, a moment pinning the guard), C the pounce with a takedown cam (slow-motion and a slight zoom at impact). Claude's choices, up for change: red-orange for the kill stage, a cross as the kill icon, the shatter's pieces, and all timings.
 
@@ -316,7 +321,7 @@ Shortlisted for visual comparison (options, not decisions):
 - **The gloves barely show against the dark**, as seen in the Thief Mask Fitting. Nothing has been decided about it, and it matters more now they're his weapons (#55): his punches are hard to see.
 - **Combat is against one kind of test guard only.** It's the watchman's look with simple behaviour (#85); no hearing, no searching, no torch-bearer or blind guard yet.
 - **He's invulnerable** (#85): there's no health and no losing a fight yet.
-- **Takedowns don't read well yet** (Lyra's combat playtest): how to do one, knockout versus kill, and the ceiling and wall takedowns. Options in the Takedown Studies.
+- **Takedowns don't read well yet** (Lyra's combat playtest): how to do one, knockout versus kill, and the ceiling and wall takedowns. Fixes picked (History #86–#89), not yet built.
 - **No guards yet**, so "guards look up" (#28) and "guards can notice a blink" (#34) have nothing to act on. Noise is measured and can be shown as rings, but nothing hears it.
 - ~~**A full-height wall takes longer to climb than his grip lasts.**~~ Fixed by the grip increase (#47): a full-height test wall now uses about half the meter. The rest ledge stays in the test room for trying the under-ledge climb.
 
@@ -437,6 +442,10 @@ Shortlisted for visual comparison (options, not decisions):
 | 83 | 2026-11-16T13:47:00+00:00 | Guards | The torch-bearer's wheel can't do stairs: its weakness. |
 | 84 | 2026-11-16T13:47:00+00:00 | Guards | The rest of the guards' look approved as drawn in the Guard Line-up (shapes, colours, faces by state, marker, torch). |
 | 85 | 2026-11-16T13:52:05+00:00 | Workflow | Combat first, against a simple test enemy (post, turning, sees, attacks), with him invulnerable; Claude's combat plan and its first-take defaults approved. |
+| 86 | 2026-11-16T14:31:28+00:00 | Combat | Takedown prompt: the guard outlined in power blue (red-orange as a hold tips into a kill), with the badge, your Attack button and "tap · hold" (Takedown Studies 1D, as drawn). |
+| 87 | 2026-11-16T14:31:28+00:00 | Combat | Knockout: lying with eyes shut, Zs drifting up (2B). |
+| 88 | 2026-11-16T14:31:28+00:00 | Combat | Kill: the guard shatters into its own shapes, which scatter and fade (2C). |
+| 89 | 2026-11-16T14:31:28+00:00 | Combat | Ceiling and wall takedowns: the pounce, with wind-up, afterimages, hit-stop, ring and a moment pinning the guard; no takedown cam (3B). |
 
 ---
 
