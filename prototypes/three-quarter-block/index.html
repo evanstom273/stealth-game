@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Three-Quarter Block</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Standalone: the reset the artifact host would otherwise supply. */
+body { margin: 0; }
+[hidden] { display: none !important; }
+/* Layout: a slim header, the street as a full-width stage, a control strip under it, short notes below. */
+:root {
+  --bg: #eceef2;
+  --panel: #ffffff;
+  --fg: #1b1f27;
+  --muted: #5d6573;
+  --line: #d3d8e0;
+  --accent: #2c7fb8;
+  --chip: #e3e8ef;
+  --font-ui: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #111319; --panel: #191c24; --fg: #e8eaf0; --muted: #9aa3b2; --line: #2a2f3b; --accent: #8fd3ff; --chip: #232835; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #111319; --panel: #191c24; --fg: #e8eaf0; --muted: #9aa3b2; --line: #2a2f3b; --accent: #8fd3ff; --chip: #232835; color-scheme: dark; }
+
+body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 14px 32px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 12px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+h1 { font-size: 1.35rem; font-weight: 800; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); font-size: 0.92rem; }
+
+.stage { position: relative; height: clamp(420px, 70dvh, 760px); border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: #6b8f5a; touch-action: none; user-select: none; -webkit-user-select: none; }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.stick { position: absolute; width: 96px; height: 96px; margin: -48px 0 0 -48px; border-radius: 50%; border: 2px solid rgba(255,255,255,.55); background: rgba(0,0,0,.18); pointer-events: none; }
+.stick i { position: absolute; left: 50%; top: 50%; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; background: rgba(255,255,255,.85); }
+.jump { position: absolute; right: calc(14px + env(safe-area-inset-right, 0px)); bottom: 14px; width: 64px; height: 64px; border-radius: 50%; border: 2px solid rgba(255,255,255,.6); background: rgba(20,22,30,.45); color: #fff; font: 600 0.8rem var(--font-ui); letter-spacing: .04em; }
+.jump:active { background: rgba(20,22,30,.65); }
+.hint { position: absolute; left: 12px; top: 10px; padding: 4px 9px; border-radius: 8px; background: rgba(20,22,30,.55); color: #f2f2f2; font: 500 0.72rem var(--font-mono); pointer-events: none; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.seg { display: inline-flex; background: var(--chip); border-radius: 10px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: transparent; color: var(--fg); font: 600 0.88rem var(--font-ui); padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+.seg button[aria-checked="true"] { background: var(--panel); box-shadow: 0 1px 2px rgba(0,0,0,.15); color: var(--accent); }
+.toggle { display: inline-flex; align-items: center; gap: 7px; font-size: 0.9rem; cursor: pointer; }
+.toggle input { width: 17px; height: 17px; accent-color: var(--accent); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.notes section { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; min-width: 0; }
+.notes h2 { font-size: 0.95rem; margin: 0 0 6px; }
+.notes ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.9rem; }
+.notes li + li { margin-top: 4px; }
+kbd { font: 500 0.78rem var(--font-mono); background: var(--chip); border-radius: 5px; padding: 1px 5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Three-Quarter Block</h1>
+    <p>Stylised Geometry seen from three-quarters up: the thief as he's drawn now, in placeholder streets.</p>
+  </header>
+
+  <div class="stage" id="stage">
+    <canvas id="view" aria-label="A city block seen from three-quarters above, with the thief standing on the pavement"></canvas>
+    <div class="hint" id="hint">WASD / arrows · Shift run · Space jump</div>
+    <div class="stick" id="stick" hidden><i></i></div>
+    <button class="jump" id="jumpBtn" type="button" aria-label="Jump">JUMP</button>
+  </div>
+
+  <div class="controls">
+    <div class="group">
+      <span class="label" id="timeLabel">Time</span>
+      <div class="seg" role="radiogroup" aria-labelledby="timeLabel" id="timeSeg">
+        <button type="button" role="radio" aria-checked="true" data-time="day" id="t-day">Day</button>
+        <button type="button" role="radio" aria-checked="false" data-time="dusk" id="t-dusk">Dusk</button>
+        <button type="button" role="radio" aria-checked="false" data-time="night" id="t-night">Night</button>
+      </div>
+    </div>
+    <label class="toggle"><input type="checkbox" id="seeThrough" checked> See him behind things</label>
+    <label class="toggle"><input type="checkbox" id="footprints"> Show footprints</label>
+  </div>
+
+  <div class="notes">
+    <section>
+      <h2>What to try</h2>
+      <ul>
+        <li>Walk up, down and sideways: the badge never rotates. Facing down shows his face, sideways is the side view from the game, and facing away shows the back of his mask, knot and ties.</li>
+        <li>Walk behind the buildings (the back alley, top of the map) or behind a tree to see the depth sorting.</li>
+        <li>Jump: the shadow stays on the ground and shrinks, which is what sells the height.</li>
+        <li><strong>Show footprints</strong> draws what actually collides: everything is a shape on the ground, not the drawing.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Claude's choices, up for change</h2>
+      <ul>
+        <li>The front and back views of him (the game only has a side view), including which way the ties hang.</li>
+        <li>Every building, car and prop: placeholder SVGs, flat fills with outlines, nothing final.</li>
+        <li>The ground squashed to three quarters of its depth, so shadows and light pools are ellipses.</li>
+        <li>A power-blue silhouette for him when he's behind something.</li>
+        <li>Day by default, with dusk and night only to compare. British street furniture because it's a British street.</li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<script>
+(() => {
+  'use strict'
+  // ---------- Units ----------
+  const S = 56            // world px per S (his height unit, as in the game)
+  const FS = 0.75         // ground depth squash: three-quarter view
+  const WW = 32 * S       // world width
+  const WD = 24 * S       // world depth (ground)
+  const INK = '#1d2230'
+  const sy = (gy, z = 0) => gy * FS - z   // ground y and height to screen y
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  // ---------- Placeholder SVGs ----------
+  const images = []
+  function svg(w, h, body) {
+    const im = new Image()
+    im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" stroke-linejoin="round" stroke-linecap="round">${body}</svg>`)
+    images.push(im)
+    return im
+  }
+  // A box in an image whose top margin is zMax and whose ground runs g (0 at back) down the image.
+  const ly = (zMax, g, z) => zMax + g * FS - z
+  function box(zMax, x, w, g0, g1, z0, z1, top, front, sw = 3) {
+    const tY = ly(zMax, g0, z1), fY = ly(zMax, g1, z1), bY = ly(zMax, g1, z0)
+    let s = ''
+    if (fY - tY > 0.5) s += `<rect x="${x}" y="${tY}" width="${w}" height="${fY - tY}" fill="${top}" stroke="${INK}" stroke-width="${sw}"/>`
+    if (bY - fY > 0.5) s += `<rect x="${x}" y="${fY}" width="${w}" height="${bY - fY}" fill="${front}" stroke="${INK}" stroke-width="${sw}"/>`
+    return s
+  }
+
+  function buildingSvg(o) {
+    const { w, d, h } = o
+    const zMax = h + 4
+    const H = zMax + d * FS + 2
+    let s = box(zMax, 2, w - 4, 0, d, 0, h, o.roof, o.wall)
+    // Roof details: parapet line and a vent box.
+    const rTop = ly(zMax, 0, h), rBot = ly(zMax, d, h)
+    s += `<rect x="12" y="${rTop + 10}" width="${w - 24}" height="${rBot - rTop - 20}" fill="none" stroke="${INK}" stroke-opacity=".25" stroke-width="2"/>`
+    s += box(zMax, w * 0.62, 0.7 * S, d * 0.3, d * 0.3 + 0.6 * S, h, h + 0.45 * S, '#c9ccd2', '#9ea3ab', 2.5)
+    const fTop = rBot, base = ly(zMax, d, 0)
+    // Brick courses.
+    if (o.brick) for (let y = fTop + 14; y < base - 6; y += 14) s += `<line x1="4" x2="${w - 4}" y1="${y}" y2="${y}" stroke="${INK}" stroke-opacity=".08" stroke-width="2"/>`
+    // Upper floors of windows.
+    const floorH = 1.35 * S
+    const gf = o.shop ? 1.55 * S : 1.25 * S
+    for (let fy = base - gf - floorH; fy > fTop + 0.25 * S; fy -= floorH) {
+      const n = o.cols, ww = 0.5 * S, wh = 0.72 * S
+      for (let i = 0; i < n; i++) {
+        const cx = ((i + 0.5) / n) * w
+        s += `<rect x="${cx - ww / 2}" y="${fy + floorH - wh - 0.2 * S}" width="${ww}" height="${wh}" rx="3" fill="${o.glass}" stroke="${INK}" stroke-width="2.5"/>`
+        s += `<line x1="${cx}" x2="${cx}" y1="${fy + floorH - wh - 0.2 * S}" y2="${fy + floorH - 0.2 * S}" stroke="${INK}" stroke-width="2"/>`
+        s += `<rect x="${cx - ww / 2 - 4}" y="${fy + floorH - 0.2 * S}" width="${ww + 8}" height="5" fill="${o.trim}" stroke="${INK}" stroke-width="2"/>`
+      }
+    }
+    // Ground floor: a shopfront or a door with windows.
+    if (o.shop) {
+      const sx = 0.3 * S, sw = w - 0.6 * S
+      s += `<rect x="${sx}" y="${base - gf}" width="${sw}" height="${0.42 * S}" fill="${o.sign}" stroke="${INK}" stroke-width="3"/>`
+      s += `<text x="${w / 2}" y="${base - gf + 0.3 * S}" text-anchor="middle" font-family="Outfit, sans-serif" font-weight="800" font-size="${0.28 * S}" fill="#fff">${o.shop}</text>`
+      s += `<rect x="${sx}" y="${base - gf + 0.48 * S}" width="${sw * 0.62}" height="${gf - 0.5 * S}" fill="${o.glass}" stroke="${INK}" stroke-width="3"/>`
+      s += `<rect x="${sx + sw * 0.7}" y="${base - gf + 0.48 * S}" width="${sw * 0.28}" height="${gf - 0.5 * S}" fill="#3a3f4c" stroke="${INK}" stroke-width="3"/>`
+      // Striped awning, sloping out over the pavement.
+      const ay = base - gf + 0.42 * S
+      const stripes = 8
+      for (let i = 0; i < stripes; i++) {
+        const x0 = sx + (sw * 0.62 * i) / stripes, x1 = sx + (sw * 0.62 * (i + 1)) / stripes
+        s += `<polygon points="${x0},${ay} ${x1},${ay} ${x1 + 2},${ay + 0.42 * S} ${x0 - 2},${ay + 0.42 * S}" fill="${i % 2 ? '#fff' : o.awning}" stroke="${INK}" stroke-width="2"/>`
+      }
+    } else {
+      const n = o.cols
+      for (let i = 0; i < n; i++) {
+        const cx = ((i + 0.5) / n) * w
+        if (i === o.door) {
+          s += `<rect x="${cx - 0.3 * S}" y="${base - 1.05 * S}" width="${0.6 * S}" height="${1.05 * S}" fill="${o.doorCol}" stroke="${INK}" stroke-width="3"/>`
+          s += `<circle cx="${cx + 0.17 * S}" cy="${base - 0.5 * S}" r="3" fill="#e8c35a"/>`
+          s += `<rect x="${cx - 0.42 * S}" y="${base - 0.1 * S}" width="${0.84 * S}" height="${0.1 * S}" fill="#b8b2a4" stroke="${INK}" stroke-width="2"/>`
+        } else {
+          s += `<rect x="${cx - 0.27 * S}" y="${base - 1.0 * S}" width="${0.54 * S}" height="${0.7 * S}" rx="3" fill="${o.glass}" stroke="${INK}" stroke-width="2.5"/>`
+        }
+      }
+    }
+    return svg(w, H, s)
+  }
+
+  function carSvg(col, light) {
+    const w = 3.2 * S, d = 1.45 * S, zMax = 1.05 * S
+    let s = ''
+    // Wheels peeking under the body.
+    for (const x of [0.55 * S, w - 0.95 * S]) s += `<rect x="${x}" y="${ly(zMax, d, 0) - 0.34 * S}" width="${0.42 * S}" height="${0.36 * S}" rx="6" fill="#23262e" stroke="${INK}" stroke-width="3"/>`
+    s += box(zMax, 2, w - 4, 0.05 * S, d - 0.05 * S, 0.14 * S, 0.62 * S, light, col)
+    // Cabin.
+    s += box(zMax, w * 0.24, w * 0.5, 0.2 * S, d - 0.2 * S, 0.62 * S, 1.0 * S, light, '#a9d6ea')
+    const cy0 = ly(zMax, d - 0.2 * S, 1.0 * S), cy1 = ly(zMax, d - 0.2 * S, 0.62 * S)
+    s += `<line x1="${w * 0.49}" x2="${w * 0.49}" y1="${cy0}" y2="${cy1}" stroke="${INK}" stroke-width="3"/>`
+    // Lights.
+    s += `<rect x="${w - 0.22 * S}" y="${ly(zMax, d - 0.05 * S, 0.5 * S)}" width="${0.16 * S}" height="${0.14 * S}" fill="#fff4c8" stroke="${INK}" stroke-width="2"/>`
+    s += `<rect x="${0.06 * S}" y="${ly(zMax, d - 0.05 * S, 0.5 * S)}" width="${0.16 * S}" height="${0.14 * S}" fill="#e2504a" stroke="${INK}" stroke-width="2"/>`
+    return { img: svg(w, ly(zMax, d, 0) + 2, s), w, d, zMax }
+  }
+
+  function treeSvg(tone) {
+    const w = 2.4 * S, d = 0.4 * S, zMax = 3.0 * S
+    const cx = w / 2, ground = ly(zMax, d / 2, 0)
+    let s = `<rect x="${cx - 0.11 * S}" y="${ground - 1.3 * S}" width="${0.22 * S}" height="${1.3 * S}" fill="#7a5a3e" stroke="${INK}" stroke-width="3"/>`
+    s += `<circle cx="${cx}" cy="${ground - 2.0 * S}" r="${0.95 * S}" fill="${tone[0]}" stroke="${INK}" stroke-width="3"/>`
+    s += `<circle cx="${cx - 0.32 * S}" cy="${ground - 2.25 * S}" r="${0.5 * S}" fill="${tone[1]}"/>`
+    s += `<circle cx="${cx + 0.38 * S}" cy="${ground - 1.75 * S}" r="${0.3 * S}" fill="${tone[1]}"/>`
+    return { img: svg(w, ground + 0.3 * S, s), w, d, zMax }
+  }
+
+  function lampSvg() {
+    const w = 0.8 * S, d = 0.3 * S, zMax = 3.0 * S
+    const cx = w / 2, g = ly(zMax, d / 2, 0)
+    let s = `<rect x="${cx - 0.07 * S}" y="${g - 2.55 * S}" width="${0.14 * S}" height="${2.55 * S}" fill="#2e3440" stroke="${INK}" stroke-width="2.5"/>`
+    s += `<rect x="${cx - 0.16 * S}" y="${g - 0.18 * S}" width="${0.32 * S}" height="${0.18 * S}" fill="#2e3440" stroke="${INK}" stroke-width="2.5"/>`
+    s += `<polygon points="${cx - 0.26 * S},${g - 2.55 * S} ${cx + 0.26 * S},${g - 2.55 * S} ${cx + 0.17 * S},${g - 2.85 * S} ${cx - 0.17 * S},${g - 2.85 * S}" fill="#fff1c2" stroke="${INK}" stroke-width="2.5"/>`
+    s += `<rect x="${cx - 0.3 * S}" y="${g - 2.92 * S}" width="${0.6 * S}" height="${0.1 * S}" rx="3" fill="#2e3440" stroke="${INK}" stroke-width="2.5"/>`
+    return { img: svg(w, g + 4, s), w, d, zMax, head: 2.7 * S }
+  }
+
+  function beaconSvg() {
+    const w = 0.6 * S, d = 0.2 * S, zMax = 2.2 * S
+    const cx = w / 2, g = ly(zMax, d / 2, 0)
+    let s = ''
+    const top = g - 1.75 * S, bands = 7, bh = (g - top) / bands
+    for (let i = 0; i < bands; i++) s += `<rect x="${cx - 0.06 * S}" y="${top + i * bh}" width="${0.12 * S}" height="${bh}" fill="${i % 2 ? '#f4f4f4' : '#22252c'}"/>`
+    s += `<rect x="${cx - 0.06 * S}" y="${top}" width="${0.12 * S}" height="${g - top}" fill="none" stroke="${INK}" stroke-width="2.5"/>`
+    s += `<circle cx="${cx}" cy="${top - 0.18 * S}" r="${0.2 * S}" fill="#ff9d2e" stroke="${INK}" stroke-width="3"/>`
+    return { img: svg(w, g + 4, s), w, d, zMax }
+  }
+
+  function pillarBoxSvg() {
+    const w = 0.8 * S, d = 0.55 * S, zMax = 1.45 * S
+    const g = ly(zMax, d, 0)
+    let s = `<path d="M ${0.12 * S} ${g} L ${0.12 * S} ${g - 1.05 * S} Q ${w / 2} ${g - 1.45 * S} ${w - 0.12 * S} ${g - 1.05 * S} L ${w - 0.12 * S} ${g} Z" fill="#d8312b" stroke="${INK}" stroke-width="3"/>`
+    s += `<rect x="${w / 2 - 0.2 * S}" y="${g - 0.9 * S}" width="${0.4 * S}" height="${0.06 * S}" fill="#22252c"/>`
+    s += `<rect x="${w / 2 - 0.14 * S}" y="${g - 0.72 * S}" width="${0.28 * S}" height="${0.2 * S}" fill="#f1e3c4" stroke="${INK}" stroke-width="1.5"/>`
+    s += `<rect x="${0.08 * S}" y="${g - 0.12 * S}" width="${w - 0.16 * S}" height="${0.12 * S}" fill="#22252c"/>`
+    return { img: svg(w, g + 3, s), w, d, zMax }
+  }
+
+  function benchSvg() {
+    const w = 1.7 * S, d = 0.6 * S, zMax = 0.95 * S
+    let s = box(zMax, 6, w - 12, 0, 0.12 * S, 0.3 * S, 0.9 * S, '#a5703f', '#8a5a30', 2.5)
+    s += box(zMax, 2, w - 4, 0.15 * S, d, 0.32 * S, 0.44 * S, '#c38a52', '#8a5a30', 2.5)
+    for (const x of [0.15 * S, w - 0.27 * S]) s += `<rect x="${x}" y="${ly(zMax, d, 0.32 * S)}" width="${0.12 * S}" height="${0.32 * S}" fill="#2e3440" stroke="${INK}" stroke-width="2"/>`
+    return { img: svg(w, ly(zMax, d, 0) + 3, s), w, d, zMax }
+  }
+
+  function binSvg() {
+    const w = 0.62 * S, d = 0.5 * S, zMax = 0.95 * S
+    const g = ly(zMax, d, 0)
+    let s = `<rect x="3" y="${g - 0.85 * S}" width="${w - 6}" height="${0.85 * S}" rx="5" fill="#3c6e5a" stroke="${INK}" stroke-width="3"/>`
+    s += `<ellipse cx="${w / 2}" cy="${g - 0.85 * S}" rx="${w / 2 - 3}" ry="${0.13 * S}" fill="#4f8a72" stroke="${INK}" stroke-width="3"/>`
+    return { img: svg(w, g + 3, s), w, d, zMax }
+  }
+
+  function shelterSvg() {
+    const w = 2.8 * S, d = 1.0 * S, zMax = 2.35 * S
+    let s = box(zMax, 6, w - 12, 0.05 * S, 0.2 * S, 0, 2.0 * S, '#9fd0e8', 'rgba(175,220,240,.55)', 2.5)
+    for (const x of [8, w - 0.18 * S]) s += `<rect x="${x}" y="${ly(zMax, d - 0.05 * S, 2.1 * S)}" width="${0.12 * S}" height="${2.1 * S}" fill="#2e3440" stroke="${INK}" stroke-width="2"/>`
+    s += box(zMax, 2, w - 4, 0, d, 2.05 * S, 2.25 * S, '#e8e6df', '#3a7fb0', 2.5)
+    s += `<text x="${w / 2}" y="${ly(zMax, d, 2.05 * S) - 2}" text-anchor="middle" font-family="Outfit, sans-serif" font-weight="800" font-size="${0.15 * S}" fill="#fff">BUS STOP</text>`
+    s += box(zMax, 0.4 * S, w - 0.8 * S, 0.25 * S, 0.55 * S, 0.38 * S, 0.48 * S, '#c38a52', '#8a5a30', 2)
+    return { img: svg(w, ly(zMax, d, 0) + 3, s), w, d, zMax }
+  }
+
+  function fountainSvg() {
+    const w = 3.0 * S, d = 3.0 * S, zMax = 1.4 * S
+    const cx = w / 2, cy = ly(zMax, d / 2, 0), rx = w / 2 - 4, ry = (d / 2) * FS - 2, rim = 0.4 * S
+    let s = `<path d="M ${cx - rx} ${cy - rim} L ${cx - rx} ${cy} A ${rx} ${ry} 0 0 0 ${cx + rx} ${cy} L ${cx + rx} ${cy - rim} Z" fill="#b9b3a5" stroke="${INK}" stroke-width="3"/>`
+    s += `<ellipse cx="${cx}" cy="${cy - rim}" rx="${rx}" ry="${ry}" fill="#d6d0c2" stroke="${INK}" stroke-width="3"/>`
+    s += `<ellipse cx="${cx}" cy="${cy - rim}" rx="${rx - 0.25 * S}" ry="${ry - 0.2 * S}" fill="#7cc4e2" stroke="${INK}" stroke-width="2.5"/>`
+    s += `<rect x="${cx - 0.12 * S}" y="${cy - rim - 0.9 * S}" width="${0.24 * S}" height="${0.9 * S}" fill="#b9b3a5" stroke="${INK}" stroke-width="2.5"/>`
+    s += `<ellipse cx="${cx}" cy="${cy - rim - 0.95 * S}" rx="${0.35 * S}" ry="${0.12 * S}" fill="#a8e1f5" stroke="${INK}" stroke-width="2"/>`
+    return { img: svg(w, cy + ry + 4, s), w, d, zMax }
+  }
+
+  function planterSvg() {
+    const w = 1.2 * S, d = 0.5 * S, zMax = 0.85 * S
+    let s = box(zMax, 2, w - 4, 0, d, 0, 0.42 * S, '#6b4a33', '#8c6a4c', 2.5)
+    const top = ly(zMax, d * 0.5, 0.42 * S)
+    const cols = ['#ff7aa8', '#ffd25a', '#ff7aa8', '#ffffff', '#ffd25a']
+    cols.forEach((c, i) => { s += `<circle cx="${0.16 * S + i * 0.22 * S}" cy="${top - (i % 2) * 0.1 * S}" r="${0.1 * S}" fill="${c}" stroke="${INK}" stroke-width="2"/>` })
+    return { img: svg(w, ly(zMax, d, 0) + 3, s), w, d, zMax }
+  }
+
+  function kioskSvg() {
+    const w = 2.2 * S, d = 1.6 * S, zMax = 2.3 * S
+    let s = box(zMax, 2, w - 4, 0, d, 0, 1.7 * S, '#f1ead8', '#f0c8d8')
+    const fy = ly(zMax, d, 1.7 * S)
+    s += `<rect x="${0.25 * S}" y="${fy + 0.35 * S}" width="${w - 0.5 * S}" height="${0.6 * S}" fill="#a9d6ea" stroke="${INK}" stroke-width="2.5"/>`
+    s += `<rect x="${0.15 * S}" y="${fy + 1.0 * S}" width="${w - 0.3 * S}" height="${0.12 * S}" fill="#e0b0c4" stroke="${INK}" stroke-width="2"/>`
+    s += `<text x="${w / 2}" y="${fy + 0.26 * S}" text-anchor="middle" font-family="Outfit, sans-serif" font-weight="800" font-size="${0.2 * S}" fill="#9a3d63">ICES</text>`
+    return { img: svg(w, ly(zMax, d, 0) + 3, s), w, d, zMax }
+  }
+
+  // ---------- The street ----------
+  const R = (x, y, w, h) => ({ x: x * S, y: y * S, w: w * S, h: h * S })
+  const ground = {
+    northPave: R(0, 6.5, 23, 2.6),
+    road: R(0, 9.1, 23, 4.4),
+    southPave: R(0, 13.5, 23, 2.0),
+    vRoad: R(23, 0, 4.4, 24),
+    eastPave: R(27.4, 0, 4.6, 24),
+    park: R(0.6, 15.9, 21.8, 7.6),
+    backAlley: R(0, 0, 23, 6.5),
+    zebra: R(13.2, 9.1, 2.4, 4.4),
+  }
+
+  const drawables = []
+  const solids = []   // { rect } or { circle: {x, y, r} } on the ground
+  const lamps = []
+  const windows = []  // lit shopfronts for dusk and night: ground rects
+
+  function place(def, gx, gy, opts = {}) {
+    // gx, gy: the image's left edge and the footprint's back edge, in ground px.
+    const d = {
+      key: gy + def.d,
+      x: gx,
+      top: sy(gy) - def.zMax,
+      w: def.w,
+      h: def.img.naturalHeight || def.zMax + def.d * FS,
+      img: def.img,
+      draw(ctx) { if (def.img.complete && def.img.naturalWidth) ctx.drawImage(def.img, gx, sy(gy) - def.zMax) },
+      ...opts,
+    }
+    drawables.push(d)
+    return d
+  }
+
+  // North row of buildings (their fronts face the street), with a back alley behind them.
+  const B = [
+    { x: 0.4, w: 5.4, h: 5.2, roof: '#5d5f66', wall: '#b9583e', glass: '#a9d6ea', trim: '#e8e2d2', cols: 3, door: 1, doorCol: '#2c4a73', brick: true },
+    { x: 5.8, w: 5.0, h: 3.6, roof: '#62656c', wall: '#e9e1cf', glass: '#a9d6ea', trim: '#ffffff', cols: 3, shop: 'CORNER SHOP', sign: '#2f6f4f', awning: '#3f8f63' },
+    { x: 11.6, w: 4.8, h: 7.4, roof: '#4d525c', wall: '#7f93a8', glass: '#cfe8f4', trim: '#dfe6ee', cols: 4, door: 2, doorCol: '#2b2f3a' },
+    { x: 17.3, w: 5.4, h: 4.4, roof: '#5d5f66', wall: '#8fb59a', glass: '#a9d6ea', trim: '#f4efe2', cols: 3, shop: 'CAFÉ', sign: '#7a3b2e', awning: '#c0563f' },
+  ]
+  for (const b of B) {
+    const w = b.w * S, d = 4.3 * S, h = b.h * S
+    const def = { img: buildingSvg({ ...b, w, d, h }), w, d, zMax: h + 4 }
+    place(def, b.x * S, 2.2 * S)
+    solids.push({ rect: { x: b.x * S, y: 2.2 * S, w, h: d } })
+    if (b.shop) windows.push({ x: b.x * S + 0.3 * S, y: 6.5 * S, w: (w - 0.6 * S) * 0.62, h: 1.6 * S })
+  }
+  // East side: a tall block across the side road.
+  {
+    const w = 4.2 * S, d = 6 * S, h = 8.5 * S
+    const def = { img: buildingSvg({ w, d, h, roof: '#4a4f58', wall: '#a08ab8', glass: '#cfe8f4', trim: '#efe9f5', cols: 3, door: 1, doorCol: '#3a2f4a' }), w, d, zMax: h + 4 }
+    place(def, 27.6 * S, 1.0 * S)
+    solids.push({ rect: { x: 27.6 * S, y: 1.0 * S, w, h: d } })
+  }
+  {
+    const w = 4.2 * S, d = 5 * S, h = 4.2 * S
+    const def = { img: buildingSvg({ w, d, h, roof: '#5d5f66', wall: '#d9a65a', glass: '#a9d6ea', trim: '#fff6e0', cols: 3, shop: 'LAUNDRY', sign: '#2e5d8a', awning: '#4a86c0' }), w, d, zMax: h + 4 }
+    place(def, 27.6 * S, 13.2 * S)
+    solids.push({ rect: { x: 27.6 * S, y: 13.2 * S, w, h: d } })
+    windows.push({ x: 27.9 * S, y: 18.2 * S, w: 2.2 * S, h: 1.6 * S })
+  }
+
+  // Parked cars.
+  for (const [cx, cy, col, light] of [[1.6, 9.35, '#3b8fa3', '#62b2c4'], [17.6, 9.35, '#d9a42b', '#ecc25a'], [6.2, 11.85, '#c4473d', '#dc6a5f']]) {
+    const def = carSvg(col, light)
+    place(def, cx * S, cy * S)
+    solids.push({ rect: { x: cx * S + 4, y: cy * S, w: def.w - 8, h: def.d } })
+  }
+  // Lamp posts.
+  for (const [x, y] of [[3.5, 8.5], [12.2, 8.5], [20.2, 8.5], [4.5, 13.8], [11.0, 13.8], [19.5, 13.8], [27.9, 10.5]]) {
+    const def = lampSvg()
+    place(def, x * S - def.w / 2, y * S - def.d / 2)
+    solids.push({ circle: { x: x * S, y: y * S, r: 0.14 * S } })
+    lamps.push({ x: x * S, y: y * S, head: def.head })
+  }
+  // Belisha beacons at the zebra crossing.
+  for (const [x, y] of [[12.9, 8.85], [15.9, 8.85], [12.9, 13.75], [15.9, 13.75]]) {
+    const def = beaconSvg()
+    place(def, x * S - def.w / 2, y * S - def.d / 2, { beacon: true, bx: x * S, by: y * S })
+    solids.push({ circle: { x: x * S, y: y * S, r: 0.1 * S } })
+  }
+  // Street furniture.
+  { const def = pillarBoxSvg(); place(def, 9.2 * S, 7.9 * S); solids.push({ circle: { x: 9.6 * S, y: 8.15 * S, r: 0.3 * S } }) }
+  { const def = binSvg(); place(def, 1.3 * S, 7.9 * S); solids.push({ circle: { x: 1.6 * S, y: 8.15 * S, r: 0.26 * S } }) }
+  { const def = binSvg(); place(def, 15.4 * S, 14.4 * S); solids.push({ circle: { x: 15.7 * S, y: 14.65 * S, r: 0.26 * S } }) }
+  { const def = shelterSvg(); place(def, 6.3 * S, 14.2 * S); solids.push({ rect: { x: 6.4 * S, y: 14.2 * S, w: def.w - 0.2 * S, h: 0.3 * S } }) }
+  for (const x of [17.6, 20.6]) { const def = planterSvg(); place(def, x * S, 7.0 * S); solids.push({ rect: { x: x * S, y: 7.0 * S, w: def.w, h: def.d } }) }
+
+  // The park.
+  { const def = fountainSvg(); place(def, 10 * S, 17.2 * S); solids.push({ circle: { x: 11.5 * S, y: 18.7 * S, r: 1.4 * S } }) }
+  { const def = kioskSvg(); place(def, 18.6 * S, 16.6 * S); solids.push({ rect: { x: 18.6 * S, y: 16.6 * S, w: def.w, h: def.d } }) }
+  for (const [x, y] of [[3.2, 19.2], [16.0, 21.4]]) { const def = benchSvg(); place(def, x * S, y * S); solids.push({ rect: { x: x * S, y: y * S, w: def.w, h: def.d } }) }
+  const trees = [[2.0, 17.4, 0], [6.2, 22.4, 1], [8.0, 17.0, 0], [15.0, 17.6, 1], [21.0, 21.8, 0], [12.3, 22.6, 1], [25.6, 23.0, 0]]
+  const TONES = [['#5fa25a', '#79bd6c'], ['#4f9a6e', '#6cb88a']]
+  for (const [x, y, t] of trees) {
+    const def = treeSvg(TONES[t])
+    place(def, x * S - def.w / 2, y * S - def.d / 2, { tree: { x: x * S, y: y * S } })
+    solids.push({ circle: { x: x * S, y: y * S, r: 0.16 * S } })
+  }
+
+  // ---------- The thief, ported from the game's thiefArt.ts ----------
+  const HERO = [242, 242, 242], TINT = [217, 219, 232], ROOM = [20, 20, 28], FOOT = [42, 42, 58]
+  const KIT = '#20202c'
+  const K = 0.68
+  const mix = (a, b, t) => `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(',')})`
+  const TRAP = [[-0.32, -0.12], [0.32, -0.12], [0.5, 0.5], [-0.5, 0.5]]
+
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r)
+    ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h); ctx.lineTo(x + r, y + h)
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r); ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath()
+  }
+  function tie(ctx, x, y, deg, len) {
+    ctx.save(); ctx.translate(x, y); ctx.rotate((deg * Math.PI) / 180)
+    ctx.beginPath(); ctx.moveTo(0, -0.032); ctx.lineTo(len, -0.024); ctx.lineTo(len - 0.045, 0); ctx.lineTo(len, 0.024); ctx.lineTo(0, 0.032); ctx.closePath()
+    ctx.fillStyle = KIT; ctx.fill(); ctx.lineWidth = 0.022; ctx.strokeStyle = INK; ctx.stroke(); ctx.restore()
+  }
+
+  /** Drawn in units of S, body centre at the origin. dir: side (facing right), front or back. */
+  function drawThief(ctx, o) {
+    const L = o.light, d = 0.88 * (1 - L), t = o.time, sp = o.speed, sw = o.swing
+    const side = o.dir === 'side', front = o.dir === 'front', back = o.dir === 'back'
+    const hx = side ? 0.03 : 0, hy = -0.42, hr = 0.27
+    const eyeY = -0.43
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round'
+    const headPath = () => { ctx.beginPath(); ctx.arc(hx, hy, hr, 0, Math.PI * 2) }
+    const sway = (i) => Math.sin(t * 13 + i * 1.7) * 7 * sp + Math.sin(t * 1.6 + i) * 4 * (1 - sp)
+
+    // Ties behind him: off the side of the head, or peeking out either side from the front.
+    if (side) {
+      const knotX = hx - Math.sqrt(hr * hr - (eyeY - hy) ** 2)
+      const rest = [118, 140], run = [172, 191]
+      for (let i = 0; i < 2; i++) tie(ctx, knotX, eyeY, rest[i] + (run[i] - rest[i]) * sp + sway(i), i ? 0.24 : 0.3)
+    } else if (front) {
+      const a = [148 + 14 * sp, 32 - 14 * sp]
+      for (let i = 0; i < 2; i++) tie(ctx, 0, eyeY, a[i] + sway(i), 0.42)
+    }
+
+    // Gloves behind him when he faces away.
+    const gl = side
+      ? [[-0.76 + sw * 0.08, 0.18 - Math.abs(sw) * 0.03], [0.76 - sw * 0.08, 0.18 - Math.abs(sw) * 0.03]]
+      : [[-0.74, 0.18 + sw * 0.06], [0.74, 0.18 - sw * 0.06]]
+    if (o.air) for (const g of gl) g[1] -= 0.14
+    const gloves = () => {
+      ctx.fillStyle = KIT; ctx.lineWidth = 0.045; ctx.strokeStyle = INK
+      for (const [gx, gy] of gl) { ctx.beginPath(); ctx.arc(gx, gy, 0.17, 0, Math.PI * 2); ctx.fill(); ctx.stroke() }
+    }
+    if (back) gloves()
+
+    // Feet.
+    ctx.fillStyle = mix(FOOT, ROOM, 0.6 * (1 - L)); ctx.strokeStyle = INK; ctx.lineWidth = 0.04
+    const lift = o.air ? [0, 0] : [Math.max(0, sw) * 0.07, Math.max(0, -sw) * 0.07]
+    const feet = side ? [[-0.44, 0.4], [0.04, 0.4]] : [[-0.42, 0.4], [0.02, 0.4]]
+    feet.forEach(([fx, fy], i) => { rr(ctx, fx, fy - lift[i], 0.4, 0.22, 0.06); ctx.fill(); ctx.stroke() })
+
+    // Body and head.
+    const g = ctx.createLinearGradient(0, -0.7, 0, 0.5)
+    g.addColorStop(0, mix(HERO, ROOM, d)); g.addColorStop(1, mix(TINT, ROOM, d))
+    ctx.fillStyle = g; ctx.lineWidth = 0.06
+    ctx.beginPath(); TRAP.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.closePath(); ctx.fill(); ctx.stroke()
+    headPath(); ctx.fill()
+    ctx.save(); headPath(); ctx.clip(); ctx.fillStyle = KIT; ctx.fillRect(-1, eyeY - 0.15 * K, 2, 0.3 * K); ctx.restore()
+    headPath(); ctx.stroke()
+
+    if (side) {
+      const knotX = hx - Math.sqrt(hr * hr - (eyeY - hy) ** 2)
+      ctx.beginPath(); ctx.arc(knotX + 0.01, eyeY, 0.05, 0, Math.PI * 2); ctx.fillStyle = KIT; ctx.fill(); ctx.lineWidth = 0.022; ctx.stroke()
+    }
+    if (back) {
+      // From behind: the knot in the middle of the band, ties hanging over his back.
+      ctx.beginPath(); ctx.arc(0, eyeY, 0.06, 0, Math.PI * 2); ctx.fillStyle = KIT; ctx.fill(); ctx.lineWidth = 0.022; ctx.strokeStyle = INK; ctx.stroke()
+      const a = [102, 80]
+      for (let i = 0; i < 2; i++) tie(ctx, 0, eyeY, a[i] + sway(i) * 0.6, i ? 0.26 : 0.32)
+    }
+
+    if (!back) {
+      // Lit eyes glow as he darkens.
+      const ecx = side ? 0.03 + 0.04 * K : 0
+      if (L < 1) {
+        ctx.save(); ctx.globalCompositeOperation = 'lighter'
+        const rg = ctx.createRadialGradient(ecx, eyeY, 0, ecx, eyeY, 0.36)
+        rg.addColorStop(0, `rgba(255,244,220,${(0.5 * (1 - L)).toFixed(3)})`); rg.addColorStop(1, 'rgba(255,244,220,0)')
+        ctx.fillStyle = rg; ctx.beginPath(); ctx.ellipse(ecx, eyeY, 0.36, 0.24, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore()
+      }
+      // Pupils look where he's going: ahead in the side view, wherever he's moving from the front.
+      const px = side ? 0.028 * K : o.lookX * 0.03 * K
+      const py = side ? 0.005 * K : 0.012 * K
+      for (const ex of [ecx - 0.19 * K, ecx + 0.19 * K]) {
+        ctx.beginPath(); ctx.ellipse(ex, eyeY, 0.085 * K, 0.1 * K, 0, 0, Math.PI * 2); ctx.fillStyle = '#f2f2f2'; ctx.fill()
+        ctx.beginPath(); ctx.arc(ex + px, eyeY + py, 0.042 * K, 0, Math.PI * 2); ctx.fillStyle = INK; ctx.fill()
+      }
+      // The smirk.
+      const fx = side ? 0.03 : -0.01
+      ctx.beginPath(); ctx.moveTo(fx - 0.13 * K, eyeY + 0.27 * K); ctx.quadraticCurveTo(fx + 0.01 * K, eyeY + 0.36 * K, fx + 0.15 * K, eyeY + 0.2 * K)
+      ctx.lineWidth = 0.05 * K; ctx.strokeStyle = INK; ctx.stroke()
+    }
+    if (!back) gloves()
+  }
+
+  // ---------- Him ----------
+  const me = { x: 7.6 * S, y: 7.4 * S, z: 0, vz: 0, dir: 'front', flip: 1, lookX: 0, walk: 0, swing: 0, speed: 0, sq: { x: 1, y: 1, vx: 0, vy: 0 }, time: 0, light: 1 }
+  const R_FOOT = 0.28 * S
+  const MOVE = { walk: 2.6 * S, run: 4.7 * S, jump: 5.2 * S, grav: 17 * S }
+
+  function collide(nx, ny) {
+    nx = Math.max(R_FOOT, Math.min(WW - R_FOOT, nx))
+    ny = Math.max(R_FOOT, Math.min(WD - R_FOOT, ny))
+    for (let pass = 0; pass < 2; pass++) {
+      for (const s of solids) {
+        if (s.rect) {
+          const r = s.rect
+          const cx = Math.max(r.x, Math.min(nx, r.x + r.w)), cy = Math.max(r.y, Math.min(ny, r.y + r.h))
+          const dx = nx - cx, dy = ny - cy, dist = Math.hypot(dx, dy)
+          if (dist < R_FOOT) {
+            if (dist > 0.0001) { nx = cx + (dx / dist) * R_FOOT; ny = cy + (dy / dist) * R_FOOT }
+            else {
+              // Centre inside the rect: push out the shortest way.
+              const opts = [[r.x - R_FOOT - nx, 0], [r.x + r.w + R_FOOT - nx, 0], [0, r.y - R_FOOT - ny], [0, r.y + r.h + R_FOOT - ny]]
+              opts.sort((a, b) => Math.hypot(...a) - Math.hypot(...b)); nx += opts[0][0]; ny += opts[0][1]
+            }
+          }
+        } else {
+          const c = s.circle, dx = nx - c.x, dy = ny - c.y, dist = Math.hypot(dx, dy), min = c.r + R_FOOT
+          if (dist < min && dist > 0.0001) { nx = c.x + (dx / dist) * min; ny = c.y + (dy / dist) * min }
+        }
+      }
+    }
+    return [nx, ny]
+  }
+
+  // ---------- Input ----------
+  const keys = new Set()
+  let jumpQueued = false
+  const stickEl = document.getElementById('stick')
+  const stick = { active: false, id: null, ox: 0, oy: 0, x: 0, y: 0 }
+  window.addEventListener('keydown', (e) => {
+    const k = e.key.toLowerCase()
+    if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k) && document.activeElement?.tagName !== 'INPUT') e.preventDefault()
+    if (k === ' ' && !e.repeat) jumpQueued = true
+    keys.add(k)
+  })
+  window.addEventListener('keyup', (e) => keys.delete(e.key.toLowerCase()))
+  window.addEventListener('blur', () => keys.clear())
+  const stage = document.getElementById('stage')
+  stage.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('.jump')) return
+    stick.active = true; stick.id = e.pointerId
+    const r = stage.getBoundingClientRect()
+    stick.ox = e.clientX - r.left; stick.oy = e.clientY - r.top; stick.x = 0; stick.y = 0
+    stickEl.style.left = stick.ox + 'px'; stickEl.style.top = stick.oy + 'px'; stickEl.hidden = false
+    stickEl.firstElementChild.style.transform = 'translate(0,0)'
+    stage.setPointerCapture(e.pointerId)
+  })
+  stage.addEventListener('pointermove', (e) => {
+    if (!stick.active || e.pointerId !== stick.id) return
+    const r = stage.getBoundingClientRect()
+    let dx = e.clientX - r.left - stick.ox, dy = e.clientY - r.top - stick.oy
+    const len = Math.hypot(dx, dy), max = 40
+    if (len > max) { dx *= max / len; dy *= max / len }
+    stick.x = dx / max; stick.y = dy / max
+    stickEl.firstElementChild.style.transform = `translate(${dx}px,${dy}px)`
+  })
+  const endStick = (e) => { if (e.pointerId !== stick.id) return; stick.active = false; stick.x = stick.y = 0; stickEl.hidden = true }
+  stage.addEventListener('pointerup', endStick)
+  stage.addEventListener('pointercancel', endStick)
+  document.getElementById('jumpBtn').addEventListener('pointerdown', (e) => { e.preventDefault(); jumpQueued = true })
+  if (window.matchMedia('(any-pointer: coarse)').matches) document.getElementById('hint').textContent = 'Drag to walk (to the edge to run) · Jump button'
+
+  // ---------- Options ----------
+  let time = 'day'
+  const seg = document.getElementById('timeSeg')
+  seg.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-time]')
+    if (!b) return
+    time = b.dataset.time
+    for (const x of seg.querySelectorAll('button')) x.setAttribute('aria-checked', String(x === b))
+  })
+  const seeThrough = document.getElementById('seeThrough')
+  const footprints = document.getElementById('footprints')
+
+  // ---------- Canvas ----------
+  const canvas = document.getElementById('view')
+  const ctx = canvas.getContext('2d')
+  let dpr = 1, cw = 0, ch = 0, zoom = 1
+  const cam = { x: me.x, y: sy(me.y) }
+  function resize() {
+    dpr = Math.min(2, window.devicePixelRatio || 1)
+    const r = stage.getBoundingClientRect()
+    cw = r.width; ch = r.height
+    canvas.width = Math.round(cw * dpr); canvas.height = Math.round(ch * dpr)
+    // He's about the same size on screen as in the game: S is 52–64 CSS px.
+    zoom = Math.max(52, Math.min(64, Math.min(cw, ch) / 7.35)) / S
+  }
+  new ResizeObserver(resize).observe(stage)
+  resize()
+
+  const sil = document.createElement('canvas'), silCtx = sil.getContext('2d')
+  const mask = document.createElement('canvas'), maskCtx = mask.getContext('2d')
+  const dark = document.createElement('canvas'), darkCtx = dark.getContext('2d')
+
+  const LOOK = {
+    day: { overlay: null, lampGlow: 0, minLight: 1 },
+    dusk: { overlay: 'rgba(70,40,90,0.38)', lampGlow: 0.55, minLight: 0.72 },
+    night: { overlay: 'rgba(8,12,30,0.80)', lampGlow: 1, minLight: 0.12 },
+  }
+
+  function drawGround(c) {
+    // Pavement everywhere, then roads, park and markings on top.
+    c.fillStyle = '#d6d1c4'; c.fillRect(0, 0, WW, sy(WD))
+    // Paving slabs.
+    c.strokeStyle = 'rgba(29,34,48,0.09)'; c.lineWidth = 2
+    c.beginPath()
+    for (let x = 0; x <= WW; x += S) { c.moveTo(x, 0); c.lineTo(x, sy(WD)) }
+    for (let y = 0; y <= WD; y += S) { c.moveTo(0, sy(y)); c.lineTo(WW, sy(y)) }
+    c.stroke()
+    // Back alley: darker tarmac behind the buildings.
+    const ba = ground.backAlley
+    c.fillStyle = '#9a978f'; c.fillRect(ba.x, sy(ba.y), ba.w, sy(ba.h))
+    // Roads.
+    const rd = (r) => { c.fillStyle = '#5b5f68'; c.fillRect(r.x, sy(r.y), r.w, r.h * FS) }
+    rd(ground.road); rd(ground.vRoad)
+    // Kerb faces where a raised pavement's front edge meets the road below it.
+    c.fillStyle = '#9d978a'
+    c.fillRect(0, sy(ground.road.y), ground.road.w, 0.12 * S)
+    c.fillStyle = '#7d786d'; c.fillRect(0, sy(ground.road.y) + 0.12 * S - 2, ground.road.w, 2)
+    // Double yellow lines along both kerbs.
+    c.strokeStyle = '#f2c230'; c.lineWidth = 3
+    for (const y of [ground.road.y + 0.22 * S, ground.road.y + 0.34 * S, ground.road.y + ground.road.h - 0.22 * S, ground.road.y + ground.road.h - 0.34 * S]) {
+      c.beginPath(); c.moveTo(0, sy(y)); c.lineTo(ground.zebra.x - 0.5 * S, sy(y)); c.moveTo(ground.zebra.x + ground.zebra.w + 0.5 * S, sy(y)); c.lineTo(ground.road.w, sy(y)); c.stroke()
+    }
+    // Centre line, dashed.
+    c.strokeStyle = '#f4f1e6'; c.lineWidth = 4; c.setLineDash([0.7 * S, 0.6 * S])
+    c.beginPath(); c.moveTo(0, sy(ground.road.y + ground.road.h / 2)); c.lineTo(ground.zebra.x - 0.8 * S, sy(ground.road.y + ground.road.h / 2))
+    c.moveTo(ground.zebra.x + ground.zebra.w + 0.8 * S, sy(ground.road.y + ground.road.h / 2)); c.lineTo(ground.road.w + 0.2 * S, sy(ground.road.y + ground.road.h / 2)); c.stroke()
+    c.beginPath(); c.moveTo(ground.vRoad.x + ground.vRoad.w / 2, 0); c.lineTo(ground.vRoad.x + ground.vRoad.w / 2, sy(WD)); c.stroke()
+    c.setLineDash([])
+    // Zebra crossing.
+    const z = ground.zebra
+    c.fillStyle = '#f4f1e6'
+    for (let x = z.x; x < z.x + z.w - 1; x += 0.48 * S) c.fillRect(x, sy(z.y + 0.15 * S), 0.28 * S, (z.h - 0.3 * S) * FS)
+    // The park: grass with a gravel path and a low kerb.
+    const p = ground.park
+    c.fillStyle = '#8cc56b'; c.fillRect(p.x, sy(p.y), p.w, p.h * FS)
+    c.fillStyle = '#7ab35b'
+    for (let i = 0; i < 70; i++) { const gx = p.x + ((i * 997) % 1000) / 1000 * p.w, gy = p.y + ((i * 613) % 1000) / 1000 * p.h; c.fillRect(gx, sy(gy), 6, 3) }
+    c.fillStyle = '#e3d6b4'
+    c.fillRect(p.x, sy(18.2 * S), p.w, 1.0 * S * FS)
+    c.fillRect(11.0 * S, sy(p.y), 1.0 * S, p.h * FS)
+    c.strokeStyle = 'rgba(29,34,48,0.35)'; c.lineWidth = 3; c.strokeRect(p.x, sy(p.y), p.w, p.h * FS)
+    // Drains.
+    c.fillStyle = '#3d4049'
+    for (const x of [5, 10.5, 19]) { c.fillRect(x * S, sy(ground.road.y + ground.road.h) - 0.25 * S, 0.5 * S, 0.12 * S) }
+  }
+
+  function shadow(c, x, y, rx, a = 0.22) {
+    c.fillStyle = `rgba(20,24,36,${a})`; c.beginPath(); c.ellipse(x, sy(y), rx, rx * FS * 0.6, 0, 0, Math.PI * 2); c.fill()
+  }
+
+  function lightAt(x, y) {
+    let l = LOOK[time].minLight
+    if (time === 'day') return 1
+    for (const lp of lamps) {
+      const d = Math.hypot(x - lp.x, (y - lp.y)) / S
+      l = Math.max(l, d < 1.2 ? 1 : d > 4 ? 0 : 1 - (d - 1.2) / 2.8)
+    }
+    for (const w of windows) {
+      if (x > w.x - 0.4 * S && x < w.x + w.w + 0.4 * S && y > w.y && y < w.y + w.h) l = Math.max(l, 0.75)
+    }
+    return Math.min(1, l)
+  }
+
+  function thiefDrawable() {
+    const scale = S
+    return {
+      key: me.y, isMe: true,
+      x: me.x - 1.0 * S, top: sy(me.y) - me.z - 1.2 * S, w: 2.0 * S, h: 1.4 * S,
+      draw(c) {
+        c.save()
+        c.translate(me.x, sy(me.y) - me.z)
+        c.scale(me.sq.x, me.sq.y)
+        c.translate(0, -0.62 * scale)
+        c.scale(scale * (me.dir === 'side' ? me.flip : 1), scale)
+        drawThief(c, { dir: me.dir, time: me.time, speed: me.speed, swing: me.swing, light: me.light, lookX: me.lookX, air: me.z > 1 })
+        c.restore()
+      },
+    }
+  }
+
+  const overlap = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.top < b.top + b.h && a.top + a.h > b.top
+
+  // ---------- Loop ----------
+  let last = performance.now()
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000)
+    last = now
+    me.time += dt
+
+    // Movement intent.
+    let ix = (keys.has('d') || keys.has('arrowright') ? 1 : 0) - (keys.has('a') || keys.has('arrowleft') ? 1 : 0)
+    let iy = (keys.has('s') || keys.has('arrowdown') ? 1 : 0) - (keys.has('w') || keys.has('arrowup') ? 1 : 0)
+    let run = keys.has('shift')
+    if (stick.active && Math.hypot(stick.x, stick.y) > 0.2) { ix = stick.x; iy = stick.y; run = Math.hypot(stick.x, stick.y) > 0.92 }
+    const mag = Math.hypot(ix, iy)
+    if (mag > 1) { ix /= mag; iy /= mag }
+    const speed = run ? MOVE.run : MOVE.walk
+    const moving = mag > 0.05
+    if (moving) {
+      ;[me.x, me.y] = collide(me.x + ix * speed * dt, me.y + iy * speed * dt)
+      // Facing: sideways wins on diagonals; straight up or down shows the back or the face.
+      if (Math.abs(ix) >= Math.abs(iy) * 0.75) { me.dir = 'side'; me.flip = ix > 0 ? 1 : -1 }
+      else me.dir = iy > 0 ? 'front' : 'back'
+      me.lookX += (ix - me.lookX) * Math.min(1, dt * 8)
+      me.walk += dt * (run ? 13 : 9)
+    } else me.lookX += (0 - me.lookX) * Math.min(1, dt * 4)
+    me.swing += ((moving ? Math.sin(me.walk) : 0) - me.swing) * Math.min(1, dt * 12)
+    me.speed += ((moving ? (run ? 1 : 0.45) : 0) - me.speed) * Math.min(1, dt * 5)
+
+    // Jumping: height is drawn, the footprint stays on the ground.
+    if (jumpQueued && me.z <= 0) { me.vz = MOVE.jump; me.sq.x = 0.86; me.sq.y = 1.16 }
+    jumpQueued = false
+    if (me.z > 0 || me.vz > 0) {
+      me.vz -= MOVE.grav * dt; me.z += me.vz * dt
+      if (me.z <= 0) { me.z = 0; me.vz = 0; me.sq.x = 1.2; me.sq.y = 0.82 }
+    }
+    const sq = me.sq, k = 300, damp = 20, st = Math.min(dt, 1 / 30)
+    sq.vx += (k * (1 - sq.x) - damp * sq.vx) * st; sq.vy += (k * (1 - sq.y) - damp * sq.vy) * st
+    sq.x += sq.vx * st; sq.y += sq.vy * st
+    if (reduceMotion) { sq.x = 1; sq.y = 1 }
+    const bob = moving && me.z === 0 ? Math.abs(Math.sin(me.walk)) * 0.03 * S : 0
+
+    me.light = lightAt(me.x, me.y)
+
+    // Camera follows, kept inside the street.
+    const vw = cw / zoom, vh = ch / zoom
+    const tx = me.x, ty = sy(me.y) - 0.8 * S
+    cam.x += (tx - cam.x) * Math.min(1, dt * 6); cam.y += (ty - cam.y) * Math.min(1, dt * 6)
+    const minY = -8.5 * S, maxY = sy(WD)
+    cam.x = vw >= WW ? WW / 2 : Math.max(vw / 2, Math.min(WW - vw / 2, cam.x))
+    cam.y = vh >= maxY - minY ? (minY + maxY) / 2 : Math.max(minY + vh / 2, Math.min(maxY - vh / 2, cam.y))
+
+    const k2 = zoom * dpr
+    ctx.setTransform(1, 0, 0, 1, 0, 0)
+    ctx.fillStyle = '#8a877f'; ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.setTransform(k2, 0, 0, k2, (cw / 2 - cam.x * zoom) * dpr, (ch / 2 - cam.y * zoom) * dpr)
+
+    drawGround(ctx)
+    // Ground shadows: trees and him (shrinking as he rises).
+    for (const d of drawables) if (d.tree) shadow(ctx, d.tree.x + 0.25 * S, d.tree.y + 0.1 * S, 1.0 * S, 0.16)
+    shadow(ctx, me.x, me.y, 0.48 * S * Math.max(0.55, 1 - me.z / (2.2 * S)), 0.28)
+
+    if (footprints.checked) {
+      ctx.lineWidth = 2
+      for (const s of solids) {
+        ctx.fillStyle = 'rgba(255,90,90,0.28)'; ctx.strokeStyle = 'rgba(200,40,40,0.8)'
+        if (s.rect) { ctx.fillRect(s.rect.x, sy(s.rect.y), s.rect.w, s.rect.h * FS); ctx.strokeRect(s.rect.x, sy(s.rect.y), s.rect.w, s.rect.h * FS) }
+        else { ctx.beginPath(); ctx.ellipse(s.circle.x, sy(s.circle.y), s.circle.r, s.circle.r * FS, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke() }
+      }
+      ctx.fillStyle = 'rgba(143,211,255,0.45)'; ctx.strokeStyle = '#2c7fb8'
+      ctx.beginPath(); ctx.ellipse(me.x, sy(me.y), R_FOOT, R_FOOT * FS, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke()
+    }
+
+    // Everything standing up, back to front by where it meets the ground.
+    const meD = thiefDrawable()
+    meD.top -= bob
+    const list = drawables.concat([meD]).sort((a, b) => a.key - b.key)
+    const myIdx = list.indexOf(meD)
+    for (const d of list) {
+      if (d === meD) { ctx.save(); ctx.translate(0, -bob); d.draw(ctx); ctx.restore() }
+      else d.draw(ctx)
+    }
+
+    // Behind something: show him through it as a power-blue silhouette.
+    const covering = list.slice(myIdx + 1).filter((d) => overlap(d, meD))
+    if (seeThrough.checked && covering.length) {
+      const pw = Math.ceil(meD.w * k2), ph = Math.ceil(meD.h * k2)
+      for (const cv of [sil, mask]) if (cv.width !== pw || cv.height !== ph) { cv.width = pw; cv.height = ph }
+      const local = (c) => { c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, pw, ph); c.setTransform(k2, 0, 0, k2, -meD.x * k2, -meD.top * k2) }
+      local(silCtx); silCtx.translate(0, -bob); meD.draw(silCtx)
+      silCtx.setTransform(1, 0, 0, 1, 0, 0); silCtx.globalCompositeOperation = 'source-in'; silCtx.fillStyle = '#8fd3ff'; silCtx.fillRect(0, 0, pw, ph)
+      local(maskCtx); for (const d of covering) d.draw(maskCtx)
+      silCtx.globalCompositeOperation = 'destination-in'; silCtx.setTransform(1, 0, 0, 1, 0, 0); silCtx.drawImage(mask, 0, 0)
+      silCtx.globalCompositeOperation = 'source-over'
+      ctx.save(); ctx.globalAlpha = 0.62; ctx.drawImage(sil, meD.x, meD.top, meD.w, meD.h); ctx.restore()
+    }
+
+    // Dusk and night: a tint over the street with the lamps' pools cut out of it.
+    const look = LOOK[time]
+    if (look.overlay) {
+      const dw = Math.ceil(canvas.width / 2), dh = Math.ceil(canvas.height / 2)
+      if (dark.width !== dw || dark.height !== dh) { dark.width = dw; dark.height = dh }
+      const kd = k2 / 2
+      darkCtx.setTransform(1, 0, 0, 1, 0, 0); darkCtx.globalCompositeOperation = 'source-over'
+      darkCtx.clearRect(0, 0, dw, dh); darkCtx.fillStyle = look.overlay; darkCtx.fillRect(0, 0, dw, dh)
+      darkCtx.setTransform(kd, 0, 0, kd, (cw / 2 - cam.x * zoom) * dpr / 2, (ch / 2 - cam.y * zoom) * dpr / 2)
+      darkCtx.globalCompositeOperation = 'destination-out'
+      const pool = (x, y, r, a) => {
+        darkCtx.save(); darkCtx.translate(x, sy(y)); darkCtx.scale(1, FS)
+        const g = darkCtx.createRadialGradient(0, 0, 0, 0, 0, r)
+        g.addColorStop(0, `rgba(0,0,0,${a})`); g.addColorStop(0.55, `rgba(0,0,0,${a * 0.7})`); g.addColorStop(1, 'rgba(0,0,0,0)')
+        darkCtx.fillStyle = g; darkCtx.beginPath(); darkCtx.arc(0, 0, r, 0, Math.PI * 2); darkCtx.fill(); darkCtx.restore()
+      }
+      for (const lp of lamps) pool(lp.x, lp.y, 3.6 * S, 0.95)
+      for (const w of windows) {
+        const g = darkCtx.createLinearGradient(0, sy(w.y), 0, sy(w.y + w.h))
+        g.addColorStop(0, 'rgba(0,0,0,0.8)'); g.addColorStop(1, 'rgba(0,0,0,0)')
+        darkCtx.fillStyle = g; darkCtx.fillRect(w.x - 0.3 * S, sy(w.y) - 1.5 * S, w.w + 0.6 * S, w.h * FS + 1.5 * S)
+      }
+      pool(me.x, me.y - 0.3 * S, 1.8 * S, 0.35)
+      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(dark, 0, 0, canvas.width, canvas.height)
+      // Glowing lamp heads and beacons.
+      ctx.setTransform(k2, 0, 0, k2, (cw / 2 - cam.x * zoom) * dpr, (ch / 2 - cam.y * zoom) * dpr)
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'
+      const flick = reduceMotion ? 1 : 0.92 + 0.08 * Math.sin(now / 90)
+      for (const lp of lamps) {
+        const hx = lp.x, hy = sy(lp.y) - lp.head
+        const g = ctx.createRadialGradient(hx, hy, 0, hx, hy, 0.9 * S)
+        g.addColorStop(0, `rgba(255,236,180,${0.6 * look.lampGlow * flick})`); g.addColorStop(1, 'rgba(255,236,180,0)')
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(hx, hy, 0.9 * S, 0, Math.PI * 2); ctx.fill()
+      }
+      const blink = Math.sin(now / 420) > 0 || reduceMotion
+      for (const d of drawables) if (d.beacon && blink) {
+        const hx = d.bx, hy = sy(d.by) - 1.93 * S
+        const g = ctx.createRadialGradient(hx, hy, 0, hx, hy, 0.6 * S)
+        g.addColorStop(0, `rgba(255,160,60,${0.7 * look.lampGlow})`); g.addColorStop(1, 'rgba(255,160,60,0)')
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(hx, hy, 0.6 * S, 0, Math.PI * 2); ctx.fill()
+      }
+      ctx.restore()
+    }
+    requestAnimationFrame(frame)
+  }
+  requestAnimationFrame(frame)
+})()
+</script>
+</body>
+</html>
