@@ -8,7 +8,7 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16), **breaking out of a facility**: a clinical test facility, our own take on that kind of place (History #77, #78). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T14:20:55+00:00):**
+**Where the project stands (as of 2026-11-16T14:30:22+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -16,7 +16,7 @@ A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry**
 - Lyra is deploying the scaffold to Cloudflare Workers (History #14).
 - Designing the player: look settled (History #15–#25); climbing and ground movement settled (History #26, #28–#31); blink's rules and look settled (History #27, #32–#36).
 - Combat designed in three rounds (History #50–#61); details still open (§E).
-- **Combat is built for testing** (History #85): three test guards (staff watchmen) in the test room, sneak takedowns from behind, the ceiling, a wall and a blink, the jab-cross-shove combo with a finisher, the dodge, and knockout-or-kill. He's invulnerable for now. Merged to `main`, waiting on Lyra's playtest.
+- **Combat is built for testing** (History #85): three test guards (staff watchmen) in the test room, sneak takedowns from behind, the ceiling, a wall and a blink, the jab-cross-shove combo with a finisher, the dodge, and knockout-or-kill. He's invulnerable for now. Merged to `main`. Lyra's first playtest: takedowns don't read well enough yet; options in the Takedown Studies.
 - Designing the guards: archetypes, senses, suspicion, searching, hiding spots, each archetype's behaviour and their size settled (History #63–#80); staff watchman and blind guard, robot torch-bearer on a wheel that can't do stairs, and their look approved (History #81–#84).
 - **The full player is built** (History #37, #45, #46) in a test room, playable with keyboard and mouse, gamepad and touch, and merged to `main`. Lyra's first playtest: good overall; grip raised and blink loosened as a result (History #47, #48).
 
@@ -244,7 +244,9 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink's rules and look settled (#27, #32–#36). First playable piece: the full player (#37); plan and UI approved (#45, #46). **Built and merged to `main`** (see §F): Lyra's first playtest on the Fold went well; grip was far too short and blink a little tight, now raised (#47, #48). Next: test again, keep refining (Depth Before Breadth).
 
-**Combat test build** (History #85), built and merged: Lyra playtests the combat next.
+**Combat test build** (History #85), built and merged. **Lyra's first combat playtest** (2026-11-16T14:30:22+00:00): respawning test guards are fine for now, but three things don't read: **how to do a takedown** (the marker doesn't say what to press, or that tap and hold differ); **whether you knocked a guard out or killed it**; and **takedowns from a ceiling or wall**, which are over too fast to see. Options for all three are in the Takedown Studies, for Lyra to pick from before anything changes in the game.
+
+**Takedown Studies** (Artifact, 2026-11-16T14:30:22+00:00): https://claude.ai/artifact/9PjeTfLjLqrT8VYuQR2jFT. Looping scenes, option A in each row being what's in the game now. **1. The prompt:** A badge only; B badge plus the Attack button for your controls (keyboard, gamepad or touch) and "tap · hold"; C a two-stage badge saying "Knock out", then turning red-orange and saying "Kill" as the hold tips over; D the guard outlined in power blue, turning red-orange for a kill (combines with B or C). **2. Outcomes:** knockout A slump with eyes shut, B with Zs drifting up, C seeing stars then eyes shut; kill A drain to grey, B grey with crossed eyes, C shatter into its own shapes, D collapse into a dark silhouette that sinks away. **3. Ceiling and wall takedowns:** A quick, B a pounce (wind-up, afterimages, hit-stop and ring, a moment pinning the guard), C the pounce with a takedown cam (slow-motion and a slight zoom at impact). Claude's choices, up for change: red-orange for the kill stage, a cross as the kill icon, the shatter's pieces, and all timings.
 
 Shortlisted for visual comparison (options, not decisions):
 - **Bodies:** square, rounded square, circle and triangle (all four picked), plus stacked and polygon builds following Lyra's note (#19).
@@ -314,6 +316,7 @@ Shortlisted for visual comparison (options, not decisions):
 - **The gloves barely show against the dark**, as seen in the Thief Mask Fitting. Nothing has been decided about it, and it matters more now they're his weapons (#55): his punches are hard to see.
 - **Combat is against one kind of test guard only.** It's the watchman's look with simple behaviour (#85); no hearing, no searching, no torch-bearer or blind guard yet.
 - **He's invulnerable** (#85): there's no health and no losing a fight yet.
+- **Takedowns don't read well yet** (Lyra's combat playtest): how to do one, knockout versus kill, and the ceiling and wall takedowns. Options in the Takedown Studies.
 - **No guards yet**, so "guards look up" (#28) and "guards can notice a blink" (#34) have nothing to act on. Noise is measured and can be shown as rings, but nothing hears it.
 - ~~**A full-height wall takes longer to climb than his grip lasts.**~~ Fixed by the grip increase (#47): a full-height test wall now uses about half the meter. The rest ledge stays in the test room for trying the under-ledge climb.
 
