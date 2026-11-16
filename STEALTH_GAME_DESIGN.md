@@ -32,6 +32,9 @@ A **stealth game** (History #1), drawn in the **Stylised Geometry** art style (H
 ### Art and presentation
 - **Art style: Stylised Geometry**, as set out in `stylised-geometry/STYLISED_GEOMETRY.md` and its reference sheets. *(2026-11-16T05:36:10+00:00 — History #2)*
 
+### Development approach
+- **Not one-shotting the game.** It's built a piece at a time, the way Lyra built a previous project: each piece is made, tested, refined, tested and refined further before moving on to the next. *(2026-11-16T05:43:12+00:00 — History #6)*
+
 ### Technical architecture / platform
 - **Stack: React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js, Cloudflare Workers.** *(2026-11-16T05:36:10+00:00 — History #3)*
 
@@ -91,6 +94,7 @@ Nothing in development yet. The repository holds this document, the README and t
 | 3 | 2026-11-16T05:36:10+00:00 | Technical | Stack: React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js, Cloudflare Workers (Lyra's normal stack). |
 | 4 | 2026-11-16T05:36:10+00:00 | Documentation | Living `GAME_DESIGN.md`, using the format of Lyra's previous project's design document. |
 | 5 | 2026-11-16T05:38:21+00:00 *(commit time)* | Documentation | Design doc renamed from `GAME_DESIGN.md` to `STEALTH_GAME_DESIGN.md` (Lyra). |
+| 6 | 2026-11-16T05:43:12+00:00 | Workflow | Not one-shotting the game: each piece is made, tested, refined, tested and refined further before moving on (as in Lyra's previous project). |
 
 ---
 
