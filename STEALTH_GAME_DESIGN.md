@@ -8,13 +8,14 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T13:25:51+00:00):**
+**Where the project stands (as of 2026-11-16T13:27:43+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
 - How we work is set out below: Depth Before Breadth, Artifacts as a visual workshop, and structured rounds of design questions (History #11–#13).
 - Lyra is deploying the scaffold to Cloudflare Workers (History #14).
 - Designing the player: look settled (History #15–#25); climbing and ground movement settled (History #26, #28–#31); blink's rules and look settled (History #27, #32–#36).
+- Combat designed in three rounds (History #50–#61); details still open (§E).
 - **The full player is built** (History #37, #45, #46) in a test room, playable with keyboard and mouse, gamepad and touch, and merged to `main`. Lyra's first playtest: good overall; grip raised and blink loosened as a result (History #47, #48).
 
 **Stack:** React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js and Cloudflare Workers: Lyra's normal stack (History #3).
@@ -170,6 +171,10 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **He fights with his gloved hands:** fists, kicks and grabs with the floating gloves, and no visible weapon. Kills come only from finishers. *(2026-11-16T13:25:51+00:00 — History #55)*
 - **Open-combat moves: attack combos, dodge and finishers.** Parry and counter were not chosen. *(2026-11-16T13:25:51+00:00 — History #56)*
 - **Health recovers in hiding:** it comes back slowly once he's out of sight, so retreating and hiding is how he heals. How much he can take isn't decided. *(2026-11-16T13:25:51+00:00 — History #57)*
+- **Knockout or kill: tap or hold.** Tap Attack to knock a guard out, hold it to kill, at finishers and sneak attacks alike. One button, the same on touch, gamepad and keyboard. Claude's recommendation, approved. *(2026-11-16T13:27:43+00:00 — History #58)*
+- **Sneak attacks: a marker, then Attack.** When he's in position on an unaware guard (behind, above, on a wall, or aiming a blink at them), a marker shows over the guard, and Attack does the takedown instead of an ordinary blow. Claude's recommendation, approved. *(2026-11-16T13:27:43+00:00 — History #59)*
+- **Health is shown as pips** in the HUD, coming back one at a time while he's hidden (#57). How many isn't decided. Chosen over showing damage on his body (Claude's recommendation, from the guide's §8.3). *(2026-11-16T13:27:43+00:00 — History #60)*
+- **Rewards for staying unseen:** an **end-of-level rating** (seen or not, knockouts, kills, time), and **guards stay relaxed** while he's unseen: once they've seen him, they're on edge for the rest of the level. *(2026-11-16T13:27:43+00:00 — History #61)*
 
 ### Platforms and input
 - **Keyboard, gamepad and touch, all from the start.** Lyra plays on a Pixel 10 Pro Fold, so the game has to work in portrait, in landscape and on the inner folding screen, as well as on desktop. *(2026-11-16T06:31:36+00:00 — History #39)*
@@ -236,7 +241,7 @@ Shortlisted for visual comparison (options, not decisions):
 1. **Title.**
 2. **Everything about the game itself.**
 3. **Blink details** (#27, #32–#36, #48): whether 5 charges and a 6 S range hold up in proper levels; what counts as a thin wall; exactly what guards notice and from how far.
-4. **How combat works** (#50–#57): how the knockout-or-kill choice is made; how sneak attacks are triggered; how much health he has and how it's shown; what the reward for staying unseen is; Attack and Dodge on the touch layout; how the gloves read as weapons when they vanish in the dark.
+4. **Combat details still open** (#50–#61): how many health pips; what attacks, combos, dodges, finishers, takedowns and the takedown marker look like; Attack and Dodge on the touch layout (the diamond has four buttons); how the gloves read as weapons when they vanish in the dark. Combat also needs guards to exist before it can be built or tested.
 5. **The player's size, in the game and next to the guards.** Decided when the guards are designed. Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
 6. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). ~~physics~~ (Phaser Arcade, #40). Still open: anything server-side.
 
@@ -354,6 +359,10 @@ Shortlisted for visual comparison (options, not decisions):
 | 55 | 2026-11-16T13:25:51+00:00 | Combat | He fights with his gloved hands (fists, kicks, grabs); kills only from finishers. |
 | 56 | 2026-11-16T13:25:51+00:00 | Combat | Open-combat moves: attack combos, dodge, finishers (no parry or counter). |
 | 57 | 2026-11-16T13:25:51+00:00 | Combat | Health recovers slowly once he's out of sight. |
+| 58 | 2026-11-16T13:27:43+00:00 | Combat | Knockout or kill: tap Attack to knock out, hold to kill (Claude's recommendation, approved). |
+| 59 | 2026-11-16T13:27:43+00:00 | Combat | Sneak attacks: a marker shows over an unaware guard when he's in position; Attack does the takedown (Claude's recommendation, approved). |
+| 60 | 2026-11-16T13:27:43+00:00 | Combat | Health as pips in the HUD, refilling one at a time while hidden; number undecided. |
+| 61 | 2026-11-16T13:27:43+00:00 | Combat | Rewards for staying unseen: an end-of-level rating, and guards stay relaxed until they've seen him (then on edge for the rest of the level). |
 
 ---
 
