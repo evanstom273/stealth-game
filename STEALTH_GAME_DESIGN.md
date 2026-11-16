@@ -8,13 +8,13 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T06:16:30+00:00):**
+**Where the project stands (as of 2026-11-16T06:19:39+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
 - How we work is set out below: Depth Before Breadth, Artifacts as a visual workshop, and structured rounds of design questions (History #11–#13).
 - Lyra is deploying the scaffold to Cloudflare Workers (History #14).
-- Designing the player: look settled (History #15–#25); movement started with free climbing and blink (History #26, #27).
+- Designing the player: look settled (History #15–#25); climbing and ground movement settled (History #26, #28–#31); blink in design (History #27).
 
 **Stack:** React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js and Cloudflare Workers: Lyra's normal stack (History #3).
 - **React** is the outer shell; **Phaser** (v4) runs the game inside a single React component (History #7, #9).
@@ -141,9 +141,13 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **Mask: B, band with ties.** The dark band knotted at the back of the head, with two notched tails of slightly different lengths that hang down-back at rest and trail behind when it moves, so speed and direction read off the mask. Chosen from the Thief Mask Fitting; Claude's favourite too. *(2026-11-16T06:14:56+00:00 — History #25)*
 
 ### Player movement
-*Lyra calls the thief "he". Lyra has examples of how she wants him to move, to be shared and refined from.*
-- **Free climbing.** He can climb anywhere: across walls, across ceilings, everything. Something will have to stop it getting him past everything; what that is hasn't been decided. *(2026-11-16T06:16:30+00:00 — History #26)*
+*Lyra calls the thief "he". Free climbing and blink are Lyra's examples of how she wants him to move; the rest is refined from them.*
+- **Free climbing.** He can climb anywhere: across walls, across ceilings, everything. *(2026-11-16T06:16:30+00:00 — History #26)*
+  - **Limits** (so it can't get him past everything): **grip** (he can only hold on so long, especially upside down on ceilings, and recovers on floors and ledges); **slow and noisy** (climbing is slower than running, and some surfaces make noise guards can hear); **guards look up** (suspicious guards check ceilings and high walls, so up isn't automatically safe). Unclimbable surfaces, Claude's recommendation, were not chosen. *(2026-11-16T06:19:39+00:00 — History #28)*
+  - **Hangs by his hands.** Upright on walls with the gloves gripping; hangs from ceilings by his hands with his body dangling. The gloves are his climbing tool. Claude's recommendation, approved. *(2026-11-16T06:19:39+00:00 — History #29)*
+  - **Controls: press to grab, press to let go.** A toggle rather than holding a button. *(2026-11-16T06:19:39+00:00 — History #30)*
 - **Blink.** He has a blink ability. How it works hasn't been decided. *(2026-11-16T06:16:30+00:00 — History #27)*
+- **On the ground:** walk, plus **sneak** (slow, near-silent), **run** (fast but noisy), **jump**, and **slide or roll** (under low gaps and closing doors). *(2026-11-16T06:19:39+00:00 — History #31)*
 
 ### Art and presentation
 - **Art style: Stylised Geometry**, as set out in `stylised-geometry/STYLISED_GEOMETRY.md` and its reference sheets. *(2026-11-16T05:36:10+00:00 — History #2)*
@@ -172,7 +176,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 ## C. Current Development Scope
 
-The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement started: free climbing and blink (#26, #27), to be refined from Lyra's examples; then the game.
+The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink next (#27); then the game.
 
 Shortlisted for visual comparison (options, not decisions):
 - **Bodies:** square, rounded square, circle and triangle (all four picked), plus stacked and polygon builds following Lyra's note (#19).
@@ -196,10 +200,9 @@ Shortlisted for visual comparison (options, not decisions):
 
 1. **Title.**
 2. **Everything about the game itself.**
-3. **What limits free climbing** (#26), so it can't get him past everything.
-4. **How blink works** (#27): range, cost, how it looks, what guards notice.
-5. **The player's size, in the game and next to the guards.** Decided when the guards are designed. Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
-6. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). Still open: physics, and anything server-side.
+3. **How blink works** (#27): range, cost, how it looks, what guards notice.
+4. **The player's size, in the game and next to the guards.** Decided when the guards are designed. Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
+5. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). Still open: physics, and anything server-side.
 
 ---
 
@@ -263,6 +266,10 @@ Shortlisted for visual comparison (options, not decisions):
 | 25 | 2026-11-16T06:14:56+00:00 | Player | Mask: B, band with ties (from the Thief Mask Fitting). |
 | 26 | 2026-11-16T06:16:30+00:00 | Player | Free climbing: he can climb across walls, ceilings, everything, with some limit (not yet decided) so it can't get him past everything. |
 | 27 | 2026-11-16T06:16:30+00:00 | Player | Blink ability; details not yet decided. |
+| 28 | 2026-11-16T06:19:39+00:00 | Player | Climbing limits: grip, slow and noisy, guards look up (unclimbable surfaces not chosen). |
+| 29 | 2026-11-16T06:19:39+00:00 | Player | Climbing pose: hangs by his hands (Claude's recommendation, approved). |
+| 30 | 2026-11-16T06:19:39+00:00 | Player | Climbing controls: press to grab, press to let go. |
+| 31 | 2026-11-16T06:19:39+00:00 | Player | Ground movement: walk, sneak, run, jump, slide or roll. |
 
 ---
 
