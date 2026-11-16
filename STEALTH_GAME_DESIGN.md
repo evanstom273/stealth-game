@@ -8,13 +8,13 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T06:19:39+00:00):**
+**Where the project stands (as of 2026-11-16T06:27:40+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
 - How we work is set out below: Depth Before Breadth, Artifacts as a visual workshop, and structured rounds of design questions (History #11–#13).
 - Lyra is deploying the scaffold to Cloudflare Workers (History #14).
-- Designing the player: look settled (History #15–#25); climbing and ground movement settled (History #26, #28–#31); blink in design (History #27).
+- Designing the player: look settled (History #15–#25); climbing and ground movement settled (History #26, #28–#31); blink's rules settled, look being compared (History #27, #32–#35).
 
 **Stack:** React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js and Cloudflare Workers: Lyra's normal stack (History #3).
 - **React** is the outer shell; **Phaser** (v4) runs the game inside a single React component (History #7, #9).
@@ -146,7 +146,12 @@ Don't rush through the questions simply to get to implementation. The design pro
   - **Limits** (so it can't get him past everything): **grip** (he can only hold on so long, especially upside down on ceilings, and recovers on floors and ledges); **slow and noisy** (climbing is slower than running, and some surfaces make noise guards can hear); **guards look up** (suspicious guards check ceilings and high walls, so up isn't automatically safe). Unclimbable surfaces, Claude's recommendation, were not chosen. *(2026-11-16T06:19:39+00:00 — History #28)*
   - **Hangs by his hands.** Upright on walls with the gloves gripping; hangs from ceilings by his hands with his body dangling. The gloves are his climbing tool. Claude's recommendation, approved. *(2026-11-16T06:19:39+00:00 — History #29)*
   - **Controls: press to grab, press to let go.** A toggle rather than holding a button. *(2026-11-16T06:19:39+00:00 — History #30)*
-- **Blink.** He has a blink ability. How it works hasn't been decided. *(2026-11-16T06:16:30+00:00 — History #27)*
+- **Blink.** He has a blink ability. *(2026-11-16T06:16:30+00:00 — History #27)*
+  - **Aimed, and it can go through thin walls**, doors and floors. Chosen over line-of-sight only (Claude's recommendation) and a fixed short hop. *(2026-11-16T06:27:40+00:00 — History #32)*
+  - **Charges that work like spells in Dark Souls:** a set number of blinks that only reset at checkpoints, not over time. *(2026-11-16T06:27:40+00:00 — History #33)*
+  - **Guards can notice it:** a blink makes a flash or sound, so blinking near guards is a risk. *(2026-11-16T06:27:40+00:00 — History #34)*
+  - **Lands gripping:** blink onto a wall or ceiling and he arrives already holding on, so blink and climbing work as one move set. Claude's recommendation, approved. *(2026-11-16T06:27:40+00:00 — History #35)*
+  - **Look:** being compared in the Thief Blink Studies: pop and ring, shatter and reassemble, shadow streak, and turning to dust (Lyra's own option).
 - **On the ground:** walk, plus **sneak** (slow, near-silent), **run** (fast but noisy), **jump**, and **slide or roll** (under low gaps and closing doors). *(2026-11-16T06:19:39+00:00 — History #31)*
 
 ### Art and presentation
@@ -176,7 +181,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 ## C. Current Development Scope
 
-The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink next (#27); then the game.
+The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink's rules settled (#27, #32–#35) and its look being compared; then the game.
 
 Shortlisted for visual comparison (options, not decisions):
 - **Bodies:** square, rounded square, circle and triangle (all four picked), plus stacked and polygon builds following Lyra's note (#19).
@@ -185,6 +190,8 @@ Shortlisted for visual comparison (options, not decisions):
 **Thief Line-up** (Artifact, round 2 visual options): https://claude.ai/artifact/JJtcAFFG3k7kV3fym82UXV. It shows eight bodies (Nos. 1–4: square, rounded square, circle, triangle; Nos. 5–8: hooded, teardrop, stacked, leaning), four faces (mask, mask + mouth, eyes + mouth, eyes only), a light slider, each body at game size, and a walk through a lamp's light. Things Claude drew that weren't asked for, all up for rejection: Nos. 5–8, a smirk on the faces with a mouth, mask + mouth as a combined face, the look of the lit eyes, how far the player fades (to about 12% brightness), and the guide's default hands and feet.
 
 **Thief Mask Fitting** (Artifact, round 3): https://claude.ai/artifact/3qpxJDtQ17eQkx3taQwPiN. No. 7 with the smirk and dark gloves in three masks: A, plain band; B, band with ties (knotted at the back, two notched tails that trail when moving and drop at rest); C, domino (dips between the eyes, outer corners flick up just past the head). Each in light and full shadow, at S = 48, 64 and 80 px, and walking under a lamp. Claude's choices, up for change: the tie and domino details, and gloves matching the mask's dark.
+
+**Thief Blink Studies** (Artifact, blink looks): https://claude.ai/artifact/G34hV17S54p8gSnqsmDbZU. Four looping test rooms, one per look: A, pop and ring; B, shatter and reassemble (pieces of his own shapes); C, shadow streak; D, turning to dust (Lyra's option, drawn as crumbling into the guide's dust squares from the head down and gathering back at the far end). In each he aims through a thin wall, blinks to the far floor, back, then up to the ceiling, landing gripping. Claude's choices, up for change: power blue for the aim line, landing marker and rings; a first take on the hanging pose; lit eye streaks in the shadow streak; the reading of "turning to dust"; all timings.
 
 ---
 
@@ -200,7 +207,7 @@ Shortlisted for visual comparison (options, not decisions):
 
 1. **Title.**
 2. **Everything about the game itself.**
-3. **How blink works** (#27): range, cost, how it looks, what guards notice.
+3. **Blink details** (#27, #32–#35): how it looks; how many charges; its range; what counts as a thin wall; exactly what guards notice and from how far.
 4. **The player's size, in the game and next to the guards.** Decided when the guards are designed. Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
 5. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). Still open: physics, and anything server-side.
 
@@ -270,6 +277,10 @@ Shortlisted for visual comparison (options, not decisions):
 | 29 | 2026-11-16T06:19:39+00:00 | Player | Climbing pose: hangs by his hands (Claude's recommendation, approved). |
 | 30 | 2026-11-16T06:19:39+00:00 | Player | Climbing controls: press to grab, press to let go. |
 | 31 | 2026-11-16T06:19:39+00:00 | Player | Ground movement: walk, sneak, run, jump, slide or roll. |
+| 32 | 2026-11-16T06:27:40+00:00 | Player | Blink is aimed and can go through thin walls. |
+| 33 | 2026-11-16T06:27:40+00:00 | Player | Blink charges work like Dark Souls spells: a set number, reset only at checkpoints. |
+| 34 | 2026-11-16T06:27:40+00:00 | Player | Guards can notice a blink. |
+| 35 | 2026-11-16T06:27:40+00:00 | Player | Blink can land on walls and ceilings, arriving gripping (Claude's recommendation, approved). |
 
 ---
 
