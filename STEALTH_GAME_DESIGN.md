@@ -1,4 +1,4 @@
-# GAME_DESIGN.md
+# STEALTH_GAME_DESIGN.md
 
 Authoritative, living record of the game's design. Timestamps are Europe/London, ISO 8601 with UTC offset, recorded at the time the decision was confirmed in conversation unless marked otherwise.
 
@@ -8,14 +8,14 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **stealth game** (History #1), drawn in the **Stylised Geometry** art style (History #2). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T05:36:10+00:00):**
-- Living design document created (History #4).
-- Art style reference added to the repository as `stylised-geometry/` (History #2).
+**Where the project stands (as of 2026-11-16T05:39:26+00:00):**
+- Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
+- Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Nothing built yet.
 
 **Stack:** React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js and Cloudflare Workers: Lyra's normal stack (History #3). What each part handles is not decided yet.
 
-**Art style:** Stylised Geometry, kept in `stylised-geometry/`: the guide (`STYLISED_GEOMETRY.md`) and seven SVG reference sheets. In short: characters built from simple geometric shapes, with faces and floating hands, in a dark world lit around them, all drawn from shapes in code or SVG rather than sprites. The guide is the reference for how things look; this document records the game's own design.
+**Art style:** Stylised Geometry, kept in `stylised-geometry/`: the guide (`STYLISED_GEOMETRY.md`), seven SVG reference sheets and `make_sheets.py`, which regenerates them. In short: characters built from simple geometric shapes, with faces and floating hands, in a dark world lit around them, all drawn from shapes in code or SVG rather than sprites. The guide is the reference for how things look; this document records the game's own design.
 
 **Guiding principles** *(carried over from Lyra's previous project's design document; flag if any don't apply here)*:
 - Discuss → Decide → Document → Implement → Test → Expand.
@@ -36,7 +36,7 @@ A **stealth game** (History #1), drawn in the **Stylised Geometry** art style (H
 - **Stack: React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js, Cloudflare Workers.** *(2026-11-16T05:36:10+00:00 — History #3)*
 
 ### Documentation
-- **Living `GAME_DESIGN.md`**, using the format of Lyra's previous project's design document, filled in with everything decided and done as the project goes. *(2026-11-16T05:36:10+00:00 — History #4)*
+- **Living `STEALTH_GAME_DESIGN.md`**, using the format of Lyra's previous project's design document, filled in with everything decided and done as the project goes. Originally `GAME_DESIGN.md`; renamed by Lyra. *(2026-11-16T05:36:10+00:00 — History #4; renamed 2026-11-16T05:38:21+00:00 — History #5)*
 
 ---
 
@@ -64,15 +64,15 @@ Nothing in development yet. The repository holds this document, the README and t
 
 ## F. Implementation Status
 
-*Updated 2026-11-16T05:36:10+00:00.*
+*Updated 2026-11-16T05:39:26+00:00.*
 
 | Feature | Status | Notes |
 |---|---|---|
-| Design doc | Done | `GAME_DESIGN.md`. *(2026-11-16T05:36:10+00:00)* |
-| Art style reference | Added | `stylised-geometry/`, unpacked from `stylised-geometry.zip` as supplied. *(2026-11-16T05:36:10+00:00)* |
+| Design doc | Done | `STEALTH_GAME_DESIGN.md` (originally `GAME_DESIGN.md`). *(2026-11-16T05:36:10+00:00; renamed 2026-11-16T05:38:21+00:00)* |
+| Art style reference | Added | `stylised-geometry/`, unpacked from `stylised-geometry.zip` as supplied; `sheets/make_sheets.py` added by Lyra. *(2026-11-16T05:36:10+00:00; script 2026-11-16T05:37:53+00:00)* |
 
 ### Known issues and limitations
-- The style guide says `make_sheets.py` regenerates the reference sheets, but that script wasn't in the zip, so the sheets can't be regenerated from this repository.
+- None yet.
 
 ### Implementation interpretations (technical, not design decisions — flag if wrong)
 - The guiding principles in §A and the "explain before adding" and merge-to-`main` standing orders in §H were carried over from Lyra's previous design document rather than restated for this project.
@@ -90,12 +90,13 @@ Nothing in development yet. The repository holds this document, the README and t
 | 2 | 2026-11-16T05:36:10+00:00 | Art | Art style: Stylised Geometry (`stylised-geometry/`). |
 | 3 | 2026-11-16T05:36:10+00:00 | Technical | Stack: React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js, Cloudflare Workers (Lyra's normal stack). |
 | 4 | 2026-11-16T05:36:10+00:00 | Documentation | Living `GAME_DESIGN.md`, using the format of Lyra's previous project's design document. |
+| 5 | 2026-11-16T05:38:21+00:00 *(commit time)* | Documentation | Design doc renamed from `GAME_DESIGN.md` to `STEALTH_GAME_DESIGN.md` (Lyra). |
 
 ---
 
 ## H. Technical Notes
 
 - **Repository:** `evanstom273/stealth-game`. Working branch `ccr-cbb584dc-kvemny`.
-- **Art style reference:** `stylised-geometry/STYLISED_GEOMETRY.md` and `stylised-geometry/sheets/01-anatomy.svg` to `07-colour.svg`. The guide was developed in a side-on platformer; rules it marks **(untested)** haven't been through a real game yet.
+- **Art style reference:** `stylised-geometry/STYLISED_GEOMETRY.md` and `stylised-geometry/sheets/01-anatomy.svg` to `07-colour.svg`, regenerated by `stylised-geometry/sheets/make_sheets.py` (Python standard library only; takes the output folder as its one argument). The guide was developed in a side-on platformer; rules it marks **(untested)** haven't been through a real game yet.
 - **Explain before adding** *(carried over from Lyra's previous design document)*: before building anything, Claude says what it's about to add and how, then waits for the go-ahead.
 - **Workflow** *(Lyra's standing order across all her projects)*: after committing to the working branch, always merge straight to `main` as well; no need to ask each time.
