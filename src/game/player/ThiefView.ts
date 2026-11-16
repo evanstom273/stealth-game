@@ -24,6 +24,8 @@ export class ThiefView {
   private res = 0
   private tex!: Phaser.Textures.CanvasTexture
   readonly image: Phaser.GameObjects.Image
+  /** Fading copies of him along a pounce (History #89). */
+  private ghosts: Phaser.GameObjects.Image[] = []
   private key: string
   private scene: Phaser.Scene
 
@@ -40,6 +42,20 @@ export class ThiefView {
     this.tex = cpuCanvasTexture(this.scene, this.key, Math.ceil(SIZE * res), Math.ceil(SIZE * res))
     this.image.setTexture(this.key)
     this.image.setOrigin(OX / SIZE, OY / SIZE)
+    for (const g of this.ghosts) g.setTexture(this.key).setOrigin(OX / SIZE, OY / SIZE)
+  }
+
+  /** Afterimages: copies of his current drawing at earlier points, fainter the further back. */
+  placeGhosts(at: readonly { x: number; y: number; alpha: number }[], facing: number) {
+    while (this.ghosts.length < at.length) {
+      this.ghosts.push(this.scene.add.image(0, 0, this.key).setOrigin(OX / SIZE, OY / SIZE).setDepth(DEPTH.thief - 0.1))
+    }
+    this.ghosts.forEach((g, i) => {
+      const p = at[i]
+      g.setVisible(!!p)
+      if (!p) return
+      g.setPosition(p.x, p.y).setScale(1 / this.res).setFlipX(facing < 0).setAlpha(p.alpha)
+    })
   }
 
   /** @param flash 0–1: a white flash over him when he's hit. */

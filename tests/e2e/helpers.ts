@@ -48,11 +48,42 @@ export interface GuardState {
   state: string
   facing: number
   suspicion: number
+  /** Pieces still flying or fading from a kill. */
+  pieces: number
+  /** Its outline: a takedown is on it. */
+  rim: 'ko' | 'kill' | null
+}
+
+export interface CombatState {
+  step: number
+  attacking: boolean
+  charging: boolean
+  takedown: string | null
+  /** A pounce's phase, or 'move' for every other takedown. */
+  phase: 'windup' | 'leap' | 'pin' | 'off' | 'move' | null
+  context: string | null
+  rim: 'ko' | 'kill' | null
+  /** The Attack button the prompt shows. */
+  glyph: 'key' | 'mouse' | 'pad' | 'touch'
 }
 
 export const guards = (page: Page) => page.evaluate(() => (window as unknown as { __guards: () => GuardState[] }).__guards())
-export const combat = (page: Page) =>
-  page.evaluate(() => (window as unknown as { __combat: () => { step: number; attacking: boolean; charging: boolean; takedown: string | null; context: string | null } }).__combat())
+export const combat = (page: Page) => page.evaluate(() => (window as unknown as { __combat: () => CombatState }).__combat())
+
+/** Starts recording each takedown phase in order, every frame, so short phases aren't missed. */
+export const recordPhases = (page: Page) =>
+  page.evaluate(() => {
+    const w = window as unknown as { __combat: () => CombatState; __phases: string[] }
+    const seen: string[] = []
+    w.__phases = seen
+    const tick = () => {
+      const p = w.__combat().phase
+      if (p && seen[seen.length - 1] !== p) seen.push(p)
+      if (!seen.length || p) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  })
+export const phases = (page: Page) => page.evaluate(() => (window as unknown as { __phases: string[] }).__phases)
 
 /** Testing hooks: stand him somewhere, and keep a guard calm facing one way. Units of S. */
 export async function setUp(page: Page, thiefX: number, guard?: { i: number; facing: 1 | -1 }) {

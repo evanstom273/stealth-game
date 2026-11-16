@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser'
-import { touch } from '../bridge.ts'
+import { touch, wantsTouchControls } from '../bridge.ts'
 import type { Vec } from '../logic/geometry.ts'
+import { attackGlyph, startDevice, trackDevice, type AttackGlyph, type DeviceState } from './device.ts'
 
 /** What the player wants this frame, whatever they're holding: keyboard and mouse, gamepad or touch. */
 export interface Intent {
@@ -23,6 +24,8 @@ export interface Intent {
   dodgePressed: boolean
   pausePressed: boolean
   debugPressed: boolean
+  /** The Attack button for the controls he last used, for prompts (History #86). */
+  attackGlyph: AttackGlyph
 }
 
 type Keys = Record<'W' | 'A' | 'S' | 'D' | 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'SHIFT' | 'C' | 'SPACE' | 'E' | 'ESC' | 'BACKTICK' | 'F' | 'Q', Phaser.Input.Keyboard.Key>
@@ -32,21 +35,49 @@ const DEAD = 0.2
 export class Controls {
   private keys: Keys | null
   private rightWasDown = false
-  private mouseWasDown = false
   private padPrev: Record<string, boolean> = {}
   private scene: Phaser.Scene
+  private device: DeviceState = startDevice(wantsTouchControls())
+  private keySeen = false
+  private mouseSeen = false
+  /**
+   * Keys pressed and released since the last read, counted from the key events themselves.
+   * Phaser's own "just pressed" flag is cleared when the key comes back up, so a tap that's
+   * down and up within one frame would otherwise be lost.
+   */
+  private downs = new Set<number>()
+  private ups = new Set<number>()
+  /** The same for the left mouse button. */
+  private leftPresses = 0
+  private leftReleases = 0
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene
     this.keys = (scene.input.keyboard?.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,SHIFT,C,SPACE,E,ESC,BACKTICK,F,Q') as Keys) ?? null
     scene.input.mouse?.disableContextMenu()
+    scene.input.keyboard?.on('keydown', (e: KeyboardEvent) => {
+      this.keySeen = true
+      if (!e.repeat) this.downs.add(e.keyCode)
+    })
+    scene.input.keyboard?.on('keyup', (e: KeyboardEvent) => this.ups.add(e.keyCode))
+    scene.input.on('pointerdown', (p: Phaser.Input.Pointer) => {
+      if (p.wasTouch) return
+      this.mouseSeen = true
+      if (p.button === 0) this.leftPresses++
+    })
+    const up = (p: Phaser.Input.Pointer) => {
+      if (!p.wasTouch && p.button === 0) this.leftReleases++
+    }
+    scene.input.on('pointerup', up)
+    scene.input.on('pointerupoutside', up)
   }
 
   /** @param cssToWorld converts a point over the canvas, in CSS pixels, to world coordinates. */
   read(cssToWorld: (x: number, y: number) => Vec): Intent {
     const k = this.keys
     const down = (key?: Phaser.Input.Keyboard.Key) => !!key?.isDown
-    const just = (key?: Phaser.Input.Keyboard.Key) => (key ? Phaser.Input.Keyboard.JustDown(key) : false)
+    const just = (key?: Phaser.Input.Keyboard.Key) => !!key && this.downs.has(key.keyCode)
+    const justUp = (key?: Phaser.Input.Keyboard.Key) => !!key && this.ups.has(key.keyCode)
 
     // Keyboard
     let moveX = (down(k?.D) || down(k?.RIGHT) ? 1 : 0) - (down(k?.A) || down(k?.LEFT) ? 1 : 0)
@@ -75,12 +106,14 @@ export class Controls {
     }
     this.rightWasDown = rightDown
     // Attack: F, or the left mouse button (mouse only, so taps on a touch screen don't punch).
-    // Presses and releases come from key events, so a tap shorter than a frame is never lost.
+    // Presses and releases come from the events, so a tap shorter than a frame is never lost.
     const mouseDown = pointer.leftButtonDown() && !pointer.wasTouch
     let attackHeld = down(k?.F) || mouseDown
-    let attackPressed = (k?.F ? Phaser.Input.Keyboard.JustDown(k.F) : false) || (mouseDown && !this.mouseWasDown)
-    let attackReleased = (k?.F ? Phaser.Input.Keyboard.JustUp(k.F) : false) || (!mouseDown && this.mouseWasDown)
-    this.mouseWasDown = mouseDown
+    const keyAttack = just(k?.F)
+    const mouseAttack = this.leftPresses > 0
+    let attackPressed = keyAttack || mouseAttack
+    let attackReleased = justUp(k?.F) || this.leftReleases > 0
+    let padUsed = false
 
     // Gamepad
     const pad = this.scene.input.gamepad?.total ? this.scene.input.gamepad.getPad(0) : null
@@ -92,6 +125,7 @@ export class Controls {
       }
       const lx = Math.abs(pad.leftStick.x) > DEAD ? pad.leftStick.x : 0
       const ly = Math.abs(pad.leftStick.y) > DEAD ? pad.leftStick.y : 0
+      padUsed = pad.buttons.some((b) => b.pressed) || !!lx || !!ly || Math.hypot(pad.rightStick.x, pad.rightStick.y) > DEAD
       const dx = (pad.right ? 1 : 0) - (pad.left ? 1 : 0)
       const dy = (pad.down ? 1 : 0) - (pad.up ? 1 : 0)
       if (!moveX) moveX = dx || lx
@@ -118,6 +152,8 @@ export class Controls {
     }
 
     // Touch
+    const touchUsed =
+      !!(touch.moveX || touch.moveY) || touch.jumpHeld || touch.jumpPressed || touch.sneakPressed || touch.grabPressed || touch.aim.active || touch.blinkReleased || touch.attackHeld || touch.attackPressed || touch.dodgePressed
     if (!moveX && !moveY && (touch.moveX || touch.moveY)) {
       moveX = touch.moveX
       moveY = touch.moveY
@@ -144,6 +180,15 @@ export class Controls {
     touch.attackReleased = false
     touch.dodgePressed = false
 
-    return { moveX, moveY, run, jumpPressed, jumpHeld, sneakPressed, grabPressed, aim, blinkReleased, attackPressed, attackHeld, attackReleased, dodgePressed, pausePressed, debugPressed }
+    // Which controls he's using: a key, a mouse button, the pad or the screen.
+    this.device = trackDevice(this.device, { key: this.keySeen, keyAttack, mouse: this.mouseSeen, mouseAttack, pad: padUsed, touch: touchUsed })
+    this.keySeen = false
+    this.mouseSeen = false
+    this.downs.clear()
+    this.ups.clear()
+    this.leftPresses = 0
+    this.leftReleases = 0
+
+    return { moveX, moveY, run, jumpPressed, jumpHeld, sneakPressed, grabPressed, aim, blinkReleased, attackPressed, attackHeld, attackReleased, dodgePressed, pausePressed, debugPressed, attackGlyph: attackGlyph(this.device) }
   }
 }

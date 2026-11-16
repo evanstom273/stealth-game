@@ -167,6 +167,25 @@ export const COMBAT = {
   hurtLock: 0.25,
 }
 
+/** The pounce from a ceiling or wall (History #89). Seconds, except the squash. */
+export const POUNCE = {
+  windup: 0.25,
+  leap: 0.42,
+  /** On the guard after the impact, before stepping off. */
+  pin: 0.45,
+  stepOff: 0.25,
+  hitStop: 0.1,
+  /** How much he coils against the surface in the wind-up. */
+  squash: 0.18,
+  ghosts: 3,
+  /** How far behind each other the afterimages are, as a share of the leap. */
+  ghostGap: 0.09,
+  /** The nearest afterimage's opacity; each further one is fainter. */
+  ghostAlpha: 0.45,
+  /** How long the impact ring takes to spread and fade. */
+  ring: 0.5,
+}
+
 export const TAKEDOWN_CFG: TakedownConfig = {
   behindReach: 1.3 * S,
   dropReach: 0.9 * S,

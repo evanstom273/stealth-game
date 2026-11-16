@@ -68,6 +68,10 @@ export class Thief {
   combatPose: Pose | null = null
   /** Set by combat during takedowns: movement is scripted, not his own. */
   locked = false
+  /** Set by combat: extra squash and stretch, for the pounce's wind-up. */
+  combatSquash = { x: 1, y: 1 }
+  /** Set by combat: afterimages along a pounce, as drawing origins. */
+  ghosts: { x: number; y: number; alpha: number }[] = []
   /** A blink aimed at a guard lands here instead, behind it (set by combat). */
   blinkSnap: Vec | null = null
   /** Seconds left of the white flash when he's hit. */
@@ -583,8 +587,8 @@ export class Thief {
     const pose: Pose =
       this.combatPose ??
       (this.dodgeT > 0 ? 'dodge' : this.mode === 'climb' && this.climb ? this.climb.mode : this.mode === 'slide' ? 'slide' : this.mode === 'air' ? 'air' : 'stand')
-    let sx = sq.x
-    let sy = sq.y
+    let sx = sq.x * this.combatSquash.x
+    let sy = sq.y * this.combatSquash.y
     if (pose === 'slide') {
       sx *= 1.22
       sy *= 0.58
@@ -599,6 +603,7 @@ export class Thief {
       this.view.draw({ light: this.light, time: this.time, speed: this.tie, swing: this.swing, pose, climb: this.climbPhase }, this.flash)
     }
     this.view.place(o.x, o.y + anchor * (1 - sy), this.facing, sx, sy, this.mode !== 'blink')
+    this.view.placeGhosts(this.ghosts, this.facing)
     this.drawDust(dt)
   }
 

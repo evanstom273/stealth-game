@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { boot, combat, guards, setUp, thief, worldToCss } from './helpers.ts'
+import { boot, combat, guards, phases, recordPhases, setUp, thief, worldToCss } from './helpers.ts'
 
 // The test guards (History #85) stand at x = 8, 12.4 and 22 (units of S).
 test.describe('combat against the test guards', () => {
@@ -7,15 +7,58 @@ test.describe('combat against the test guards', () => {
     const errors = await boot(page)
     await setUp(page, 7.1, { i: 0, facing: 1 })
     await expect.poll(async () => (await combat(page)).context, { intervals: [30] }).toBe('behind')
+    // The prompt: the guard outlined for a knockout, and F shown as the button.
+    expect(await combat(page)).toMatchObject({ rim: 'ko', glyph: 'key' })
+    expect((await guards(page))[0].rim).toBe('ko')
     await page.keyboard.press('f')
     await expect.poll(async () => (await guards(page))[0].state).toBe('ko')
     await expect.poll(async () => (await combat(page)).takedown).toBeNull()
+    expect((await guards(page))[0].pieces).toBe(0)
 
     await setUp(page, 11.5, { i: 1, facing: 1 })
     await expect.poll(async () => (await combat(page)).context, { intervals: [30] }).toBe('behind')
     await page.keyboard.down('f')
+    // Held past the kill point, the outline turns to the kill colour until it lands.
+    await expect.poll(async () => (await combat(page)).rim, { intervals: [10] }).toBe('kill')
     await expect.poll(async () => (await guards(page))[1].state).toBe('dead')
     await page.keyboard.up('f')
+    // Killed, it shatters: its pieces fly, then fade away to nothing.
+    expect((await guards(page))[1].pieces).toBeGreaterThan(0)
+    await expect.poll(async () => (await guards(page))[1].pieces, { timeout: 5000 }).toBe(0)
+    expect(errors).toEqual([])
+  })
+
+  test('the prompt shows the mouse once he attacks with it, and F again once he presses F', async ({ page }) => {
+    await boot(page)
+    await setUp(page, 7.1, { i: 0, facing: 1 })
+    await expect.poll(async () => (await combat(page)).context, { intervals: [30] }).toBe('behind')
+    await page.mouse.move(400, 300)
+    await page.mouse.down()
+    await page.mouse.up()
+    await expect.poll(async () => (await guards(page))[0].state).toBe('ko')
+    expect((await combat(page)).glyph).toBe('mouse')
+    await page.keyboard.press('f')
+    await expect.poll(async () => (await combat(page)).glyph).toBe('key')
+  })
+
+  test('from a wall he pounces: wind-up, leap, pin, step off, and the guard is out', async ({ page }) => {
+    const errors = await boot(page)
+    // On the thin wall's right face, with the third guard facing away from him.
+    await setUp(page, 18.2, { i: 2, facing: 1 })
+    await expect.poll(async () => (await thief(page)).mode).toBe('ground')
+    await page.keyboard.press('e')
+    await expect.poll(async () => (await thief(page)).climb).toBe('wall')
+    await expect.poll(async () => (await combat(page)).context, { intervals: [30] }).toBe('wall')
+    await recordPhases(page)
+    await page.keyboard.press('f')
+    await expect.poll(async () => (await guards(page))[2].state).toBe('ko')
+    await expect.poll(async () => (await combat(page)).takedown).toBeNull()
+    expect(await phases(page)).toEqual(['windup', 'leap', 'pin', 'off'])
+    // He steps off on the side he came from, standing.
+    const t = await thief(page)
+    expect(t.mode).toBe('ground')
+    expect(t.x).toBeGreaterThan(19)
+    expect(t.x).toBeLessThan(22)
     expect(errors).toEqual([])
   })
 
@@ -87,6 +130,7 @@ test.describe('combat on touch', () => {
     }
     await setUp(page, 7.1, { i: 0, facing: 1 })
     await expect.poll(async () => (await combat(page)).context).toBe('behind')
+    expect((await combat(page)).glyph).toBe('touch')
     await page.getByTestId('attack').click()
     await expect.poll(async () => (await guards(page))[0].state).toBe('ko')
   })

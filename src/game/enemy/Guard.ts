@@ -3,8 +3,10 @@ import { cpuCanvasTexture } from '../canvasTexture.ts'
 import { seesTarget, sightRange } from '../logic/combat.ts'
 import type { Rect, Vec } from '../logic/geometry.ts'
 import { DEPTH } from '../room/RoomView.ts'
+import { KILL, POWER, POWER_LIGHT } from '../style/tokens.ts'
 import { GUARD, S, SIGHT_CFG } from '../tuning.ts'
-import { drawGuard, type GuardFace, type GuardPose } from './guardArt.ts'
+import { drawGuard, GUARD_COLOURS, type GuardFace, type GuardPose } from './guardArt.ts'
+import { pieceOutline, shatterAlpha, shatterPieces, stepPiece, type Piece } from './shatter.ts'
 
 export type GuardState = 'calm' | 'sus' | 'alert' | 'return' | 'stagger' | 'stunned' | 'ko' | 'dead'
 
@@ -22,11 +24,23 @@ const H = 3 * S
 const OX = 2 * S
 const OY = 1.7 * S
 const MARKER = { sus: 0xffb347, alert: 0xff7a3d }
+const hex = (c: string) => parseInt(c.slice(1), 16)
+const RIM = { ko: '#' + POWER.toString(16).padStart(6, '0'), kill: '#' + KILL.toString(16).padStart(6, '0') }
+
+/** A kill: the guard's pieces, flying from where it stood (History #88). */
+interface Shatter {
+  x: number
+  y: number
+  facing: 1 | -1
+  age: number
+  pieces: Piece[]
+}
 
 /**
  * The test guard (History #85): stands at its post turning left and right, notices him with a
  * cone that reaches further the more lit he is, fills its "?" to "!", then comes over and punches.
  * It can be hit, staggered, stunned by a blink, knocked out or killed, and comes back after a while.
+ * Knocked out, it lies with Zs drifting up; killed, it shatters into its shapes (History #87, #88).
  */
 export class Guard {
   readonly zone: Phaser.GameObjects.Zone
@@ -35,6 +49,7 @@ export class Guard {
   private tex!: Phaser.Textures.CanvasTexture
   private res = 0
   private badge: Phaser.GameObjects.Graphics
+  private debris: Phaser.GameObjects.Graphics
   private glyph: Phaser.GameObjects.Text
   private scene: Phaser.Scene
   private key: string
@@ -44,6 +59,9 @@ export class Guard {
   state: GuardState = 'calm'
   suspicion = 0
   sees = false
+  /** Caught in a takedown that's under way: it stands still and can't turn or notice anything. */
+  private held = false
+  private shatter: Shatter | null = null
   private turnTimer = GUARD.turnEvery
   private lostTimer = 0
   private lastSeen: Vec | null = null
@@ -65,6 +83,7 @@ export class Guard {
     this.body = this.zone.body as Phaser.Physics.Arcade.Body
     this.image = scene.add.image(0, 0, '__DEFAULT').setDepth(DEPTH.thief - 0.5)
     this.badge = scene.add.graphics().setDepth(DEPTH.status)
+    this.debris = scene.add.graphics().setDepth(DEPTH.thief - 0.5)
     this.glyph = scene.add
       .text(0, 0, '', { fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif', fontSize: '20px', fontStyle: '900', color: '#ffffff' })
       .setOrigin(0.5, 0.55)
@@ -92,6 +111,10 @@ export class Guard {
   }
   get alerted() {
     return this.state === 'alert'
+  }
+  /** Pieces still flying or fading from a kill, for tests. */
+  get pieceCount() {
+    return this.shatter?.pieces.length ?? 0
   }
   /** How far it can currently see him, for drawing its cone. */
   range(light: number) {
@@ -140,15 +163,34 @@ export class Guard {
     this.body.setVelocityX(0)
   }
 
+  /** A takedown has started on it: it's committed, so it can't turn round mid-way. */
+  hold() {
+    this.held = true
+    this.attack = 'none'
+    this.body.setVelocityX(0)
+  }
+
+  /** The takedown it was caught in was called off. */
+  release() {
+    this.held = false
+  }
+
   takedown(lethal: boolean) {
+    this.held = false
     this.attack = 'none'
     this.state = lethal ? 'dead' : 'ko'
     this.stateT = GUARD.downFor
     this.suspicion = 0
     this.body.setVelocityX(0)
+    if (lethal) {
+      const b = this.box
+      this.shatter = { x: b.x + b.w / 2, y: b.y + GUARD.originFromTop, facing: this.facing, age: 0, pieces: shatterPieces(Math.random) }
+    }
   }
 
   reset() {
+    this.held = false
+    this.shatter = null
     this.state = 'calm'
     this.suspicion = 0
     this.attack = 'none'
@@ -163,6 +205,17 @@ export class Guard {
     this.cooldown = Math.max(0, this.cooldown - dt)
     const body = this.body
     let strike: Rect | null = null
+
+    if (this.shatter) {
+      this.shatter.age += dt
+      for (const p of this.shatter.pieces) stepPiece(p, dt)
+      if (shatterAlpha(this.shatter.age) <= 0) this.shatter = null
+    }
+    if (this.held) {
+      body.setVelocityX(0)
+      this.sees = false
+      return null
+    }
 
     if (this.down) {
       body.setVelocityX(0)
@@ -284,7 +337,9 @@ export class Guard {
     return strike
   }
 
-  render() {
+  /** @param rim the outline when a takedown is on it: knock out or kill (History #86). */
+  render(rim: 'ko' | 'kill' | null = null) {
+    this.drawDebris()
     if (!this.tex) return
     const pose: GuardPose = this.down
       ? 'down'
@@ -306,7 +361,7 @@ export class Guard {
     ctx.clearRect(0, 0, this.tex.width, this.tex.height)
     const k = GUARD.scale * S * r
     ctx.setTransform(k, 0, 0, k, OX * r, OY * r)
-    drawGuard(ctx, { face, pose, time: this.time, walk: this.walk, grey: this.state === 'dead' })
+    drawGuard(ctx, { face, pose, time: this.time, walk: this.walk, rim: rim && !this.down ? RIM[rim] : null })
     this.tex.refresh()
 
     const b = this.box
@@ -315,11 +370,14 @@ export class Guard {
     this.image.setPosition(ox, oy)
     this.image.setScale(1 / r)
     this.image.setFlipX(this.facing < 0)
-    this.image.setAlpha(this.state === 'dead' ? 0.85 : 1)
+    // Killed, it's gone: only its pieces are left, flying.
+    this.image.setVisible(this.state !== 'dead')
 
-    // The suspicion marker: a "?" that fills, turning to "!" (History #66).
     const g = this.badge
     g.clear()
+    if (this.state === 'ko') this.drawZs(g, ox, oy)
+
+    // The suspicion marker: a "?" that fills, turning to "!" (History #66).
     const showSus = (this.state === 'sus' || this.state === 'return') && this.suspicion > 0.01
     const showAlert = this.state === 'alert'
     this.glyph.setVisible(showSus || showAlert)
@@ -354,5 +412,48 @@ export class Guard {
     }
     this.glyph.setPosition(mx, my)
     this.glyph.setFontSize(Math.round(rad * 1.3))
+  }
+
+  /** Little Zs drifting up from its head while it's out (History #87). */
+  private drawZs(g: Phaser.GameObjects.Graphics, ox: number, oy: number) {
+    const k = GUARD.scale * S
+    const f = this.facing
+    // Lying down, its head is out the way it faces; start from the top of the head.
+    const hx = ox + f * 1.05 * k
+    const hy = oy - 0.1 * k
+    const out = GUARD.downFor - this.stateT
+    const u = S / 54
+    for (let i = 0; i < 3; i++) {
+      const ph = ((out + i * 0.6) % 1.8) / 1.8
+      const a = Math.min(1, Math.max(0, Math.sin(ph * Math.PI)))
+      if (a <= 0.01) continue
+      const x = hx + f * (6 + ph * 18 + i * 3) * u
+      const y = hy - (8 + ph * 40) * u
+      const h = (10 + ph * 8) * u * 0.45
+      g.lineStyle(Math.max(2, h * 0.5), POWER_LIGHT, a)
+      g.beginPath()
+      g.moveTo(x - h, y - h)
+      g.lineTo(x + h, y - h)
+      g.lineTo(x - h, y + h)
+      g.lineTo(x + h, y + h)
+      g.strokePath()
+    }
+  }
+
+  /** The pieces of a kill, tumbling and fading (History #88). */
+  private drawDebris() {
+    const g = this.debris
+    g.clear()
+    const sh = this.shatter
+    if (!sh) return
+    const k = GUARD.scale * S
+    const alpha = shatterAlpha(sh.age)
+    for (const p of sh.pieces) {
+      const pts = pieceOutline(p).map((q) => new Phaser.Math.Vector2(sh.x + sh.facing * (p.x + q.x) * k, sh.y + (p.y + q.y) * k))
+      g.fillStyle(hex(GUARD_COLOURS[p.color]), alpha)
+      g.fillPoints(pts, true)
+      g.lineStyle(0.04 * k, hex(GUARD_COLOURS.ink), alpha)
+      g.strokePoints(pts, true)
+    }
   }
 }

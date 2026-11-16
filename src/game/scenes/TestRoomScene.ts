@@ -2,7 +2,7 @@ import * as Phaser from 'phaser'
 import { commands, hud } from '../bridge.ts'
 import { Combat } from '../combat/Combat.ts'
 import { Guard } from '../enemy/Guard.ts'
-import { Controls } from '../input/Controls.ts'
+import { Controls, type Intent } from '../input/Controls.ts'
 import type { Vec } from '../logic/geometry.ts'
 import { NOISE_NAMES } from '../logic/noise.ts'
 import { glovesFor, HEAD, TRAPEZOID, type Pose } from '../player/thiefArt.ts'
@@ -12,6 +12,9 @@ import { DEPTH, drawLamps, drawRoom } from '../room/RoomView.ts'
 import { TEST_ROOM } from '../room/testRoom.ts'
 import { POWER } from '../style/tokens.ts'
 import { BLINK, MOVE, S, SIGHT_CFG, screenS } from '../tuning.ts'
+
+/** One-frame presses, which mustn't be lost while the game is frozen for a hit-stop. */
+const PRESSES = ['jumpPressed', 'sneakPressed', 'grabPressed', 'attackPressed', 'attackReleased', 'dodgePressed'] as const
 
 interface Ring {
   x: number
@@ -29,6 +32,8 @@ export class TestRoomScene extends Phaser.Scene {
   private guards: Guard[] = []
   private combat!: Combat
   private hitStop = 0
+  /** Presses made during a hit-stop, carried into the first frame after it. */
+  private carried: Partial<Intent> = {}
   private reducedMotion = false
   private controls!: Controls
   private darkness!: Darkness
@@ -135,7 +140,7 @@ export class TestRoomScene extends Phaser.Scene {
         return { mouse: { x: p.x / S, y: p.y / S, px: this.input.activePointer.x, py: this.input.activePointer.y }, aimEnd: t.aim ? { x: t.aim.end.x / S, y: t.aim.end.y / S } : null, trace: t.trace.slice(-8), x: c.x / S, y: c.y / S, mode: t.mode, state: t.state, charges: t.charges, grip: t.grip, facing: t.facing, sneaking: t.sneaking, climb: t.climb?.mode ?? null, light: t.light }
       }
       w.__loop = () => ({ fps: this.game.loop.actualFps, delta: this.game.loop.delta, raw: this.game.loop.rawDelta, physicsSteps: this.physics.world.stepsLastFrame })
-      w.__guards = () => this.guards.map((g) => ({ x: g.centre.x / S, state: g.state, facing: g.facing, suspicion: g.suspicion }))
+      w.__guards = () => this.guards.map((g) => ({ x: g.centre.x / S, state: g.state, facing: g.facing, suspicion: g.suspicion, pieces: g.pieceCount, rim: this.combat.rimFor(g) }))
       w.__combat = () => this.combat.status
       w.__test = {
         /** Stand him with his feet at (x, y), in units of S. */
@@ -191,15 +196,21 @@ export class TestRoomScene extends Phaser.Scene {
 
   update(_time: number, deltaMs: number) {
     const dt = Math.min(deltaMs / 1000, 0.1)
-    const intent = this.controls.read(this.cssToWorld)
+    let intent = this.controls.read(this.cssToWorld)
     if (intent.pausePressed) this.setPaused(!this.paused)
     if (intent.debugPressed) hud.set({ showDebug: !hud.get().showDebug })
     if (this.paused) return
-    // Hit-stop: a tiny freeze when a blow lands (guide §7.3).
+    // Hit-stop: a tiny freeze when a blow lands (guide §7.3). Presses made during it still count.
     if (this.hitStop > 0) {
       this.hitStop -= dt
+      for (const k of PRESSES) if (intent[k]) this.carried[k] = true
+      if (intent.blinkReleased) this.carried = { ...this.carried, blinkReleased: true, aim: intent.aim }
       if (this.hitStop <= 0) this.physics.resume()
       return
+    }
+    if (Object.keys(this.carried).length) {
+      intent = { ...intent, ...this.carried }
+      this.carried = {}
     }
 
     const t = this.thief
@@ -209,7 +220,7 @@ export class TestRoomScene extends Phaser.Scene {
     for (const g of this.guards) {
       const strike = g.update(dt, him, TEST_ROOM.solids)
       if (strike) this.combat.strike(g, strike)
-      g.render()
+      g.render(this.combat.rimFor(g))
     }
     this.combat.after(dt)
 

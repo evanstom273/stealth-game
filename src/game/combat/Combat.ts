@@ -1,14 +1,15 @@
 import * as Phaser from 'phaser'
 import type { Guard } from '../enemy/Guard.ts'
 import type { Intent } from '../input/Controls.ts'
+import type { AttackGlyph } from '../input/device.ts'
 import { holdOutcome, takedownOn, type TakedownKind } from '../logic/combat.ts'
-import { overlaps, type Rect, type Vec } from '../logic/geometry.ts'
+import { isFree, overlaps, type Rect, type Vec } from '../logic/geometry.ts'
 import { NOISE } from '../logic/noise.ts'
 import type { Pose } from '../player/thiefArt.ts'
 import type { Thief } from '../player/Thief.ts'
 import { DEPTH } from '../room/RoomView.ts'
 import { DUST, POWER } from '../style/tokens.ts'
-import { BLINK, BODY, COMBAT, S, TAKEDOWN_CFG } from '../tuning.ts'
+import { BLINK, BODY, COMBAT, POUNCE, S, TAKEDOWN_CFG } from '../tuning.ts'
 
 interface Spark {
   x: number
@@ -25,13 +26,33 @@ interface Takedown {
   guard: Guard
   kind: TakedownKind
   lethal: boolean
-  from: Rect
-  to: Rect
+  /** From a ceiling or wall: wind-up, leap, impact, pin, step off (History #89). */
+  pounce: boolean
+  /** A pounce goes through each phase in turn; every other takedown is one quick move. */
+  phase: 'windup' | 'leap' | 'pin' | 'off' | 'move'
+  /** Time into the current phase. */
   t: number
+  from: Rect
+  /** Where a pounce lands, on the guard. */
+  hit: Rect
+  to: Rect
   dur: number
   arc: number
   landed: boolean
+  /** The surface he pounces from, for his pose in the wind-up. */
+  surface: 'wall' | 'ceiling' | null
+  /** Towards the guard. */
+  side: 1 | -1
 }
+
+interface Ring {
+  x: number
+  y: number
+  age: number
+}
+
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t
+const FONT = 'Outfit, ui-sans-serif, system-ui, sans-serif'
 
 export interface CombatHooks {
   hitStop(seconds: number): void
@@ -43,8 +64,10 @@ const BLOWS: Pose[] = ['jab', 'cross', 'shove']
 
 /**
  * Combat (History #50–#61, #85): the jab, cross and shove combo, the dodge, and takedowns.
- * When a takedown or finisher is possible a power-blue marker shows over the guard; pressing
- * Attack starts it, tap to knock out, hold to kill, with the marker's ring filling as you hold.
+ * When a takedown or finisher is possible the guard is outlined in power blue, with a marker
+ * over it showing the Attack button and "tap · hold" (History #86): tap to knock out, hold to
+ * kill, the marker's ring filling as you hold and the outline turning red-orange for a kill.
+ * From a ceiling or wall, the takedown is a pounce (History #89).
  */
 export class Combat {
   private step = 0
@@ -62,7 +85,11 @@ export class Combat {
   private blinkTarget: Guard | null = null
   private wasBlinking = false
   private sparks: Spark[] = []
+  private rings: Ring[] = []
+  private glyph: AttackGlyph = 'key'
   private fx: Phaser.GameObjects.Graphics
+  private keyLabel: Phaser.GameObjects.Text
+  private hint: Phaser.GameObjects.Text
   private thief: Thief
   private guards: Guard[]
   private hooks: CombatHooks
@@ -74,6 +101,15 @@ export class Combat {
     this.solids = solids
     this.hooks = hooks
     this.fx = scene.add.graphics().setDepth(DEPTH.dust + 1)
+    const text = (size: number, weight: string, color: string) =>
+      scene.add
+        .text(0, 0, '', { fontFamily: FONT, fontSize: `${Math.round(size)}px`, fontStyle: weight, color, stroke: '#0d1a24', strokeThickness: 3 })
+        .setOrigin(0.5, 0.52)
+        .setDepth(DEPTH.dust + 1.1)
+        .setResolution(3)
+        .setVisible(false)
+    this.keyLabel = text(0.25 * S, '800', '#e6eaef')
+    this.hint = text(0.236 * S, '700', '#cfe9ff').setText('tap · hold')
   }
 
   get busy() {
@@ -82,17 +118,44 @@ export class Combat {
 
   /** For tests and the debug panel. */
   get status() {
-    return { step: this.step, attacking: this.blowT >= 0, charging: !!this.charge, takedown: this.takedown?.kind ?? null, context: this.context?.kind ?? null }
+    const g = this.takedown?.guard ?? this.charge?.guard ?? this.context?.guard ?? this.aimTarget
+    return {
+      step: this.step,
+      attacking: this.blowT >= 0,
+      charging: !!this.charge,
+      takedown: this.takedown?.kind ?? null,
+      phase: this.takedown?.phase ?? null,
+      context: this.context?.kind ?? null,
+      rim: g ? this.rimFor(g) : null,
+      glyph: this.glyph,
+    }
+  }
+
+  /** The outline a guard gets: a takedown is on it, a knockout or a kill (History #86). */
+  rimFor(g: Guard): 'ko' | 'kill' | null {
+    const td = this.takedown
+    if (td) return td.guard === g && !td.landed ? (td.lethal ? 'kill' : 'ko') : null
+    if (this.charge) return this.charge.guard === g ? (this.charge.t >= COMBAT.killHold ? 'kill' : 'ko') : null
+    return this.context?.guard === g || this.aimTarget === g ? 'ko' : null
   }
 
   reset() {
+    if (this.takedown && !this.takedown.landed) this.takedown.guard.release()
     this.charge = null
     this.takedown = null
     this.blowT = -1
     this.step = 0
-    this.thief.combatPose = null
+    this.rings = []
+    this.endPose()
     this.thief.blinkSnap = null
     if (this.thief.locked) this.thief.lock(false)
+  }
+
+  private endPose() {
+    const t = this.thief
+    t.combatPose = null
+    t.combatSquash = { x: 1, y: 1 }
+    t.ghosts = []
   }
 
   private thiefPose() {
@@ -138,6 +201,7 @@ export class Combat {
    */
   before(dt: number, intent: Intent): Intent {
     const t = this.thief
+    this.glyph = intent.attackGlyph
     this.sinceBlow += dt
     this.dodgeCd = Math.max(0, this.dodgeCd - dt)
     this.hurtT = Math.max(0, this.hurtT - dt)
@@ -227,17 +291,123 @@ export class Combat {
     this.charge = null
     this.blowT = -1
     const from = t.box
+    const surface = t.mode === 'climb' && t.climb ? t.climb.mode : null
     const gb = guard.box
     const floorY = gb.y + gb.h
-    // Sneak attacks end behind the guard; finishers end on his own side of it.
-    const side = Math.sign(guard.centre.x - t.centre.x) || t.facing
-    const endX = kind === 'finisher' || kind === 'blink' ? guard.centre.x - side * 0.75 * S : guard.centre.x - guard.facing * 0.7 * S
-    const to: Rect = { x: endX - BODY.w / 2, y: floorY - BODY.h, w: BODY.w, h: BODY.h }
-    const dur = kind === 'ceiling' ? 0.45 : kind === 'wall' ? 0.5 : kind === 'behind' ? 0.3 : 0.25
+    const side: 1 | -1 = guard.centre.x > t.centre.x ? 1 : guard.centre.x < t.centre.x ? -1 : t.facing
+    const pounce = kind === 'ceiling' || kind === 'wall'
+    const standAt = (x: number): Rect => ({ x: x - BODY.w / 2, y: floorY - BODY.h, w: BODY.w, h: BODY.h })
+    let to: Rect
+    if (pounce) {
+      // He steps off the guard on the side he came from, or the other side if that's in a wall.
+      const near = standAt(guard.centre.x - side * 0.85 * S)
+      to = isFree(near, this.solids) ? near : standAt(guard.centre.x + side * 0.85 * S)
+    } else {
+      // Sneak attacks end behind the guard; finishers end on his own side of it.
+      to = standAt(kind === 'finisher' || kind === 'blink' ? guard.centre.x - side * 0.75 * S : guard.centre.x - guard.facing * 0.7 * S)
+      t.facing = guard.centre.x >= to.x + BODY.w / 2 ? 1 : -1
+    }
+    // A pounce lands on the guard, a little short of its middle, and pins it; for a kill there's
+    // nothing left to land on, so he comes down on the floor among the pieces.
+    const hitX = guard.centre.x - side * 0.25 * S
+    const hit: Rect = { x: hitX - BODY.w / 2, y: floorY - (lethal ? 0 : 0.4 * S) - BODY.h, w: BODY.w, h: BODY.h }
+    const dur = kind === 'behind' ? 0.3 : 0.25
     const arc = kind === 'wall' ? 0.9 * S : kind === 'behind' ? 0.15 * S : 0
-    t.facing = guard.centre.x >= endX ? 1 : -1
     t.lock(true)
-    this.takedown = { guard, kind, lethal, from, to, t: 0, dur, arc, landed: false }
+    // Committed: the guard can't turn round or notice him now.
+    guard.hold()
+    this.takedown = { guard, kind, lethal, pounce, phase: pounce ? 'windup' : 'move', t: 0, from, hit, to, dur, arc, landed: false, surface, side }
+  }
+
+  /** The moment a takedown connects. */
+  private impact(td: Takedown) {
+    td.landed = true
+    td.guard.takedown(td.lethal)
+    const gc = td.guard.centre
+    this.burst(gc.x, gc.y - 0.2 * S, td.lethal ? 0x3e5a6e : 0xc9ced8, 14)
+    this.burst(gc.x, gc.y - 0.2 * S, 0xffffff, 6)
+    this.hooks.hitStop(td.pounce ? POUNCE.hitStop : 0.06)
+    this.hooks.shake()
+    this.hooks.noise(NOISE.soft, gc)
+    if (td.pounce) this.rings.push({ x: gc.x, y: td.guard.box.y + td.guard.box.h - 0.33 * S, age: 0 })
+  }
+
+  private finishTakedown() {
+    this.takedown = null
+    this.endPose()
+    this.thief.lock(false)
+  }
+
+  /** Sneak attacks from the ground, finishers and blink takedowns: one quick move. */
+  private moveStep(td: Takedown) {
+    const t = this.thief
+    const u = Math.min(1, td.t / td.dur)
+    const e = 1 - Math.pow(1 - u, 2)
+    const x = lerp(td.from.x, td.to.x, e)
+    const y = lerp(td.from.y, td.to.y, e) - Math.sin(Math.PI * u) * td.arc
+    t.teleport({ ...td.to, x, y })
+    t.combatPose = td.kind === 'finisher' || td.kind === 'blink' ? 'shove' : 'grab'
+    if (!td.landed && u >= 0.75) this.impact(td)
+    if (u >= 1) this.finishTakedown()
+  }
+
+  /** Where he is along the pounce's leap, u from 0 to 1. */
+  private leapAt(td: Takedown, u: number): Vec {
+    const e = td.kind === 'ceiling' ? u * u : 1 - Math.pow(1 - u, 2)
+    return { x: lerp(td.from.x, td.hit.x, e), y: lerp(td.from.y, td.hit.y, e) - Math.sin(Math.PI * u) * td.arc }
+  }
+
+  /** The pounce (History #89): wind-up on the surface, leap, impact, pin, step off. */
+  private pounceStep(td: Takedown) {
+    const t = this.thief
+    const next = (phase: Takedown['phase']) => {
+      td.phase = phase
+      td.t = 0
+    }
+    switch (td.phase) {
+      case 'windup': {
+        // He coils against the surface he's on.
+        const q = Math.sin(Math.min(1, td.t / POUNCE.windup) * Math.PI) * POUNCE.squash
+        t.combatSquash = td.surface === 'wall' ? { x: 1 - q, y: 1 + q * 0.5 } : { x: 1 + q, y: 1 - q }
+        t.combatPose = td.surface ?? 'air'
+        t.teleport(td.from)
+        if (td.t >= POUNCE.windup) next('leap')
+        break
+      }
+      case 'leap': {
+        const u = Math.min(1, td.t / POUNCE.leap)
+        t.combatSquash = { x: 1, y: 1 }
+        t.facing = td.side
+        t.combatPose = 'air'
+        const p = this.leapAt(td, u)
+        t.teleport({ ...td.hit, x: p.x, y: p.y })
+        t.ghosts = []
+        for (let k = 1; k <= POUNCE.ghosts; k++) {
+          const g = this.leapAt(td, Math.max(0, u - k * POUNCE.ghostGap))
+          // As drawing origins: the middle of his body.
+          t.ghosts.push({ x: g.x + BODY.w / 2, y: g.y + BODY.h - 0.62 * S, alpha: POUNCE.ghostAlpha / k })
+        }
+        if (u >= 1) {
+          t.ghosts = []
+          this.impact(td)
+          next('pin')
+        }
+        break
+      }
+      case 'pin':
+        t.combatPose = 'grab'
+        t.teleport(td.hit)
+        if (td.t >= POUNCE.pin) next('off')
+        break
+      case 'off': {
+        const u = Math.min(1, td.t / POUNCE.stepOff)
+        const e = 1 - Math.pow(1 - u, 2)
+        t.combatPose = 'stand'
+        t.teleport({ ...td.to, x: lerp(td.hit.x, td.to.x, e), y: lerp(td.hit.y, td.to.y, e) })
+        if (u >= 1) this.finishTakedown()
+        break
+      }
+    }
   }
 
   /** After everyone has moved: blows landing, takedowns playing out, blinks arriving. */
@@ -256,27 +426,8 @@ export class Combat {
     if (this.takedown) {
       const td = this.takedown
       td.t += dt
-      const u = Math.min(1, td.t / td.dur)
-      const e = td.kind === 'ceiling' ? u * u : 1 - Math.pow(1 - u, 2)
-      const x = td.from.x + (td.to.x - td.from.x) * e
-      const y = td.from.y + (td.to.y - td.from.y) * e - Math.sin(Math.PI * u) * td.arc
-      t.teleport({ ...td.to, x, y })
-      t.combatPose = u < 0.55 && (td.kind === 'ceiling' || td.kind === 'wall') ? 'air' : td.kind === 'finisher' || td.kind === 'blink' ? 'shove' : 'grab'
-      if (!td.landed && u >= 0.75) {
-        td.landed = true
-        td.guard.takedown(td.lethal)
-        const gc = td.guard.centre
-        this.burst(gc.x, gc.y - 0.2 * S, td.lethal ? 0x8a8d92 : 0xc9ced8, 14)
-        this.burst(gc.x, gc.y - 0.2 * S, 0xffffff, 6)
-        this.hooks.hitStop(0.06)
-        this.hooks.shake()
-        this.hooks.noise(NOISE.soft, gc)
-      }
-      if (u >= 1) {
-        this.takedown = null
-        t.combatPose = null
-        t.lock(false)
-      }
+      if (td.pounce) this.pounceStep(td)
+      else this.moveStep(td)
       return
     }
 
@@ -344,7 +495,7 @@ export class Combat {
     }
   }
 
-  /** Sparks, and the takedown marker over the guard with its hold ring. */
+  /** Sparks, impact rings, and the takedown marker over the guard with its hold ring. */
   draw(dt: number, px: number) {
     const g = this.fx
     g.clear()
@@ -359,12 +510,30 @@ export class Combat {
       g.fillStyle(s.color, 1 - s.age / s.life)
       g.fillRect(s.x - s.size / 2, s.y - s.size / 2, s.size, s.size)
     }
+    // The pounce's impact ring, spreading along the floor.
+    for (const r of this.rings) r.age += dt
+    this.rings = this.rings.filter((r) => r.age < POUNCE.ring)
+    for (const r of this.rings) {
+      const q = r.age / POUNCE.ring
+      const radius = (0.3 + q * 1.1) * S
+      g.lineStyle(3 * px, 0xf2f2f2, 1 - q)
+      g.strokeEllipse(r.x, r.y, radius * 2, radius * 0.9)
+    }
 
+    this.keyLabel.setVisible(false)
+    this.hint.setVisible(false)
     const target = this.charge?.guard ?? (this.takedown ? null : (this.context?.guard ?? this.aimTarget))
     if (!target) return
     const b = target.box
-    const mx = b.x + b.w / 2
-    const my = b.y - 1.15 * S
+    let mx = b.x + b.w / 2
+    let my = b.y - 1.15 * S
+    // Hanging from a ceiling over the guard, he'd be in the way: put the marker beside it instead,
+    // on the side away from him.
+    if (overlaps({ x: mx - 0.65 * S, y: my - 0.35 * S, w: 1.5 * S, h: 1.05 * S }, this.thief.box)) {
+      const away = this.thief.centre.x <= mx ? 1 : -1
+      mx = away > 0 ? b.x + b.w + 0.7 * S : b.x - 1.0 * S
+      my = b.y + 0.2 * S
+    }
     const r = 0.26 * S
     g.fillStyle(0x0d1a24, 0.9)
     g.fillCircle(mx, my, r)
@@ -383,6 +552,58 @@ export class Combat {
       g.beginPath()
       g.arc(mx, my, r + 6 * px, -Math.PI / 2, -Math.PI / 2 + f * Math.PI * 2)
       g.strokePath()
+    }
+    // Aiming a blink at it, the thing to do is let go of Blink, so no Attack button.
+    if (!this.charge && !this.context) return
+    this.drawGlyph(g, mx + 0.567 * S, my, 0.213 * S, px)
+    this.hint.setPosition(mx + 0.095 * S, my + 0.52 * S).setVisible(true)
+  }
+
+  /** The Attack button for the controls he last used (History #86). */
+  private drawGlyph(g: Phaser.GameObjects.Graphics, x: number, y: number, r: number, px: number) {
+    switch (this.glyph) {
+      case 'key':
+        g.fillStyle(0x24242f, 1)
+        g.fillRoundedRect(x - r, y - r, 2 * r, 2 * r, 0.35 * r)
+        g.lineStyle(1.5 * px, 0x4a4a5c, 1)
+        g.strokeRoundedRect(x - r, y - r, 2 * r, 2 * r, 0.35 * r)
+        this.keyLabel.setText('F').setColor('#e6eaef').setPosition(x, y).setVisible(true)
+        break
+      case 'mouse': {
+        // A mouse with its left button lit.
+        const w = 0.68 * r
+        const h = r
+        const split = y - 0.15 * r
+        g.fillStyle(0x24242f, 1)
+        g.fillRoundedRect(x - w, y - h, 2 * w, 2 * h, w * 0.9)
+        g.fillStyle(0xe6eaef, 1)
+        g.fillRoundedRect(x - w, y - h, w, split - (y - h), { tl: w * 0.9, tr: 0, bl: 0, br: 0 })
+        g.lineStyle(1.5 * px, 0x4a4a5c, 1)
+        g.strokeRoundedRect(x - w, y - h, 2 * w, 2 * h, w * 0.9)
+        g.lineBetween(x - w, split, x + w, split)
+        g.lineBetween(x, y - h, x, split)
+        break
+      }
+      case 'pad':
+        g.fillStyle(0x2b2b1a, 1)
+        g.fillCircle(x, y, r)
+        g.lineStyle(1.5 * px, 0xe7c74a, 1)
+        g.strokeCircle(x, y, r)
+        this.keyLabel.setText('Y').setColor('#e7c74a').setPosition(x, y).setVisible(true)
+        break
+      case 'touch':
+        // The on-screen Attack button: a fist on a dark disc.
+        g.fillStyle(0x000000, 0.55)
+        g.fillCircle(x, y, r)
+        g.lineStyle(1.5 * px, 0xffffff, 0.4)
+        g.strokeCircle(x, y, r)
+        g.fillStyle(0xe6eaef, 1)
+        g.fillCircle(x - 0.1 * r, y, 0.45 * r)
+        g.lineStyle(1.2 * px, 0x14141c, 1)
+        g.beginPath()
+        g.arc(x - 0.1 * r, y + 0.05 * r, 0.26 * r, Math.PI * 1.15, Math.PI * 1.85)
+        g.strokePath()
+        break
     }
   }
 }

@@ -12,13 +12,14 @@ export interface GuardLook {
   pose: GuardPose
   time: number
   walk: number
-  /** Killed: drained to grey (first take). */
-  grey: boolean
+  /** A coloured outline round the whole guard: a takedown is on (History #86). */
+  rim: string | null
 }
 
 const INK = '#12161b'
-const C = { body: '#3e5a6e', dark: '#2a3e4d', skin: '#c9ced8', feet: '#2a2f38' }
-const GREY = { body: '#4a4d52', dark: '#3a3c40', skin: '#7a7d82', feet: '#2f3134' }
+export const GUARD_COLOURS = { body: '#3e5a6e', dark: '#2a3e4d', skin: '#c9ced8', feet: '#2a2f38', ink: '#12161b' }
+const C = GUARD_COLOURS
+const RIM_WIDTH = 0.14
 const EYE_Y = -0.44
 
 function face(ctx: CanvasRenderingContext2D, f: GuardFace) {
@@ -125,8 +126,28 @@ function lean(pose: GuardPose, time: number): number {
 }
 
 export function drawGuard(ctx: CanvasRenderingContext2D, look: GuardLook) {
-  const c = look.grey ? GREY : C
   ctx.lineJoin = 'round'
+  if (look.rim) {
+    ctx.save()
+    ctx.globalAlpha = 0.9
+    shapes(ctx, look, look.rim)
+    ctx.restore()
+  }
+  shapes(ctx, look, null)
+}
+
+/**
+ * The guard's shapes. With `rim` set, every shape is filled and stroked thickly in that colour
+ * instead, so drawing the guard over it leaves an outline round the whole of him.
+ */
+function shapes(ctx: CanvasRenderingContext2D, look: GuardLook, rim: string | null) {
+  const paint = (fill: string, width: number) => {
+    ctx.fillStyle = rim ?? fill
+    ctx.strokeStyle = rim ?? INK
+    ctx.lineWidth = rim ? RIM_WIDTH : width
+    ctx.fill()
+    ctx.stroke()
+  }
   ctx.save()
   if (look.pose === 'down') {
     // Lying on his back along the floor, head the way he was facing.
@@ -141,64 +162,47 @@ export function drawGuard(ctx: CanvasRenderingContext2D, look: GuardLook) {
   }
   const bob = look.pose === 'walk' ? Math.abs(Math.sin(look.walk)) * 0.03 : 0
 
-  ctx.fillStyle = c.feet
-  ctx.strokeStyle = INK
-  ctx.lineWidth = 0.04
   const lift = look.pose === 'walk' ? Math.sin(look.walk) * 0.05 : 0
   for (const [x, y] of [[-0.4, 0.4 - Math.max(0, lift)], [0.06, 0.4 - Math.max(0, -lift)]]) {
     ctx.beginPath()
     ctx.roundRect(x, y, 0.36, 0.22, 0.05)
-    ctx.fill()
-    ctx.stroke()
+    paint(C.feet, 0.04)
   }
   ctx.translate(0, -bob)
-  ctx.fillStyle = c.body
-  ctx.lineWidth = 0.05
   ctx.beginPath()
   ctx.roundRect(-0.42, -0.16, 0.84, 0.66, 0.08)
-  ctx.fill()
-  ctx.stroke()
-  ctx.strokeStyle = c.dark
-  ctx.lineWidth = 0.07
-  ctx.beginPath()
-  ctx.moveTo(-0.4, 0.26)
-  ctx.lineTo(0.4, 0.26)
-  ctx.stroke()
+  paint(C.body, 0.05)
+  if (!rim) {
+    ctx.strokeStyle = C.dark
+    ctx.lineWidth = 0.07
+    ctx.beginPath()
+    ctx.moveTo(-0.4, 0.26)
+    ctx.lineTo(0.4, 0.26)
+    ctx.stroke()
+  }
 
-  ctx.fillStyle = c.skin
-  ctx.strokeStyle = INK
-  ctx.lineWidth = 0.05
   ctx.beginPath()
   ctx.arc(0, -0.43, 0.28, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.stroke()
-  face(ctx, look.pose === 'down' ? 'out' : look.face)
+  paint(C.skin, 0.05)
+  if (!rim) face(ctx, look.pose === 'down' ? 'out' : look.face)
 
   // Cap
-  ctx.fillStyle = c.dark
-  ctx.strokeStyle = INK
-  ctx.lineWidth = 0.03
   ctx.beginPath()
   ctx.roundRect(-0.22, -0.82, 0.44, 0.16, 0.04)
-  ctx.fill()
-  ctx.stroke()
+  paint(C.dark, 0.03)
   ctx.beginPath()
   ctx.moveTo(-0.3, -0.64)
   ctx.lineTo(0.44, -0.64)
   ctx.lineTo(0.38, -0.7)
   ctx.lineTo(-0.24, -0.7)
   ctx.closePath()
-  ctx.fill()
-  ctx.stroke()
+  paint(C.dark, 0.03)
 
-  ctx.fillStyle = c.skin
-  ctx.lineWidth = 0.04
   const hs = look.pose === 'down' ? ([[-0.5, 0.42], [0.5, 0.42]] as [number, number][]) : hands(look.pose, look.time, look.walk)
   for (const [x, y] of hs) {
     ctx.beginPath()
     ctx.arc(x, y, 0.16, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.stroke()
+    paint(C.skin, 0.04)
   }
   ctx.restore()
 }
