@@ -8,7 +8,7 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T13:15:23+00:00):**
+**Where the project stands (as of 2026-11-16T13:24:13+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -161,6 +161,12 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **Slide from a run.** While running, press down to drop into a low slide that carries his speed under gaps and closing doors. Claude's recommendation, approved. *(2026-11-16T06:35:14+00:00 — History #42)*
 - **Sneak is a toggle; run is held.** Press once to sneak until pressed again; hold to run. *(2026-11-16T06:31:36+00:00 — History #38)*
 
+### Combat and getting spotted
+- **Being spotted isn't a fail state.** No restarting the level on detection. He gets out of it by **hiding again** (breaking line of sight, getting into the dark; guards search, then give up), **getting out of reach** (climbing or blinking where guards can't follow), **fighting his way out**, or **distracting them** (which needs tools or gadgets, still to be designed). *(2026-11-16T13:24:13+00:00 — History #50)*
+- **Open combat: he holds his own.** A proper fighting system (dodges, combos, finishers), so fighting is a real alternative to sneaking. Chosen over "scrappy, not a fighter" (Claude's recommendation), no open combat, and counters only. Details still to be designed. *(2026-11-16T13:24:13+00:00 — History #51)*
+- **Knockout or kill is the player's choice.** Both are available, perhaps with different costs or consequences. *(2026-11-16T13:24:13+00:00 — History #52)*
+- **Sneak attacks from every way he moves:** from behind on the ground, dropping from the ceiling, launching off a wall, and blinking onto a guard. Lyra's idea, confirmed. *(2026-11-16T13:24:13+00:00 — History #53)*
+
 ### Platforms and input
 - **Keyboard, gamepad and touch, all from the start.** Lyra plays on a Pixel 10 Pro Fold, so the game has to work in portrait, in landscape and on the inner folding screen, as well as on desktop. *(2026-11-16T06:31:36+00:00 — History #39)*
 - **Touch: a fixed thumbstick** in the same corner for moving and climbing. *(2026-11-16T06:35:14+00:00 — History #43)*
@@ -226,8 +232,9 @@ Shortlisted for visual comparison (options, not decisions):
 1. **Title.**
 2. **Everything about the game itself.**
 3. **Blink details** (#27, #32–#36, #48): whether 5 charges and a 6 S range hold up in proper levels; what counts as a thin wall; exactly what guards notice and from how far.
-4. **The player's size, in the game and next to the guards.** Decided when the guards are designed. Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
-5. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). ~~physics~~ (Phaser Arcade, #40). Still open: anything server-side.
+4. **How combat works** (#50–#53): weapons, moves, health, how the knockout-or-kill choice is made, and what keeps sneaking worthwhile when he can fight.
+5. **The player's size, in the game and next to the guards.** Decided when the guards are designed. Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
+6. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). ~~physics~~ (Phaser Arcade, #40). Still open: anything server-side.
 
 ---
 
@@ -335,6 +342,10 @@ Shortlisted for visual comparison (options, not decisions):
 | 47 | 2026-11-16T13:14:39+00:00 | Player | Grip raised after Lyra's first playtest: 15 s on walls, 7.5 s on ceilings (was 6 s and 3 s; amount picked by Claude). |
 | 48 | 2026-11-16T13:14:39+00:00 | Player | Blink, for now: 5 charges (was 3), range 6 S (was 5 S), after Lyra's first playtest. Revisit in proper levels. |
 | 49 | 2026-11-16T13:15:23+00:00 | Player | Ceilings drain grip at the same rate as walls (15 s). Supersedes the "especially upside down" part of #28 and the half-rate ceilings in #47. |
+| 50 | 2026-11-16T13:24:13+00:00 | Combat | Being spotted isn't a fail state: he can hide again, get out of reach, fight his way out, or distract guards (tools to be designed). |
+| 51 | 2026-11-16T13:24:13+00:00 | Combat | Open combat: he holds his own, with a proper fighting system (dodges, combos, finishers). |
+| 52 | 2026-11-16T13:24:13+00:00 | Combat | Knockout or kill is the player's choice. |
+| 53 | 2026-11-16T13:24:13+00:00 | Combat | Sneak attacks from behind, from the ceiling, from a wall, and by blinking onto a guard. |
 
 ---
 
