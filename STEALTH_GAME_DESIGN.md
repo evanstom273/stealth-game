@@ -8,7 +8,7 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16), **breaking out of a facility**: a clinical test facility, our own take on that kind of place (History #77, #78). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T13:47:00+00:00):**
+**Where the project stands (as of 2026-11-16T13:52:05+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -180,6 +180,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **Sneak attacks: a marker, then Attack.** When he's in position on an unaware guard (behind, above, on a wall, or aiming a blink at them), a marker shows over the guard, and Attack does the takedown instead of an ordinary blow. Claude's recommendation, approved. *(2026-11-16T13:27:43+00:00 — History #59)*
 - **Health is shown as pips** in the HUD, coming back one at a time while he's hidden (#57). How many isn't decided. Chosen over showing damage on his body (Claude's recommendation, from the guide's §8.3). *(2026-11-16T13:27:43+00:00 — History #60)*
 - **Rewards for staying unseen:** an **end-of-level rating** (seen or not, knockouts, kills, time), and **guards stay relaxed** while he's unseen: once they've seen him, they're on edge for the rest of the level. *(2026-11-16T13:27:43+00:00 — History #61)*
+- **Combat is built before the guards' full stealth behaviour**, so Lyra can get a feel for it: a simple test enemy (the approved staff watchman) that stands at a post turning left and right, comes over and attacks when it sees him, and can be taken down; he's invulnerable for now. Claude's plan approved with its defaults, including first takes to tune in play: a jab, cross and shove combo whose third hit staggers; a dash dodge (backstep with no direction held); blink takedowns by aiming at a guard, which stuns it on arrival; a power-blue takedown marker whose ring fills while Attack is held; knockouts slumping and kills draining to grey; Attack on left mouse or F, Y, or a touch button left of the diamond, and Dodge on Q, RB, or a smaller touch button above it; sight cones shown while testing (switchable); downed guards returning after about 8 seconds as a testing convenience. *(2026-11-16T13:52:05+00:00 — History #85)*
 
 
 ### Guards
@@ -420,6 +421,7 @@ Shortlisted for visual comparison (options, not decisions):
 | 82 | 2026-11-16T13:45:32+00:00 | Guards | Blind guard: eyes shut while calm, opening milky (no pupils) when it responds. |
 | 83 | 2026-11-16T13:47:00+00:00 | Guards | The torch-bearer's wheel can't do stairs: its weakness. |
 | 84 | 2026-11-16T13:47:00+00:00 | Guards | The rest of the guards' look approved as drawn in the Guard Line-up (shapes, colours, faces by state, marker, torch). |
+| 85 | 2026-11-16T13:52:05+00:00 | Workflow | Combat first, against a simple test enemy (post, turning, sees, attacks), with him invulnerable; Claude's combat plan and its first-take defaults approved. |
 
 ---
 
