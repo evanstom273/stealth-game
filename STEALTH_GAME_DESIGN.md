@@ -6,9 +6,9 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 ## A. Project Overview
 
-A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
+A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16), **breaking out of a facility**: a clinical test facility, our own take on that kind of place (History #77, #78). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T13:34:06+00:00):**
+**Where the project stands (as of 2026-11-16T13:37:20+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -133,9 +133,11 @@ Don't rush through the questions simply to get to implementation. The design pro
 ### Concept
 - **A stealth game.** *(2026-11-16T05:36:10+00:00 — History #1)*
 - **Side-on view**, like a platformer. The Stylised Geometry guide was built and proven side-on; its top-down and isometric rules are untested. Claude's recommendation, approved. *(2026-11-16T05:57:44+00:00 — History #15)*
+- **He's breaking out of a facility, not into somewhere.** A clinical test facility: chambers, testing, being watched, in the spirit of the game Portal's setting but our own take, not its look. Lyra is still working out the story. *(2026-11-16T13:37:20+00:00 — History #77)*
+- **He's still a thief**, just breaking out rather than in. *(2026-11-16T13:37:20+00:00 — History #78)*
 
 ### The player
-- **A thief who's small and out of place.** Lyra chose both "a thief" (breaking in to take something) and "small and out of place" (sneaking past things far bigger than it; stealth as vulnerability). *(2026-11-16T05:57:44+00:00 — History #16)*
+- **A thief who's small and out of place.** Lyra chose both "a thief" (~~breaking in to take something~~ breaking out of a facility, #77, #78) and "small and out of place" (sneaking past things far bigger than it; stealth as vulnerability). *(2026-11-16T05:57:44+00:00 — History #16)*
 - **Fades in shadow; the eyes stay lit.** The player's body dims when hidden while the eyes stay bright, so how visible the player is reads straight off the player. This deliberately breaks the style's rule that characters are never darkened, for the player only. Claude's recommendation, approved. *(2026-11-16T05:57:44+00:00 — History #17)*
 - **A vision pool, not a light.** A faint pool around him lets the player see the room in the dark, but it's his eyes adjusting, not a light: it doesn't stop him fading and guards can't see it. Lamps are what light him. Claude's recommendation, approved. *(2026-11-16T06:35:14+00:00 — History #41)*
 - **An expert thief.** Small but brilliant at this: confident, a bit smug, and its size is an advantage it knows how to use. *(2026-11-16T06:00:59+00:00 — History #18)*
@@ -181,7 +183,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 
 ### Guards
-- **Three archetypes: a watchman, a lantern-bearer, and a blind guard.** The watchman is the everyday guard (patrols, average sight and hearing) and the baseline. The lantern-bearer carries a light, so the darkness that hides him moves with them. The blind guard can't see at all: only silence works on them. Lyra chose a blind archetype and three in all; the watchman (Claude's recommendation) and lantern-bearer were picked from options. *(2026-11-16T13:31:53+00:00 — History #63)*
+- **Three archetypes: a watchman, a ~~lantern-bearer~~ torch-bearer (#80), and a blind guard.** The watchman is the everyday guard (patrols, average sight and hearing) and the baseline. The ~~lantern-bearer~~ torch-bearer carries a light, so the darkness that hides him moves with them. The blind guard can't see at all: only silence works on them. Lyra chose a blind archetype and three in all; the watchman (Claude's recommendation) and lantern-bearer were picked from options. *(2026-11-16T13:31:53+00:00 — History #63)*
 - **Senses first: sight and hearing, with proper searching.** *(2026-11-16T13:31:53+00:00 — History #64)*
 - **Sight is a cone, and light matters.** Guards see in a cone ahead of them; in light they spot him from far off, in the dark only up close. Claude's recommendation, approved. *(2026-11-16T13:31:53+00:00 — History #65)*
 - **Suspicion shows as a marker overhead** (a filling "?" that turns to "!"), not through the guard's eye. *(2026-11-16T13:31:53+00:00 — History #66)*
@@ -192,9 +194,11 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **Hiding spots:** lockers and cupboards (step in, peek through the slats), under furniture (desks, beds, tables), behind cover (curtains, crates, coat racks: hidden from one side), and vents and ducts (crawlspaces only he fits through, hiding and a hidden route at once). *(2026-11-16T13:32:49+00:00 — History #71)*
 - **Found in a hiding spot: it depends what they know.** If a guard saw him go in, he's caught and has to fight or flee. If a guard is just checking, he can take them out from inside as they open it. Claude's recommendation, approved. *(2026-11-16T13:32:49+00:00 — History #72)*
 - **Watchmen: a mix of patrols and posts.** Some walk set routes, pausing to look around; some stand at posts. Levels decide which. Claude's recommendation, approved. *(2026-11-16T13:34:06+00:00 — History #73)*
-- **Lantern-bearers:** the lantern is a moving lamp, so getting close lights him up; they search with it, swinging it into dark corners and up at ceilings; and the lantern can be put out (knocked from their hand or snuffed), leaving them as blind in the dark as anyone, but alerted. Relighting lamps was not chosen. *(2026-11-16T13:34:06+00:00 — History #74)*
+- **~~Lantern-bearers~~ Torch-bearers (#80):** the ~~lantern~~ torch is a moving lamp, so getting close lights him up; they search with it, swinging it into dark corners and up at ceilings; and the lantern can be put out (knocked from their hand or snuffed), leaving them as blind in the dark as anyone, but alerted. Relighting lamps was not chosen. *(2026-11-16T13:34:06+00:00 — History #74)*
 - **The blind guard finds him by** much sharper hearing (further, and through walls more easily); hearing even sneaking within a short range; touch (bumping into each other means it knows exactly where he is); and remembering where sounds came from, going back to them to build a picture of where he's been. *(2026-11-16T13:34:06+00:00 — History #75)*
 - **Guards are about 1.25 times his size.** Barely bigger than him. *(2026-11-16T13:34:06+00:00 — History #76)*
+- **Guards are both security staff and machines.** Which archetypes are which isn't decided. *(2026-11-16T13:37:20+00:00 — History #79)*
+- **The lantern becomes a torch:** a beam rather than a glow, so the torch-bearer lights whatever they point it at. Same mechanics as #74. *(2026-11-16T13:37:20+00:00 — History #80)*
 
 ### Platforms and input
 - **Keyboard, gamepad and touch, all from the start.** Lyra plays on a Pixel 10 Pro Fold, so the game has to work in portrait, in landscape and on the inner folding screen, as well as on desktop. *(2026-11-16T06:31:36+00:00 — History #39)*
@@ -259,11 +263,12 @@ Shortlisted for visual comparison (options, not decisions):
 ## E. Open Questions
 
 1. **Title.**
-2. **Everything about the game itself.**
-3. **Blink details** (#27, #32–#36, #48): whether 5 charges and a 6 S range hold up in proper levels; what counts as a thin wall; exactly what guards notice and from how far.
-4. **Combat details still open** (#50–#61): how many health pips; what attacks, combos, dodges, finishers, takedowns and the takedown marker look like; Attack and Dodge on the touch layout (the diamond has four buttons); how the gloves read as weapons when they vanish in the dark. Combat also needs guards to exist before it can be built or tested.
-5. **The player's size on screen.** ~~Next to the guards~~ (about 1.25×, #76). Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
-6. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). ~~physics~~ (Phaser Arcade, #40). Still open: anything server-side.
+2. **The story**, including what the facility is and why he's in it (#77).
+3. **How a clinical facility fits stealth that runs on darkness** (bright, clean test spaces against the dark): left open on purpose.
+4. **Blink details** (#27, #32–#36, #48): whether 5 charges and a 6 S range hold up in proper levels; what counts as a thin wall; exactly what guards notice and from how far.
+5. **Combat details still open** (#50–#61): how many health pips; what attacks, combos, dodges, finishers, takedowns and the takedown marker look like; Attack and Dodge on the touch layout (the diamond has four buttons); how the gloves read as weapons when they vanish in the dark. Combat also needs guards to exist before it can be built or tested.
+6. **The player's size on screen.** ~~Next to the guards~~ (about 1.25×, #76). Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
+7. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). ~~physics~~ (Phaser Arcade, #40). Still open: anything server-side.
 
 ---
 
@@ -399,6 +404,10 @@ Shortlisted for visual comparison (options, not decisions):
 | 74 | 2026-11-16T13:34:06+00:00 | Guards | Lantern-bearers: the lantern lights him when close, they search with it, and it can be put out. |
 | 75 | 2026-11-16T13:34:06+00:00 | Guards | Blind guard: much sharper hearing, hears sneaking up close, touch, remembers where sounds came from. |
 | 76 | 2026-11-16T13:34:06+00:00 | Guards | Guards are about 1.25 times his size. |
+| 77 | 2026-11-16T13:37:20+00:00 | Concept | He's breaking out of a facility, not in: a clinical test facility, our own take (not Portal's look). Story still open. Supersedes "breaking in" in #16. |
+| 78 | 2026-11-16T13:37:20+00:00 | Player | He's still a thief, breaking out rather than in. |
+| 79 | 2026-11-16T13:37:20+00:00 | Guards | Guards are both security staff and machines (which archetype is which undecided). |
+| 80 | 2026-11-16T13:37:20+00:00 | Guards | The lantern-bearer's lantern becomes a torch: a beam, not a glow. |
 
 ---
 
