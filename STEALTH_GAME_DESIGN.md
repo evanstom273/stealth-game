@@ -8,7 +8,7 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T06:28:40+00:00):**
+**Where the project stands (as of 2026-11-16T06:31:36+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -153,12 +153,17 @@ Don't rush through the questions simply to get to implementation. The design pro
   - **Lands gripping:** blink onto a wall or ceiling and he arrives already holding on, so blink and climbing work as one move set. Claude's recommendation, approved. *(2026-11-16T06:27:40+00:00 — History #35)*
   - **Look: turning to dust.** He crumbles into dust from the head down (the guide's small dust squares, in his own colours), and the dust gathers back into him at the far end. Lyra's own option, chosen from the Thief Blink Studies over pop and ring (Claude's pick), shatter and reassemble, and shadow streak. To watch in playtesting: the study takes about a second to re-form him, which may feel slow in play; and crumbling may read like a death once he can die. *(2026-11-16T06:28:40+00:00 — History #36)*
 - **On the ground:** walk, plus **sneak** (slow, near-silent), **run** (fast but noisy), **jump**, and **slide or roll** (under low gaps and closing doors). *(2026-11-16T06:19:39+00:00 — History #31)*
+- **Sneak is a toggle; run is held.** Press once to sneak until pressed again; hold to run. *(2026-11-16T06:31:36+00:00 — History #38)*
+
+### Platforms and input
+- **Keyboard, gamepad and touch, all from the start.** Lyra plays on a Pixel 10 Pro Fold, so the game has to work in portrait, in landscape and on the inner folding screen, as well as on desktop. *(2026-11-16T06:31:36+00:00 — History #39)*
 
 ### Art and presentation
 - **Art style: Stylised Geometry**, as set out in `stylised-geometry/STYLISED_GEOMETRY.md` and its reference sheets. *(2026-11-16T05:36:10+00:00 — History #2)*
 - **Bodies aren't limited to one primitive.** A character can be a polygon, or several shapes stacked or combined, for more varied body types than a single square or circle. Lyra's note; the guide agrees (§3.1 step 1, §4.2). *(2026-11-16T06:00:59+00:00 — History #19)*
 
 ### Development approach
+- **First playable piece: the full player.** Lyra wants to test all of the player's mechanics together (look, light, ground movement, climbing, blink) rather than one at a time. Claude builds it in stages internally, testing each before the next, so it's still not one-shotted. *(2026-11-16T06:31:36+00:00 — History #37)*
 - **Not one-shotting the game.** It's built a piece at a time, the way Lyra built a previous project: each piece is made, tested, refined, tested and refined further before moving on to the next. *(2026-11-16T05:43:12+00:00 — History #6)*
 - **Depth before breadth.** Each mechanic is made polished, satisfying and fully functional before new ones are added. Workflow: Design → Implement → Test → Refine → Test Again → Refine Further → Move On. In full in §A. *(2026-11-16T05:51:48+00:00 — History #11)*
 - **Claude Artifacts as a visual workshop.** Characters, animations, environments, small mechanic prototypes and UI are designed, compared and refined in Artifacts, approved by Lyra, then used as the reference for implementation. In full in §A. *(2026-11-16T05:51:48+00:00 — History #12)*
@@ -170,6 +175,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **Dexie is added when there's first something to save**, not as an empty database in the scaffold. Claude's recommendation, approved. *(2026-11-16T05:49:12+00:00, documentation time — History #8)*
 - **Phaser 4** (4.2.1 at scaffold time, the current stable release). *(2026-11-16T05:49:12+00:00, documentation time — History #9)*
 - **Deployed on Cloudflare Workers.** *(2026-11-16T05:51:48+00:00 — History #14)*
+- **Physics: Phaser Arcade.** Phaser's built-in box physics; the player's hitbox stays the plain shape, as the style guide asks, and climbing and blink are written on top. Claude's recommendation, approved. *(2026-11-16T06:31:36+00:00 — History #40)*
 
 ### Testing
 - **Vitest for logic, plus a Playwright smoke test** that boots the game in a real browser and fails if the canvas doesn't appear or anything errors. Claude's recommendation, approved. *(2026-11-16T05:49:12+00:00, documentation time — History #10)*
@@ -181,7 +187,7 @@ Don't rush through the questions simply to get to implementation. The design pro
 
 ## C. Current Development Scope
 
-The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink's rules and look settled (#27, #32–#36); next, the first playable piece of the game.
+The scaffold is built and tested (see §F). **In design: the player.** Two rounds of questions are done (view, who the player is, how they look when hidden; skill, and which shapes and faces to draw). Body and face picked from the Thief Line-up (#20, #21); round 3 settled the head, mouth and hands (#22–#24); the band with ties chosen as the mask (#25). The player's look is settled apart from how the gloves read in light. Movement: free climbing and ground movement settled (#26, #28–#31); blink's rules and look settled (#27, #32–#36). First playable piece: the full player (#37), being planned.
 
 Shortlisted for visual comparison (options, not decisions):
 - **Bodies:** square, rounded square, circle and triangle (all four picked), plus stacked and polygon builds following Lyra's note (#19).
@@ -209,7 +215,7 @@ Shortlisted for visual comparison (options, not decisions):
 2. **Everything about the game itself.**
 3. **Blink details** (#27, #32–#36): how many charges; its range; what counts as a thin wall; exactly what guards notice and from how far.
 4. **The player's size, in the game and next to the guards.** Decided when the guards are designed. Keeping the head small (#22) means the face needs the player to be big enough on screen to read.
-5. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). Still open: physics, and anything server-side.
+5. **What each part of the stack handles.** ~~React~~ (#7); ~~Dexie~~ (#8); ~~deployment~~ (Cloudflare Workers, #14). ~~physics~~ (Phaser Arcade, #40). Still open: anything server-side.
 
 ---
 
@@ -282,6 +288,10 @@ Shortlisted for visual comparison (options, not decisions):
 | 34 | 2026-11-16T06:27:40+00:00 | Player | Guards can notice a blink. |
 | 35 | 2026-11-16T06:27:40+00:00 | Player | Blink can land on walls and ceilings, arriving gripping (Claude's recommendation, approved). |
 | 36 | 2026-11-16T06:28:40+00:00 | Player | Blink look: turning to dust (Lyra's option). Watch in playtesting: re-form time, and whether it reads like a death. |
+| 37 | 2026-11-16T06:31:36+00:00 | Workflow | First playable piece: the full player, so Lyra can test all his mechanics together (built in internally tested stages). |
+| 38 | 2026-11-16T06:31:36+00:00 | Player | Sneak is a toggle; run is held. |
+| 39 | 2026-11-16T06:31:36+00:00 | Platform | Keyboard, gamepad and touch from the start; must work on a Pixel 10 Pro Fold in portrait, landscape and on the inner screen, and on desktop. |
+| 40 | 2026-11-16T06:31:36+00:00 | Technical | Physics: Phaser Arcade (Claude's recommendation, approved). |
 
 ---
 
