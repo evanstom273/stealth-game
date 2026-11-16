@@ -8,7 +8,7 @@ Authoritative, living record of the game's design. Timestamps are Europe/London,
 
 A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry** art style (History #2). The player is **a thief who's small and out of place** (History #16). Working title: none yet; the repository is `stealth-game`.
 
-**Where the project stands (as of 2026-11-16T13:27:43+00:00):**
+**Where the project stands (as of 2026-11-16T13:31:53+00:00):**
 - Living design document created (History #4), since renamed `STEALTH_GAME_DESIGN.md` (History #5).
 - Art style reference added to the repository as `stylised-geometry/` (History #2), including `make_sheets.py`.
 - Project scaffold built and tested (History #7–#10): an empty Phaser scene inside React, served through Cloudflare Workers. Nothing game-related yet.
@@ -16,6 +16,7 @@ A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry**
 - Lyra is deploying the scaffold to Cloudflare Workers (History #14).
 - Designing the player: look settled (History #15–#25); climbing and ground movement settled (History #26, #28–#31); blink's rules and look settled (History #27, #32–#36).
 - Combat designed in three rounds (History #50–#61); details still open (§E).
+- Designing the guards: archetypes, sight, suspicion and searching settled (History #63–#68).
 - **The full player is built** (History #37, #45, #46) in a test room, playable with keyboard and mouse, gamepad and touch, and merged to `main`. Lyra's first playtest: good overall; grip raised and blink loosened as a result (History #47, #48).
 
 **Stack:** React, Vite, TypeScript, Tailwind CSS, Phaser, IndexedDB via Dexie.js and Cloudflare Workers: Lyra's normal stack (History #3).
@@ -23,6 +24,8 @@ A **side-on stealth game** (History #1, #15), drawn in the **Stylised Geometry**
 - **Tailwind** styles anything React draws.
 - **Dexie** comes in when there's first something to save (History #8).
 - **Cloudflare Workers** serves the built game, with no server code yet, and it's where the game is deployed (History #14).
+
+**The style guide is a reference, not gospel** (Lyra, 2026-11-16T13:31:53+00:00 — History #62). It informs how things look; it doesn't decide anything. Where this game wants something different, the game wins, and Claude shouldn't present the guide's rules as reasons on their own.
 
 **Art style:** Stylised Geometry, kept in `stylised-geometry/`: the guide (`STYLISED_GEOMETRY.md`), seven SVG reference sheets and `make_sheets.py`, which regenerates them. In short: characters built from simple geometric shapes, with faces and floating hands, in a dark world lit around them, all drawn from shapes in code or SVG rather than sprites. The guide is the reference for how things look; this document records the game's own design.
 
@@ -175,6 +178,15 @@ Don't rush through the questions simply to get to implementation. The design pro
 - **Sneak attacks: a marker, then Attack.** When he's in position on an unaware guard (behind, above, on a wall, or aiming a blink at them), a marker shows over the guard, and Attack does the takedown instead of an ordinary blow. Claude's recommendation, approved. *(2026-11-16T13:27:43+00:00 — History #59)*
 - **Health is shown as pips** in the HUD, coming back one at a time while he's hidden (#57). How many isn't decided. Chosen over showing damage on his body (Claude's recommendation, from the guide's §8.3). *(2026-11-16T13:27:43+00:00 — History #60)*
 - **Rewards for staying unseen:** an **end-of-level rating** (seen or not, knockouts, kills, time), and **guards stay relaxed** while he's unseen: once they've seen him, they're on edge for the rest of the level. *(2026-11-16T13:27:43+00:00 — History #61)*
+
+
+### Guards
+- **Three archetypes: a watchman, a lantern-bearer, and a blind guard.** The watchman is the everyday guard (patrols, average sight and hearing) and the baseline. The lantern-bearer carries a light, so the darkness that hides him moves with them. The blind guard can't see at all: only silence works on them. Lyra chose a blind archetype and three in all; the watchman (Claude's recommendation) and lantern-bearer were picked from options. *(2026-11-16T13:31:53+00:00 — History #63)*
+- **Senses first: sight and hearing, with proper searching.** *(2026-11-16T13:31:53+00:00 — History #64)*
+- **Sight is a cone, and light matters.** Guards see in a cone ahead of them; in light they spot him from far off, in the dark only up close. Claude's recommendation, approved. *(2026-11-16T13:31:53+00:00 — History #65)*
+- **Suspicion shows as a marker overhead** (a filling "?" that turns to "!"), not through the guard's eye. *(2026-11-16T13:31:53+00:00 — History #66)*
+- **A proper search:** guards go to where he was last seen or heard, check hiding spots nearby, bring other guards in to spread out, and give up after a while, going back to their routes on edge (#61). *(2026-11-16T13:31:53+00:00 — History #67)*
+- **Hiding spots in the environment,** such as lockers. *(2026-11-16T13:31:53+00:00 — History #68)*
 
 ### Platforms and input
 - **Keyboard, gamepad and touch, all from the start.** Lyra plays on a Pixel 10 Pro Fold, so the game has to work in portrait, in landscape and on the inner folding screen, as well as on desktop. *(2026-11-16T06:31:36+00:00 — History #39)*
@@ -363,6 +375,13 @@ Shortlisted for visual comparison (options, not decisions):
 | 59 | 2026-11-16T13:27:43+00:00 | Combat | Sneak attacks: a marker shows over an unaware guard when he's in position; Attack does the takedown (Claude's recommendation, approved). |
 | 60 | 2026-11-16T13:27:43+00:00 | Combat | Health as pips in the HUD, refilling one at a time while hidden; number undecided. |
 | 61 | 2026-11-16T13:27:43+00:00 | Combat | Rewards for staying unseen: an end-of-level rating, and guards stay relaxed until they've seen him (then on edge for the rest of the level). |
+| 62 | 2026-11-16T13:31:53+00:00 | Workflow | The style guide is a reference, not gospel: the game's own choices win. |
+| 63 | 2026-11-16T13:31:53+00:00 | Guards | Three archetypes: watchman (baseline), lantern-bearer (carries a light), and a blind guard. |
+| 64 | 2026-11-16T13:31:53+00:00 | Guards | Senses first: sight and hearing, with proper searching. |
+| 65 | 2026-11-16T13:31:53+00:00 | Guards | Sight is a cone; in light they spot him from far off, in the dark only up close (Claude's recommendation, approved). |
+| 66 | 2026-11-16T13:31:53+00:00 | Guards | Suspicion shows as a marker overhead ("?" filling to "!"). |
+| 67 | 2026-11-16T13:31:53+00:00 | Guards | Searching: go to the last known spot, check hiding spots, bring others in, give up after a while (then on edge). |
+| 68 | 2026-11-16T13:31:53+00:00 | Environment | Hiding spots in the environment, such as lockers. |
 
 ---
 
